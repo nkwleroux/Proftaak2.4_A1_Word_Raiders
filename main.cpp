@@ -1,7 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "tigl.h"
-#include <glm/gtc/matrix_transform.hpp>#include <opencv2/imgcodecs.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
