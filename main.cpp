@@ -30,11 +30,17 @@ void draw();
 glm::vec3 position = glm::vec3(0, 0, 0);
 glm::vec2 rotation = glm::vec2(0, 0);
 Texture* backgroundTexture;
-tigl::VBO* kubusVbo;
+//tigl::VBO* kubusVbo;
+//double t;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 glm::mat4 getMatrix();
 void move(float angle, float fac);
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
 int main(void)
 {
@@ -83,7 +89,7 @@ void init()
 
     backgroundTexture = new Texture("rainbow.jpg");
 
-    glm::vec4 color(1.0f, 0, 1.0f, 1.0f);
+ /*   glm::vec4 color(0, 1.0f, 0, 1.0f);
 
     std::vector<tigl::Vertex> vertices;
     vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, -1), color, glm::vec3(0, 0, -1)));
@@ -117,11 +123,8 @@ void init()
     vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, -1), color, glm::vec3(0, -1, 0)));
 
     kubusVbo = tigl::createVbo(vertices);
-}
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
+    t = 0; */
 }
 
 void update()
@@ -146,8 +149,9 @@ void update()
         move(90, 0.05f);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         move(-90, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {}
-
+    //if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    //    t++;
+    //}
 
 }
 
@@ -168,14 +172,50 @@ void draw()
     tigl::shader->enableTexture(true);
 
     backgroundTexture->bind();
+
+    int size = 50;
+
+    glEnable(GL_DEPTH_TEST);
     
     tigl::begin(GL_QUADS);
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, 1, 0), glm::vec2(0, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, 1, 0), glm::vec2(1, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, -1, 0), glm::vec2(1, 0)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, -1, 0), glm::vec2(0, 0)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 1)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 1)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(1, 0)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 0)));
     tigl::end();
 
+    tigl::begin(GL_QUADS);
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(0, 1)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 1)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 0)));
+    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(0, 0)));
+    tigl::end();
+
+    glDisable(GL_DEPTH_TEST);
+
+
+    ////tigl::shader->enableLighting(true);
+    ////tigl::shader->setLightCount(1);
+    ////tigl::shader->setLightDirectional(0, true);
+    ////tigl::shader->setLightPosition(0, glm::vec3(1, 1, 1));
+    ////tigl::shader->setLightAmbient(0, glm::vec3(0.2f, 0.2f, 0.2f));
+    ////tigl::shader->setLightDiffuse(0, glm::vec3(0.9f, 0.9f, 0.9f));
+    ////tigl::shader->setLightSpecular(0, glm::vec3(0.1f, 0.1f, 0.1f));
+    //tigl::shader->setProjectionMatrix(glm::ortho(0.0f, 1400.0f, 0.0f, 800.0f, -100.0f, 100.0f));
+    //glm::mat4 modelMatrix(1.0f);
+    //modelMatrix = glm::translate(modelMatrix, glm::vec3(200, 600 - 200 * t, 0));
+    ////modelMatrix = glm::rotate(modelMatrix, t.f, glm::vec3(1, 0, 0));
+    ////modelMatrix = glm::rotate(modelMatrix, glm::radians(45.0f), glm::vec3(0, 1, 0));
+    //modelMatrix = glm::scale(modelMatrix, glm::vec3(150, 150, 150));
+    //tigl::shader->setModelMatrix(modelMatrix);
+
+    //tigl::shader->enableTexture(true);
+    //tigl::shader->enableColor(true);
+    //backgroundTexture->bind();
+
+    /*tigl::drawVertices(GL_QUADS, kubusVbo);*/
+    //tigl::shader->enableLighting(false);
+    
 }
 
 glm::mat4 getMatrix()
