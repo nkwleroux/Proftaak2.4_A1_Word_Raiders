@@ -27,4 +27,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="res\haarcascade_frontalface_alt.xml" />
+    <Xml Include="res\closed_palm.xml" />
+    <Xml Include="res\open_palm.xml" />
+  </ItemGroup>
 </Project>

@@ -1,3 +1,9 @@
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/videoio.hpp"
+#include <opencv2/highgui.hpp>
+#include <opencv2/video.hpp>3
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "tigl.h"
@@ -15,81 +21,86 @@ using tigl::Vertex;
 using namespace cv;
 using namespace std;
 
-GLFWwindow* window;
+int main() {
 
-void init();
-void update();
-void draw();
+	VideoCapture cap(0);
 
-//delete after
-void display_image() {
-
-    //Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
-    Mat img(512, 512, CV_8UC3, Scalar(255, 255, 255));
-
-    //Draw a circle in the image - input, center point, size of circle, BGR calue, thickness of border brush/circle (or put FILLED)
-    circle(img, Point(256, 256), 155, Scalar(0, 0, 255), FILLED);
-
-    //Draw a rectangle in the image - input, rect(x, y, width, height), BGR values, thickness of border brush/circle (or put FILLED)
-    //Can also make from points, replaces rect with 2 points (point 1 = top left, point 2 = bottom right)
-    rectangle(img, Point(130, 226), Point(382, 286), Scalar(0, 0, 0), FILLED);
-    
-    imshow("Image", img); 
-    waitKey(1);
-}
-
-int main(void)
-{
-    //delete after
-    display_image();
-
-    if (!glfwInit())
-        throw "Could not initialize glwf";
-    window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        throw "Could not initialize glwf";
-    }
-    glfwMakeContextCurrent(window);
-
-    tigl::init();
-
-    init();
-
-	while (!glfwWindowShouldClose(window))
-	{
-		update();
-		draw();
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+	if (!cap.isOpened()) {
+		cout << "Could not open Camera stream!";
+		return -1;
 	}
 
-	glfwTerminate();
+	// Load open_palm cascade and eye cascade files (.xml file) The XML files should be
+	// in the same directory as the project.
 
+	CascadeClassifier open_palm_cascade;
+	CascadeClassifier closed_palm_cascade;
+	open_palm_cascade.load("res/open_palm.xml");
+	closed_palm_cascade.load("res/closed_palm.xml");
 
-    return 0;
-}
+	if (open_palm_cascade.empty()) {
+		cout << "Could not load open_palm configuration file! "
+			"Check directory! " << endl << "Press Q to Quit!" << endl;
+		while (char(waitKey(0)) != 'q') {}
+		return -2;
+	}
 
+	if (closed_palm_cascade.empty()) {
+		cout << "Could not load closed_palm configuration file! "
+			"Check directory! " << endl << "Press Q to Quit!" << endl;
+		while (char(waitKey(0)) != 'q') {}
+		return -2;
+	}
 
-void init()
-{
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (key == GLFW_KEY_ESCAPE)
-            glfwSetWindowShouldClose(window, true);
-    });
+	// Start the open_palm and eye detection phase
+	vector<Rect> open_palms;
+	vector<Rect> closed_palms;
 
-}
+	while (char(waitKey(1)) != 'q' && cap.isOpened()) {
+		double t0 = getTickCount();
+		Mat frame;
+		cap >> frame;
+		if (frame.empty()) {
+			cout << "Video over!";
+			break;
+		}
 
+		// Detect all the open_palms.
+		open_palm_cascade.detectMultiScale(frame, open_palms, 1.3, 4, 0, Size(50, 50));
+		closed_palm_cascade.detectMultiScale(frame, closed_palms, 1.3, 4, 0, Size(50, 50));
 
-void update()
-{
+		if (closed_palms.size() != 0) {
 
-}
+			for (int i = 0; i < closed_palms.size(); i++) {
 
-void draw()
-{
-    glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				cout << "=============Detected a closed_palm!=============" << endl;
+
+				// Top left and bottom right points of rectangle.
+				Point closed_palm_rect_p1(closed_palms[i].x, closed_palms[i].y);
+				Point closed_palm_rect_p2(closed_palms[i].x + closed_palms[i].width, closed_palms[i].y + closed_palms[i].height);
+
+				// Draw the rectangle in the image.
+				rectangle(frame, closed_palm_rect_p1, closed_palm_rect_p2, Scalar(0, 255, 0));
+				putText(frame, "Closed Palm", closed_palm_rect_p1, FONT_HERSHEY_SIMPLEX,
+					1, Scalar(0, 255, 0), 1, 5, false);
+			}
+		}
+		for (int i = 0; i < open_palms.size(); i++) {
+
+			cout << "=============Detected an open_palm!=============" << endl;
+
+			// Top left and bottom right points of rectangle.
+			Point open_palm_rect_p1(open_palms[i].x, open_palms[i].y);
+			Point open_palm_rect_p2(open_palms[i].x + open_palms[i].width, open_palms[i].y + open_palms[i].height);
+
+			// Draw the rectangle in the image.
+			rectangle(frame, open_palm_rect_p1, open_palm_rect_p2, Scalar(255, 0, 0));
+			putText(frame, "Open Palm", open_palm_rect_p1, FONT_HERSHEY_SIMPLEX,
+				1, Scalar(255, 0, 0), 1, 5, false);
+		}
+
+		imshow("Video Capture", frame);
+		cout << "Frame rate = " << getTickFrequency() / (getTickCount() - t0) << endl;
+	}
+	return 0;
 }
