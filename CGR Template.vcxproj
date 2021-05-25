@@ -167,6 +167,7 @@
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjModel.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneIngame.cpp" />
     <ClCompile Include="StartupScene.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="ObjModel.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneIngame.h" />
     <ClInclude Include="StartupScene.h" />

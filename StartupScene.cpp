@@ -7,8 +7,8 @@
 #include <map>
 #include "imgui.h"
 
-extern std::map<Scenes, Scene*> scenes;
-extern Scene* currentScene;
+//extern std::map<Scenes, Scene*> scenes;
+//extern Scene* currentScene;
 extern GLFWwindow* window;
 
 StartupScene::StartupScene()
@@ -87,7 +87,6 @@ void StartupScene::draw()
 	tigl::shader->enableTexture(false);
 	tigl::shader->enableColor(true);
 
-
 	tigl::drawVertices(GL_QUADS, kubusVbo);
 	tigl::shader->enableLighting(false);
 	glDisable(GL_DEPTH_TEST);
@@ -115,7 +114,7 @@ void StartupScene::update()
 {
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		currentScene = scenes[Scenes::INGAME];
+		//currentScene = scenes[Scenes::INGAME];
 	}
 	time += 0.01f;
 }
