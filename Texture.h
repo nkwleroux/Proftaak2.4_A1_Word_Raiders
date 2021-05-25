@@ -6,7 +6,11 @@
 class Texture
 {
 	GLuint id;
+
+
 public:
 	Texture(const std::string &fileName);
 	void bind();
+
+
 };

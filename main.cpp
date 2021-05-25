@@ -11,6 +11,7 @@
 #include <filesystem>
 #include "stb_image.h"
 #include "Texture.h"
+#include "FpsCam.h"
 
 using tigl::Vertex;
 
@@ -22,20 +23,20 @@ using namespace cv;
 using namespace std;
 
 GLFWwindow* window;
+FpsCam* camera;
+
+glm::vec3 position = glm::vec3(0, 0, 0);
+glm::vec2 rotation = glm::vec2(0, 0);
+Texture* textures[5];
+double lastX, lastY;
+int textureIndex;
 
 void init();
 void update();
 void draw();
 
-glm::vec3 position = glm::vec3(0, 0, 0);
-glm::vec2 rotation = glm::vec2(0, 0);
-Texture* backgroundTexture;
-//tigl::VBO* kubusVbo;
-//double t;
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-glm::mat4 getMatrix();
-void move(float angle, float fac);
+std::vector<tigl::Vertex> create_cube(int size, Texture* texture);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -82,82 +83,22 @@ void init()
             glfwSetWindowShouldClose(window, true);
     });
 
-    //to hide mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    if (glfwRawMouseMotionSupported())
-        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    textures[0] = new Texture("rainbow.jpg");
+    textures[1] = new Texture("container.jpg");
 
-    backgroundTexture = new Texture("rainbow.jpg");
+    glfwGetCursorPos(window, &lastX, &lastY);
 
- /*   glm::vec4 color(0, 1.0f, 0, 1.0f);
-
-    std::vector<tigl::Vertex> vertices;
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, -1), color, glm::vec3(0, 0, -1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, -1), color, glm::vec3(0, 0, -1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, -1), color, glm::vec3(0, 0, -1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, -1), color, glm::vec3(0, 0, -1)));
-
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, 1), color, glm::vec3(0, 0, 1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, 1), color, glm::vec3(0, 0, 1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, 1), color, glm::vec3(0, 0, 1)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, 1), color, glm::vec3(0, 0, 1)));
-
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, -1), color, glm::vec3(1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, 1), color, glm::vec3(1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, 1), color, glm::vec3(1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, -1), color, glm::vec3(1, 0, 0)));
-
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, -1), color, glm::vec3(-1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, 1), color, glm::vec3(-1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, 1), color, glm::vec3(-1, 0, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, -1), color, glm::vec3(-1, 0, 0)));
-
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, -1), color, glm::vec3(0, 1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, 1, 1), color, glm::vec3(0, 1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, 1), color, glm::vec3(0, 1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, 1, -1), color, glm::vec3(0, 1, 0)));
-
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, -1), color, glm::vec3(0, -1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(-1, -1, 1), color, glm::vec3(0, -1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, 1), color, glm::vec3(0, -1, 0)));
-    vertices.push_back(tigl::Vertex::PCN(glm::vec3(1, -1, -1), color, glm::vec3(0, -1, 0)));
-
-    kubusVbo = tigl::createVbo(vertices);
-
-    t = 0; */
+    camera = new FpsCam(window);
 }
 
 void update()
 {
-    double x, y;
-    glfwGetCursorPos(window, &x, &y);
-
-    static double lastX = x;
-    static double lastY = y;
-
-    rotation.x -= (float)(lastY - y) / 100.0f;
-    rotation.y -= (float)(lastX - x) / 100.0f;
-
-    lastX = x;
-    lastY = y;
-
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        move(0, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        move(180, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        move(90, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        move(-90, 0.05f);
-    //if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-    //    t++;
-    //}
-
+    camera->update(window, &lastX, &lastY, &textureIndex);
 }
 
 void draw()
 {
-    glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
+    glClearColor(0, 0, 0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     int viewport[4];
@@ -165,70 +106,74 @@ void draw()
     glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
     tigl::shader->setProjectionMatrix(projection);
-    tigl::shader->setViewMatrix(getMatrix());
+    tigl::shader->setViewMatrix(camera->getMatrix());
     tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
     tigl::shader->enableColor(true);
     tigl::shader->enableTexture(true);
 
-    backgroundTexture->bind();
-
-    int size = 50;
-
     glEnable(GL_DEPTH_TEST);
-    
-    tigl::begin(GL_QUADS);
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(1, 0)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 0)));
-    tigl::end();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    tigl::begin(GL_QUADS);
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(0, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 1)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 0)));
-    tigl::addVertex(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(0, 0)));
-    tigl::end();
+    const int size = 5;
+
+    std::vector<tigl::Vertex> vertices = create_cube(size,textures[textureIndex]);
+
+    tigl::drawVertices(GL_QUADS, vertices);
 
     glDisable(GL_DEPTH_TEST);
-
-
-    ////tigl::shader->enableLighting(true);
-    ////tigl::shader->setLightCount(1);
-    ////tigl::shader->setLightDirectional(0, true);
-    ////tigl::shader->setLightPosition(0, glm::vec3(1, 1, 1));
-    ////tigl::shader->setLightAmbient(0, glm::vec3(0.2f, 0.2f, 0.2f));
-    ////tigl::shader->setLightDiffuse(0, glm::vec3(0.9f, 0.9f, 0.9f));
-    ////tigl::shader->setLightSpecular(0, glm::vec3(0.1f, 0.1f, 0.1f));
-    //tigl::shader->setProjectionMatrix(glm::ortho(0.0f, 1400.0f, 0.0f, 800.0f, -100.0f, 100.0f));
-    //glm::mat4 modelMatrix(1.0f);
-    //modelMatrix = glm::translate(modelMatrix, glm::vec3(200, 600 - 200 * t, 0));
-    ////modelMatrix = glm::rotate(modelMatrix, t.f, glm::vec3(1, 0, 0));
-    ////modelMatrix = glm::rotate(modelMatrix, glm::radians(45.0f), glm::vec3(0, 1, 0));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(150, 150, 150));
-    //tigl::shader->setModelMatrix(modelMatrix);
-
-    //tigl::shader->enableTexture(true);
-    //tigl::shader->enableColor(true);
-    //backgroundTexture->bind();
-
-    /*tigl::drawVertices(GL_QUADS, kubusVbo);*/
-    //tigl::shader->enableLighting(false);
     
 }
 
-glm::mat4 getMatrix()
+bool CheckCollision(double cameraX, double cameraY, double cameraZ, double wallX, double wallY, double wallZ) // AABB - AABB collision
 {
-    glm::mat4 ret(1.0f);
-    ret = glm::rotate(ret, rotation.x, glm::vec3(1, 0, 0));
-    ret = glm::rotate(ret, rotation.y, glm::vec3(0, 1, 0));
-    ret = glm::translate(ret, position);
-    return ret;
+    // collision x-axis?
+    bool collisionX = cameraX + 1 >= wallX &&
+        wallX + 1 >= cameraX;
+    // collision y-axis?
+ /*   bool collisionY = cameraY + 1 >= wallY &&
+        wallY + 1 >= cameraY;*/
+    bool collisionZ = cameraY + 1 >= wallY &&
+        wallY + 1 >= cameraY;
+    // collision only if on both axes
+    //return collisionX && collisionY;
+    return collisionX && collisionZ;
 }
 
-void move(float angle, float fac)
-{
-    position.x += (float)cos(rotation.y + glm::radians(angle)) * fac;
-    position.z += (float)sin(rotation.y + glm::radians(angle)) * fac;
+std::vector<tigl::Vertex> create_cube(int size, Texture* texture){
+    texture->bind();
+
+    std::vector<tigl::Vertex> vertices;
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(0, 0)));
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(0, 0)));
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 0)));
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(0, 0)));
+
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(1, 1)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 0)));
+    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
+
+    return vertices;
 }
