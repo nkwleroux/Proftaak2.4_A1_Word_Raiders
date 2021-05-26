@@ -40,7 +40,6 @@ void update();
 void draw();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-std::vector<tigl::Vertex> create_cube(int size, Texture* texture);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -93,7 +92,7 @@ void init()
             glfwSetWindowShouldClose(window, true);
     });
 
-    textures[0] = new Texture("rainbow.jpg");
+    //textures[0] = new Texture("rainbow.jpg");
     textures[1] = new Texture("container.jpg");
 
     glfwGetCursorPos(window, &lastX, &lastY);
@@ -111,6 +110,7 @@ void init()
         o->addComponent(new CubeComponent(0.2));
         o->addComponent(new MoveToComponent());
         o->getComponent<MoveToComponent>()->target = o->position;
+        o->addComponent(new SpinComponent(1.0f));
         //o->addComponent(new EnemyComponent());
         objects.push_back(o);
     }
@@ -125,7 +125,13 @@ void update()
     double deltaTime = currentFrameTime - lastFrameTime;
     lastFrameTime = currentFrameTime;
 
+    cout << deltaTime << endl;
+
     for (auto& o : objects) {
+        if (o != backgroundBox) {
+            o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
+            o->getComponent<MoveToComponent>()->target = o->position;
+        }
         o->update(deltaTime);
     }
         
@@ -148,7 +154,7 @@ void draw()
     tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
     tigl::shader->enableColor(true);
-    tigl::shader->enableTexture(true);
+    tigl::shader->enableTexture(false);
 
     glEnable(GL_DEPTH_TEST);
     //for outlines only
@@ -161,7 +167,16 @@ void draw()
     //tigl::drawVertices(GL_QUADS, vertices);
 
     for (auto& o : objects) {
+        if (o == backgroundBox) {
+            tigl::shader->enableColor(false);
+            tigl::shader->enableTexture(true);
+        }
+        else {
+            tigl::shader->enableColor(true);
+            tigl::shader->enableTexture(false);
+        }
         o->draw();
+
     }
         
 

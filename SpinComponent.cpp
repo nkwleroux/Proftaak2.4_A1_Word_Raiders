@@ -1,6 +1,7 @@
 #include "SpinComponent.h"
 #include "GameObject.h"
 
+#include <iostream>
 
 SpinComponent::SpinComponent(float speed)
 {

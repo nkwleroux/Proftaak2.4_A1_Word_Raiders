@@ -3,7 +3,7 @@
 CubeComponent::CubeComponent(float size)
 {
 	glm::vec3 s(size);
-	glm::vec4 color(1, 1, 1, 1);
+	glm::vec4 color((float)(rand() % 100 + 1) / 100, (float)(rand() % 100 + 1) / 100, (float)(rand() % 100 + 1) / 100, 1);
 	glm::vec3 p(0, 0, 0);
 
 	//bottom
