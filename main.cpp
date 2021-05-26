@@ -22,6 +22,7 @@ Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
 int hmax = 110, smax = 240, vmax = 255;
 bool openHand = true;
+bool handDetected = false;
 
 vector<vector<int>> myColors{
 	{45, 110, 75, 110, 240, 255}, //green
@@ -115,15 +116,19 @@ void findColor()
 		//imshow(to_string(i), mask);
 
 		Point myPoint = getContours();
-		if (i == 0 && myPoint.x != 0 && myPoint.y != 0)
-		{
-			openHand = true;
+		
+		if (myPoint.x != 0 && myPoint.y != 0) {
+			handDetected = true;
+			if (i == 0) {
+				openHand = true;
+			}
+			else if (i == 1) {
+				openHand = false;
+			}
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 		}
-		else if (i == 1 && myPoint.x != 0 && myPoint.y != 0)
-		{
-			openHand = false;
-			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
+		else {
+			handDetected = false;
 		}
 	}
 }
@@ -211,7 +216,9 @@ void closedAction()
 {
 	while (true)
 	{
-		cout << "Closed action performing!" << endl;
+		if (handDetected && !openHand) {
+			cout << "Closed hand detected!" << endl;
+		}
 		std::this_thread::sleep_for(1000ms);
 	}
 }
@@ -220,8 +227,10 @@ void openAction()
 {
 	while (true)
 	{
-		cout << "Open action performing!" << endl;
-		std::this_thread::sleep_for(10000ms);
+		if (handDetected && openHand) {
+			cout << "Open hand detected!" << endl;
+		}
+		std::this_thread::sleep_for(10ms);
 	}
 }
 
