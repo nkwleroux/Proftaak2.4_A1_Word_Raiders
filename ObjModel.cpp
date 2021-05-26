@@ -188,16 +188,23 @@ ObjModel::~ObjModel(void)
 void ObjModel::draw()
 {
 	tigl::begin(GL_TRIANGLES);
+	bool texture = false;
+	glm::vec4 color = glm::vec4(1.0f);
 
 	//foreach group in groups
 	for (auto group : this->groups) {
 		//  set material texture, if available
-		if (materials.at(group->materialIndex)->texture!=NULL)
+		if (materials.size()>group->materialIndex&&group->materialIndex!=-1)
 		{
-			materials.at(group->materialIndex)->texture->bind();
+			if (materials.at(group->materialIndex)->texture != NULL)
+			{
+				texture = true;
+				materials.at(group->materialIndex)->texture->bind();
+			}
+
+			color = materials.at(group->materialIndex)->getColor();
 		}
 		
-		glm::vec4 color = materials.at(group->materialIndex)->getColor();
 
 		//  foreach face in group
 		for (auto face : group->faces) {
@@ -206,7 +213,15 @@ void ObjModel::draw()
 			std::vector<tigl::Vertex> vertexList;
 			for (auto vertex : face.vertices) {
 				//      emit vertex
-				tigl::addVertex(tigl::Vertex::PTN(vertices.at(vertex.position),texcoords.at(vertex.texcoord),normals.at(vertex.normal)));
+				if (texture)
+				{
+					tigl::addVertex(tigl::Vertex::PT(vertices.at(vertex.position), texcoords.at(vertex.texcoord) ));
+					//tigl::addVertex(tigl::Vertex::PTN(vertices.at(vertex.position),texcoords.at(vertex.texcoord), normals.at(vertex.normal)));
+				}
+				else
+				{
+					tigl::addVertex(tigl::Vertex::PC(vertices.at(vertex.position), color));
+				}
 			}
 		}
 	}
