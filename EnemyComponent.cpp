@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "MoveToComponent.h"
 
-extern GameObject* player;
+//extern GameObject* player;
 
 
 EnemyComponent::EnemyComponent()

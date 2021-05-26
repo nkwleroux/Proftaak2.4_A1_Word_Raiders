@@ -60,9 +60,6 @@
     <ClCompile Include="DrawComponent.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyComponent.cpp">
-      <Filter>Components\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TimerJumper.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
@@ -90,9 +87,6 @@
       <Filter>Components\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerComponent.h">
-      <Filter>Components\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyComponent.h">
       <Filter>Components\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">

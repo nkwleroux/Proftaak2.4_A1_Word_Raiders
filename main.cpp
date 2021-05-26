@@ -12,6 +12,12 @@
 #include "stb_image.h"
 #include "Texture.h"
 #include "FpsCam.h"
+#include "GameObject.h"
+#include "PlayerComponent.h"
+#include "CubeComponent.h"
+#include "MoveToComponent.h"
+#include "SpinComponent.h"
+#include "TimerJumper.h"
 
 using tigl::Vertex;
 
@@ -76,10 +82,11 @@ int main(void)
 
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
-GameObject* movingObject;
+GameObject* backgroundBox;
 
 void init()
 {
+    glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_ESCAPE)
@@ -92,13 +99,36 @@ void init()
     glfwGetCursorPos(window, &lastX, &lastY);
 
     camera = new FpsCam(window);
+
+    backgroundBox = new GameObject();
+    backgroundBox->position = glm::vec3(0, 0, 5);
+    backgroundBox->addComponent(new CubeComponent(10));
+    objects.push_back(backgroundBox);
+
+    for (int i = 0; i < 5; i++) {
+        GameObject* o = new GameObject();
+        o->position = glm::vec3(rand() % 5, 0, -1);
+        o->addComponent(new CubeComponent(0.2));
+        o->addComponent(new MoveToComponent());
+        o->getComponent<MoveToComponent>()->target = o->position;
+        //o->addComponent(new EnemyComponent());
+        objects.push_back(o);
+    }
 }
 
 void update()
 {
+    //Dont forget to remove camera update so the user cant move
     camera->update(window, &lastX, &lastY, &textureIndex);
 
-    cout << lastX << "\t" << lastY << endl;
+    double currentFrameTime = glfwGetTime();
+    double deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
+
+    for (auto& o : objects) {
+        o->update(deltaTime);
+    }
+        
 
     /*glm::vec3 myvec(1.0f, 1.0f, 1.0f);
     myvec.x*/
@@ -126,64 +156,16 @@ void draw()
 
     const int size = 5;
 
-    std::vector<tigl::Vertex> vertices = create_cube(size,textures[textureIndex]);
+    //std::vector<tigl::Vertex> vertices = create_cube(size,textures[textureIndex]);
 
-    tigl::drawVertices(GL_QUADS, vertices);
+    //tigl::drawVertices(GL_QUADS, vertices);
+
+    for (auto& o : objects) {
+        o->draw();
+    }
+        
 
     glDisable(GL_DEPTH_TEST);
   
 }
 
-bool check_collision(double pos1x, double pos1y, double pos1z, double pos2x, double pos2y, double pos2z) // AABB - AABB collision
-{
-    // collision x-axis?
-    bool collisionX = pos1x + 1 >= pos2x &&
-        pos2x + 1 >= pos1x;
-    // collision y-axis?
-    bool collisionY = pos1y + 1 >= pos2y &&
-        pos2y + 1 >= pos1y;
-    // collision z-axis?
- /*   bool collisionZ = pos1z + 1 >= pos2z &&
-        pos2z + 1 >= pos1z;*/
-    // collision only if on all axes
-    //return collisionX && collisionY && collisionZ;
-    return collisionX && collisionY;
-}
-
-std::vector<tigl::Vertex> create_cube(int size, Texture* texture){
-    texture->bind();
-
-    std::vector<tigl::Vertex> vertices;
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(0, 0)));
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(0, 0)));
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 0)));
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(0, 0)));
-
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, size), glm::vec2(1, 1)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, size), glm::vec2(1, 0)));
-    vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
-
-    return vertices;
-}
