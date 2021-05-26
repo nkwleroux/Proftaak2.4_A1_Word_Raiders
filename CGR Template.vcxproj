@@ -172,6 +172,7 @@
     <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
+    <ClCompile Include="TimerJumper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boundingBox.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />
+    <ClInclude Include="TimerJumper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="container.jpg" />

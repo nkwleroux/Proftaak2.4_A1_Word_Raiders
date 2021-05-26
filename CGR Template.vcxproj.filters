@@ -22,11 +22,11 @@
     <Filter Include="Components\Source Files">
       <UniqueIdentifier>{6571cd26-4d04-43d1-8ec1-2f8a96ee6a47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{d37a1283-16cc-4131-bcc6-d877346f5c01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tigl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,11 +63,14 @@
     <ClCompile Include="EnemyComponent.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimerJumper.cpp">
+      <Filter>Components\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tigl.cpp">
+      <Filter>lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tigl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -100,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="DrawComponent.h">
       <Filter>Components\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerJumper.h">
+      <Filter>Components\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tigl.h">
+      <Filter>lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

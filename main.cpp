@@ -73,6 +73,11 @@ int main(void)
     return 0;
 }
 
+
+std::list<GameObject*> objects;
+double lastFrameTime = 0;
+GameObject* movingObject;
+
 void init()
 {
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
