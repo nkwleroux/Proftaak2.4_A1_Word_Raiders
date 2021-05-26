@@ -27,12 +27,19 @@ private:
 	public:
 		std::list<Vertex> vertices;
 	};
+
+
 	class MaterialInfo
 	{
 	public:
 		MaterialInfo();
 		std::string name;
 		Texture* texture;
+		glm::vec3 ka;
+		glm::vec3 kd;
+		glm::vec3 ks;
+
+		glm::vec4 getColor();
 	};
 
 	class ObjGroup
@@ -50,7 +57,8 @@ private:
 	std::vector<ObjGroup*> groups;
 	std::vector<MaterialInfo*> materials;
 
-	void loadMaterialFile(const std::string &fileName, const std::string &dirName);
+	void loadMaterialFile(const std::string& fileName, const std::string& dirName);
+
 public:
 	ObjModel(const std::string &filename);
 	~ObjModel(void);

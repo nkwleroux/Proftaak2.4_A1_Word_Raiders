@@ -150,7 +150,8 @@ ObjModel::ObjModel(const std::string &fileName)
 			}
 		}
 		else if(params[0] == "s")
-		{//smoothing groups
+		{
+			//smoothing groups
 		}
         else if(params[0] == "mtllib")
         {
@@ -186,24 +187,30 @@ ObjModel::~ObjModel(void)
 
 void ObjModel::draw()
 {
+	tigl::begin(GL_TRIANGLES);
+
 	//foreach group in groups
 	for (auto group : this->groups) {
 		//  set material texture, if available
-		//  set material color, if available
-		//  foreach face in group
+		if (materials.at(group->materialIndex)->texture!=NULL)
+		{
+			materials.at(group->materialIndex)->texture->bind();
+		}
+		
+		glm::vec4 color = materials.at(group->materialIndex)->getColor();
 
+		//  foreach face in group
 		for (auto face : group->faces) {
 
-			tigl::begin(GL_TRIANGLES);
 			//    foreach vertex in face
 			std::vector<tigl::Vertex> vertexList;
 			for (auto vertex : face.vertices) {
 				//      emit vertex
 				tigl::addVertex(tigl::Vertex::PTN(vertices.at(vertex.position),texcoords.at(vertex.texcoord),normals.at(vertex.normal)));
 			}
-			tigl::end();
 		}
 	}
+	tigl::end();
 }
 
 void ObjModel::loadMaterialFile( const std::string &fileName, const std::string &dirName )
@@ -231,12 +238,9 @@ void ObjModel::loadMaterialFile( const std::string &fileName, const std::string 
 
 		if(params[0] == "newmtl")
 		{
-			if(currentMaterial != NULL)
-			{
-				materials.push_back(currentMaterial);
-			}
 			currentMaterial = new MaterialInfo();
 			currentMaterial->name = params[1];
+			materials.push_back(currentMaterial);
 		}
 		else if(params[0] == "map_kd")
 		{
@@ -245,17 +249,24 @@ void ObjModel::loadMaterialFile( const std::string &fileName, const std::string 
 				tex = tex.substr(tex.rfind("/") + 1);
 			if (tex.find("\\"))
 				tex = tex.substr(tex.rfind("\\") + 1);
-			//TODO
-			currentMaterial->texture = new Texture(dirName + "/" + tex);
+
+			if (tex!=".")
+			{
+				currentMaterial->texture = new Texture(dirName + "/" + tex);
+			}
+
 		} 
 		else if (params[0] == "kd")
-		{//TODO, diffuse color
+		{
+			currentMaterial->kd = glm::vec3(atoi(params[1].c_str()), atoi(params[2].c_str()), atoi(params[3].c_str()));
 		}
 		else if (params[0] == "ka")
-		{//TODO, ambient color
+		{
+			currentMaterial->ka = glm::vec3(atoi(params[1].c_str()), atoi(params[2].c_str()), atoi(params[3].c_str()));
 		}
 		else if (params[0] == "ks")
-		{//TODO, specular color
+		{
+			currentMaterial->ks = glm::vec3(atoi(params[1].c_str()), atoi(params[2].c_str()), atoi(params[3].c_str()));
 		}
 		else if (
 			params[0] == "illum" || 
@@ -277,14 +288,21 @@ void ObjModel::loadMaterialFile( const std::string &fileName, const std::string 
 		else
 			std::cout<<"Didn't parse "<<params[0]<<" in material file"<<std::endl;
 	}
-	if(currentMaterial != NULL)
-		materials.push_back(currentMaterial);
-
 }
 
 ObjModel::MaterialInfo::MaterialInfo()
 {
 	texture = NULL;
+}
+
+glm::vec4 ObjModel::MaterialInfo::getColor()
+{
+	float color = 1.0f;
+
+	/*float color = this->ka * ambientcolor +
+		this->kd * lambertian * diffusecolor +
+		this->ks * specular * specularColor;*/
+	return glm::vec4(color,color,color,1.0f);
 }
 
 
