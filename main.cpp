@@ -25,8 +25,6 @@ using namespace std;
 GLFWwindow* window;
 FpsCam* camera;
 
-glm::vec3 position = glm::vec3(0, 0, 0);
-glm::vec2 rotation = glm::vec2(0, 0);
 Texture* textures[5];
 double lastX, lastY;
 int textureIndex;
@@ -94,6 +92,11 @@ void init()
 void update()
 {
     camera->update(window, &lastX, &lastY, &textureIndex);
+
+    cout << lastX << "\t" << lastY << endl;
+
+    /*glm::vec3 myvec(1.0f, 1.0f, 1.0f);
+    myvec.x*/
 }
 
 void draw()
@@ -107,13 +110,15 @@ void draw()
 
     tigl::shader->setProjectionMatrix(projection);
     tigl::shader->setViewMatrix(camera->getMatrix());
-    tigl::shader->setModelMatrix(glm::mat4(1.0f));
+    //tigl::shader->setModelMatrix(glm::mat4(1.0f));
+    tigl::shader->setModelMatrix(camera->getMatrix());
 
     tigl::shader->enableColor(true);
     tigl::shader->enableTexture(true);
 
     glEnable(GL_DEPTH_TEST);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //for outlines only
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     const int size = 5;
 
@@ -125,19 +130,20 @@ void draw()
     
 }
 
-bool CheckCollision(double cameraX, double cameraY, double cameraZ, double wallX, double wallY, double wallZ) // AABB - AABB collision
+bool check_collision(double pos1x, double pos1y, double pos1z, double pos2x, double pos2y, double pos2z) // AABB - AABB collision
 {
     // collision x-axis?
-    bool collisionX = cameraX + 1 >= wallX &&
-        wallX + 1 >= cameraX;
+    bool collisionX = pos1x + 1 >= pos2x &&
+        pos2x + 1 >= pos1x;
     // collision y-axis?
- /*   bool collisionY = cameraY + 1 >= wallY &&
-        wallY + 1 >= cameraY;*/
-    bool collisionZ = cameraY + 1 >= wallY &&
-        wallY + 1 >= cameraY;
-    // collision only if on both axes
-    //return collisionX && collisionY;
-    return collisionX && collisionZ;
+    bool collisionY = pos1y + 1 >= pos2y &&
+        pos2y + 1 >= pos1y;
+    // collision z-axis?
+ /*   bool collisionZ = pos1z + 1 >= pos2z &&
+        pos2z + 1 >= pos1z;*/
+    // collision only if on all axes
+    //return collisionX && collisionY && collisionZ;
+    return collisionX && collisionY;
 }
 
 std::vector<tigl::Vertex> create_cube(int size, Texture* texture){
