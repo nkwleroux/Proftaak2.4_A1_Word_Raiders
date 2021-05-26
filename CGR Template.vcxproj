@@ -159,12 +159,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boundingBox.cpp" />
     <ClCompile Include="FpsCam.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="boundingBox.h" />
     <ClInclude Include="FpsCam.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />

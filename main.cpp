@@ -110,8 +110,7 @@ void draw()
 
     tigl::shader->setProjectionMatrix(projection);
     tigl::shader->setViewMatrix(camera->getMatrix());
-    //tigl::shader->setModelMatrix(glm::mat4(1.0f));
-    tigl::shader->setModelMatrix(camera->getMatrix());
+    tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
     tigl::shader->enableColor(true);
     tigl::shader->enableTexture(true);
@@ -127,7 +126,7 @@ void draw()
     tigl::drawVertices(GL_QUADS, vertices);
 
     glDisable(GL_DEPTH_TEST);
-    
+  
 }
 
 bool check_collision(double pos1x, double pos1y, double pos1z, double pos2x, double pos2y, double pos2z) // AABB - AABB collision
