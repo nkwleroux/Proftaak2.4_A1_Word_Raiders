@@ -5,6 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+
 using tigl::Vertex;
 
 #pragma comment(lib, "glfw3.lib")
@@ -16,9 +17,105 @@ using namespace std;
 
 GLFWwindow* window;
 
+Mat img, imgHSV, mask, imgColor;
+int hmin = 45, smin = 110, vmin = 75;
+int hmax = 110, smax = 240, vmax = 255;
+bool openHand = true;
+
+vector<vector<int>> myColors{ {45, 110, 75, 110, 240, 255}, //green
+                              {152, 99, 165, 168, 205, 255} }; //pink
+vector<Scalar> myColorValues{ {0, 255, 0} };
+
 void init();
 void update();
 void draw();
+
+void colorSettings() {
+    VideoCapture cap(0);
+    //Mat img;
+
+    namedWindow("Trackbars", (640, 200));
+    createTrackbar("Hue Min", "Trackbars", &hmin, 179);
+    createTrackbar("Hue Max", "Trackbars", &hmax, 179);
+    createTrackbar("Sat Min", "Trackbars", &smin, 255);
+    createTrackbar("Sat Max", "Trackbars", &smax, 255);
+    createTrackbar("Val Min", "Trackbars", &vmin, 255);
+    createTrackbar("Val Max", "Trackbars", &vmax, 255);
+
+    while (true) {
+        cap.read(img);
+        cvtColor(img, imgHSV, COLOR_BGR2HSV);
+        Scalar lower(hmin, smin, vmin);
+        Scalar upper(hmax, smax, vmax);
+        inRange(imgHSV, lower, upper, mask);
+
+        cout << "hmin: " << hmin << ", smin: " << smin << ", vmin: " << vmin << endl;
+        cout << "hmax: " << hmax << ", smax: " << smax << ", vmax: " << vmax << endl;
+        imshow("Image", img);
+        imshow("Mask", mask);
+        waitKey(1);
+    }
+}
+
+Point getContours() {
+    
+
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    Point myPoint(0, 0);
+    if (!mask.empty()) {
+        findContours(mask, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+        vector<vector<Point>> conPoly(contours.size());
+        vector<Rect> boundRect(contours.size());
+        
+
+        for (int i = 0; i < contours.size(); i++) {
+            int area = contourArea(contours[i]);
+            //cout << "Area: " << area << endl;
+
+            
+            String objectType;
+
+            if (area > 1000) {
+                float peri = arcLength(contours[i], true);
+                approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
+
+                boundRect[i] = boundingRect(conPoly[i]);
+                myPoint.x = boundRect[i].x + boundRect[i].width / 2;
+                myPoint.y = boundRect[i].y + boundRect[i].height / 2;
+
+                drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
+                rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
+            }
+        }
+    }
+
+    return myPoint;
+}
+
+void findColor() {
+    cvtColor(img, imgHSV, COLOR_BGR2HSV);
+
+    for (int i = 0; i < myColors.size(); i++) {
+        Scalar lower(myColors[i][0], myColors[i][1], myColors[i][2]);
+        Scalar upper(myColors[i][3], myColors[i][4], myColors[i][5]);
+        inRange(imgHSV, lower, upper, mask);
+        //imshow(to_string(i), mask);
+
+        Point myPoint = getContours();
+        if (i == 0 && myPoint.x != 0 && myPoint.y != 0) {
+            openHand = true;
+            circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
+            
+        }
+        else if(i == 1 && myPoint.x != 0 && myPoint.y != 0)
+        {
+            openHand = false;
+            circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
+        }        
+    }
+}
 
 //delete after
 void display_image() {
@@ -40,7 +137,17 @@ void display_image() {
 int main(void)
 {
     //delete after
-    display_image();
+    //colorSettings();
+    VideoCapture cap(0);
+
+    while (true) {
+        cap.read(img);
+        findColor();
+        imshow("video", img);
+        waitKey(1);
+    }
+
+    
 
     if (!glfwInit())
         throw "Could not initialize glwf";
@@ -84,6 +191,7 @@ void init()
 
 void update()
 {
+    
 
 }
 
