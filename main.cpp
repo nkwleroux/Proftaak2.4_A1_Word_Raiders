@@ -21,13 +21,16 @@ GLFWwindow* window;
 Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
 int hmax = 110, smax = 240, vmax = 255;
+
+VideoCapture cap(0);
+Point currentPoint;
 bool openHand = true;
 bool handDetected = false;
 
 vector<vector<int>> myColors{
-	{45, 110, 75, 110, 240, 255}, //green
-	{152, 99, 165, 168, 205, 255}
-}; //pink
+	{45, 110, 75, 110, 240, 255}, //blue
+	{28, 61, 114, 67, 220, 247} //green
+};
 vector<Scalar> myColorValues{{0, 255, 0}};
 
 void init();
@@ -126,6 +129,7 @@ void findColor()
 				openHand = false;
 			}
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
+			currentPoint = myPoint;
 		}
 		else {
 			handDetected = false;
@@ -153,21 +157,11 @@ void display_image()
 int main(void)
 {
 	//delete after
-	//colorSettings();
-	VideoCapture cap(0);
+	colorSettings();
+	
 
 	thread t1(openAction);
 	thread t2(closedAction);
-
-
-	while (true)
-	{
-		cap.read(img);
-		findColor();
-		imshow("video", img);
-		waitKey(1);
-	}
-
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
@@ -210,6 +204,10 @@ void init()
 
 void update()
 {
+	/*cap.read(img);
+	findColor();
+	imshow("video", img);
+	waitKey(1);*/
 }
 
 void closedAction()
@@ -234,8 +232,27 @@ void openAction()
 	}
 }
 
+void createRectangle(glm::mat4 modelMatrix) {
+	tigl::shader->setModelMatrix(modelMatrix);
+
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PC(glm::vec3(-0.5, -0.5, -0.5), glm::vec4(1, 0, 0, 1)));
+	tigl::addVertex(Vertex::PC(glm::vec3(0.5, -0.5, -0.5), glm::vec4(1, 0, 0, 1)));
+	tigl::addVertex(Vertex::PC(glm::vec3(0.5, 0.5, -0.5), glm::vec4(1, 0, 0, 1)));
+	tigl::addVertex(Vertex::PC(glm::vec3(-0.5, 0.5, -0.5), glm::vec4(1, 0, 0, 1)));
+	tigl::end();
+}
+
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	tigl::shader->setProjectionMatrix(glm::ortho(-10.0f, 10.0f, -5.625f, 5.625f, -100.0f, 100.0f));
+	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	tigl::shader->enableColor(true);
+
+	glm::mat4 modelMatrix(1.0f);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(currentPoint.x / 75, currentPoint.y / 75, 0));
+	createRectangle(modelMatrix);
 }
