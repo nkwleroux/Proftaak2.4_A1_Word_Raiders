@@ -221,7 +221,7 @@ void init()
 				glfwSetWindowShouldClose(window, true);
 		});
 
-	textures[0] = new Texture("closedHand.png");
+	textures[0] = new Texture("rainbow.jpg");
 	textures[1] = new Texture("container.jpg");
 
 	currentCrosshair = 0;
