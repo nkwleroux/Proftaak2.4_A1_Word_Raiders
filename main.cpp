@@ -48,7 +48,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main(void)
 {
-
     if (!glfwInit())
         throw "Could not initialize glwf";
     window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
@@ -74,10 +73,8 @@ int main(void)
 
 	glfwTerminate();
 
-
     return 0;
 }
-
 
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
@@ -99,19 +96,18 @@ void init()
 
     camera = new FpsCam(window);
 
-    backgroundBox = new GameObject();
+    backgroundBox = new GameObject(0);
     backgroundBox->position = glm::vec3(0, 0, 5);
     backgroundBox->addComponent(new CubeComponent(10));
     objects.push_back(backgroundBox);
 
-    for (int i = 0; i < 5; i++) {
-        GameObject* o = new GameObject();
+    for (int i = 1; i < 6; i++) {
+        GameObject* o = new GameObject(i);
         o->position = glm::vec3(rand() % 5, 0, -1);
         o->addComponent(new CubeComponent(0.2));
         o->addComponent(new MoveToComponent());
         o->getComponent<MoveToComponent>()->target = o->position;
         o->addComponent(new SpinComponent(1.0f));
-        //o->addComponent(new EnemyComponent());
         objects.push_back(o);
     }
 }
@@ -125,19 +121,30 @@ void update()
     double deltaTime = currentFrameTime - lastFrameTime;
     lastFrameTime = currentFrameTime;
 
-    cout << deltaTime << endl;
+    GameObject* tempObject = new GameObject(0);
+    tempObject->modelMatrix = backgroundBox->modelMatrix;
+    tempObject->position = backgroundBox->position;
+    tempObject->rotation = backgroundBox->rotation;
+    tempObject->scale = backgroundBox->scale;
 
+    glm::mat4 inverseModelMatrix = glm::inverse(tempObject->modelMatrix);
+    glm::vec4 pointA = glm::vec4(5);
+    
     for (auto& o : objects) {
+        glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
+        if (pointA == pointB) {
+            cout << "TESTING" << endl;
+        }
+        else {
+            cout << "NOT TESTING" << endl;
+        }
+
         if (o != backgroundBox) {
             o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
             o->getComponent<MoveToComponent>()->target = o->position;
         }
         o->update(deltaTime);
     }
-        
-
-    /*glm::vec3 myvec(1.0f, 1.0f, 1.0f);
-    myvec.x*/
 }
 
 void draw()
@@ -153,18 +160,9 @@ void draw()
     tigl::shader->setViewMatrix(camera->getMatrix());
     tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
-    tigl::shader->enableColor(true);
-    tigl::shader->enableTexture(false);
-
     glEnable(GL_DEPTH_TEST);
     //for outlines only
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    const int size = 5;
-
-    //std::vector<tigl::Vertex> vertices = create_cube(size,textures[textureIndex]);
-
-    //tigl::drawVertices(GL_QUADS, vertices);
 
     for (auto& o : objects) {
         if (o == backgroundBox) {
@@ -177,8 +175,7 @@ void draw()
         }
         o->draw();
 
-    }
-        
+    }       
 
     glDisable(GL_DEPTH_TEST);
   

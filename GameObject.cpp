@@ -3,8 +3,9 @@
 #include "tigl.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject()
+GameObject::GameObject(int id = 0)
 {
+	id = id;
 }
 
 
@@ -32,7 +33,7 @@ void GameObject::draw(const glm::mat4 &parentMatrix)
 	if (!drawComponent)
 		return;
 
-	glm::mat4 modelMatrix = parentMatrix;
+	modelMatrix = parentMatrix;
 	modelMatrix = glm::translate(modelMatrix, position);
 	modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
 	modelMatrix = glm::rotate(modelMatrix, rotation.y, glm::vec3(0, 1, 0));
