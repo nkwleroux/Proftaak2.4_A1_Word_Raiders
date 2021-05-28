@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include "tigl.h"
 
 #include <string>
 #include <vector>
@@ -50,19 +51,23 @@ private:
 		std::list<Face> faces;
 	};
 
-
+	//todo remove these when vbo is created
 	std::vector<glm::vec3>	vertices;
 	std::vector<glm::vec3>	normals;
 	std::vector<glm::vec2>	texcoords;
 	std::vector<ObjGroup*> groups;
 	std::vector<MaterialInfo*> materials;
+	std::vector<tigl::VBO*> vbos;
+	bool texture;
 
 	void loadMaterialFile(const std::string& fileName, const std::string& dirName);
 
 public:
+	void createVBO();
 	ObjModel(const std::string &filename);
 	~ObjModel(void);
 
 	void draw();
+	bool hasTexture();
 };
 

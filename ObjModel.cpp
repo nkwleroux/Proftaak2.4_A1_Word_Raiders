@@ -77,7 +77,49 @@ static inline std::string cleanLine(std::string line)
 }
 
 
+void ObjModel::createVBO() {
+	//foreach group in groups
+	for (auto group : this->groups) {
+		texture = false;
+		glm::vec4 color = glm::vec4(1.0f);
+		std::vector<tigl::Vertex> verticesList;
 
+		//  set material texture, if available
+		if (materials.size() > group->materialIndex && group->materialIndex != -1)
+		{
+			if (materials.at(group->materialIndex)->texture != NULL)
+			{
+				texture = true;
+				materials.at(group->materialIndex)->texture->bind();
+			}
+
+			color = materials.at(group->materialIndex)->getColor();
+		}
+
+
+		//  foreach face in group
+		for (auto face : group->faces) {
+
+			//    foreach vertex in face
+			std::vector<tigl::Vertex> vertexList;
+			for (auto vertex : face.vertices) {
+				//emit vertex
+				if (texture)
+				{
+					//verticesList.push_back(tigl::Vertex::PT(vertices.at(vertex.position), texcoords.at(vertex.texcoord) ));
+					verticesList.push_back(tigl::Vertex::PTN(vertices.at(vertex.position), texcoords.at(vertex.texcoord), normals.at(vertex.normal)));
+				}
+				else
+				{
+					verticesList.push_back(tigl::Vertex::PC(vertices.at(vertex.position), color));
+				}
+			}
+		}
+
+		vbos.push_back(tigl::createVbo(verticesList));
+	}
+
+}
 
 /**
 * Loads an object model
@@ -178,6 +220,8 @@ ObjModel::ObjModel(const std::string &fileName)
 		}
 	}
 	groups.push_back(currentGroup);
+
+	createVBO();
 }
 
 
@@ -187,7 +231,7 @@ ObjModel::~ObjModel(void)
 
 void ObjModel::draw()
 {
-	tigl::begin(GL_TRIANGLES);
+	/*tigl::begin(GL_TRIANGLES);
 	bool texture = false;
 	glm::vec4 color = glm::vec4(1.0f);
 
@@ -212,11 +256,11 @@ void ObjModel::draw()
 			//    foreach vertex in face
 			std::vector<tigl::Vertex> vertexList;
 			for (auto vertex : face.vertices) {
-				//      emit vertex
+				//emit vertex
 				if (texture)
 				{
-					tigl::addVertex(tigl::Vertex::PT(vertices.at(vertex.position), texcoords.at(vertex.texcoord) ));
-					//tigl::addVertex(tigl::Vertex::PTN(vertices.at(vertex.position),texcoords.at(vertex.texcoord), normals.at(vertex.normal)));
+					//tigl::addVertex(tigl::Vertex::PT(vertices.at(vertex.position), texcoords.at(vertex.texcoord) ));
+					tigl::addVertex(tigl::Vertex::PTN(vertices.at(vertex.position),texcoords.at(vertex.texcoord), normals.at(vertex.normal)));
 				}
 				else
 				{
@@ -225,7 +269,17 @@ void ObjModel::draw()
 			}
 		}
 	}
-	tigl::end();
+	tigl::end();*/
+	
+	for (auto vbo : vbos) {
+		
+		tigl::drawVertices(GL_TRIANGLES, vbo);
+	}
+}
+
+bool ObjModel::hasTexture()
+{
+	return texture;
 }
 
 void ObjModel::loadMaterialFile( const std::string &fileName, const std::string &dirName )

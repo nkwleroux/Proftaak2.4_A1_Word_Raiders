@@ -11,7 +11,7 @@ using tigl::Vertex;
 #pragma comment(lib, "opengl32.lib")
 
 GLFWwindow* window;
-ObjModel* model;
+std::vector<ObjModel*> models;
 
 void init();
 void update();
@@ -56,9 +56,10 @@ void init()
     });
 
 
-    //model = new ObjModel("resources/Diamond_Word_Raiders.obj");
-    //model = new ObjModel("resources/Cube_Word_Raiders.obj");
-    model = new ObjModel("resources/cube.obj");
+    //models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
+    //models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
+    models.push_back(new ObjModel("resources/scene.obj"));
+    //models.push_back(new ObjModel("resources/cube2.obj"));
 }
 
 float rotation = 0;
@@ -70,7 +71,7 @@ void update()
 
 void draw()
 {
-    glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     int viewport[4];
@@ -81,18 +82,28 @@ void draw()
     tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0,5.0f,10.0f), glm::vec3(0,0,0), glm::vec3(0,1,0)));
     tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
 
-    tigl::shader->enableLighting(true);
+    //tigl::shader->enableLighting(true);
     tigl::shader->setLightCount(1);
     tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
     tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
-    tigl::shader->setLightPosition(0, glm::vec3(0, 10, -5));
+    tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
     tigl::shader->setLightDirectional(0, true);
 
-    tigl::shader->enableColor(true);
     tigl::shader->enableTexture(true);
 
     glEnable(GL_DEPTH_TEST);
+    glPointSize(3.f);
 
-
-    model->draw();
+    for (auto model : models) {
+        if (model->hasTexture())
+        {
+            tigl::shader->enableColor(false);
+            tigl::shader->enableTexture(true);
+        }
+        else {
+            tigl::shader->enableColor(true);
+            tigl::shader->enableTexture(false);
+        }
+        model->draw();
+    }
 }
