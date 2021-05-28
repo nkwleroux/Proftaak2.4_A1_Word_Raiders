@@ -46,5 +46,11 @@
     <Image Include="Resources\openHand.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="rainbow.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -29,7 +29,8 @@ glm::vec4 currentColor;
 glm::vec4 red(1, 0, 0, 1);
 glm::vec4 green(0, 1, 0, 1);
 
-Texture* currentCrosshair;
+int currentCrosshair;
+Texture* textures[2];
 Texture* openCrosshair;
 Texture* closedCrosshair;
 
@@ -40,15 +41,21 @@ int windowWidth = 1920;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
-	{0, 194, 75, 18, 246, 255} //red
+	//{0, 194, 75, 18, 246, 255} //red
+	{hmin, smin, vmin, hmax, smax, vmax} //red - temp (delete after)
 };
-vector<Scalar> myColorValues{{0, 255, 0}};
+vector<Scalar> myColorValues{ {0, 255, 0} };
 
 void init();
 void update();
 void draw();
 void closedAction();
 void openAction();
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
 
 void colorSettings()
 {
@@ -91,12 +98,10 @@ Point getContours()
 		vector<vector<Point>> conPoly(contours.size());
 		vector<Rect> boundRect(contours.size());
 
-
 		for (int i = 0; i < contours.size(); i++)
 		{
 			int area = contourArea(contours[i]);
 			//cout << "Area: " << area << endl;
-
 
 			String objectType;
 
@@ -130,19 +135,20 @@ void findColor()
 		//imshow(to_string(i), mask);
 
 		Point myPoint = getContours();
-		
+
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			handDetected = true;
 			if (i == 0) {
 				openHand = true;
 				currentColor = green;
-				currentCrosshair= openCrosshair;
+				currentCrosshair = i;
 			}
 			else if (i == 1) {
 				openHand = false;
 				currentColor = red;
-				currentCrosshair = closedCrosshair;
+				currentCrosshair = i;
 			}
+			//currentCrosshair = 2;
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 			currentPoint = myPoint;
 		}
@@ -173,12 +179,6 @@ int main(void)
 {
 	//delete after
 	//colorSettings();
-	openCrosshair = new Texture("Resources/openHand.png");
-	closedCrosshair = new Texture("Resources/closedHand.png");
-	currentCrosshair = openCrosshair;
-
-	thread t1(openAction);
-	thread t2(closedAction);
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
@@ -189,6 +189,7 @@ int main(void)
 		throw "Could not initialize glwf";
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	tigl::init();
 
@@ -208,23 +209,33 @@ int main(void)
 	return 0;
 }
 
-
 void init()
 {
-	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		if (key == GLFW_KEY_ESCAPE)
-			glfwSetWindowShouldClose(window, true);
-	});
-}
+	thread t1(openAction);
+	thread t2(closedAction);
 
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE)
+				glfwSetWindowShouldClose(window, true);
+		});
+
+	textures[0] = new Texture("rainbow.jpg");
+	textures[1] = new Texture("container.jpg");
+
+	currentCrosshair = 0;
+}
 
 void update()
 {
 	cap.read(img);
 	findColor();
 	imshow("video", img);
-	waitKey(1);
+
+	//if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	//	currentCrosshair = 1;
+	//if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	//	currentCrosshair = 0;
 }
 
 void closedAction()
@@ -235,6 +246,7 @@ void closedAction()
 			cout << currentPoint.x << "," << currentPoint.y << endl;
 		}
 		std::this_thread::sleep_for(1000ms);
+
 	}
 }
 
@@ -250,29 +262,54 @@ void openAction()
 	}
 }
 
-void createRectangle(glm::mat4 modelMatrix) {
-	
-	
-}
+std::vector<tigl::Vertex> create_square(int size, Texture* texture);
 
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	tigl::shader->setProjectionMatrix(glm::perspective(glm::radians(70.0f), (float)(windowWidth / 800), 0.1f, 200.0f));
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	tigl::shader->enableTexture(true);
-	currentCrosshair->bind();
-	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, -0.5, -0.5), glm::vec2(0, 0), currentColor));
-	tigl::addVertex(Vertex::PTC(glm::vec3(0.5, -0.5, -0.5), glm::vec2(1, 0), currentColor));
-	tigl::addVertex(Vertex::PTC(glm::vec3(0.5, 0.5, -0.5), glm::vec2(1, 1), currentColor));
-	tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, 0.5, -0.5), glm::vec2(0, 1), currentColor));
-	tigl::end();
-	
-	glm::mat4 modelMatrix(1.0f);
-	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth/1280) * currentPoint.x)/75 - 4.0f, ((float)((windowHeight / 650) * currentPoint.y) / 75)* -1.0f + 3.5f, 0.0f));
-	tigl::shader->setModelMatrix(modelMatrix);
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
+	tigl::shader->setProjectionMatrix(projection);
+	//tigl::shader->setProjectionMatrix(glm::perspective(glm::radians(70.0f), (float)(windowWidth / 800), 0.1f, 200.0f));
+	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+
+	tigl::shader->enableColor(false);
+	tigl::shader->enableTexture(true);
+	//textures[currentCrosshair]->bind();
+	//tigl::begin(GL_QUADS);
+	//tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, -0.5, -0.5), glm::vec2(0, 0), currentColor));
+	//tigl::addVertex(Vertex::PTC(glm::vec3(0.5, -0.5, -0.5), glm::vec2(1, 0), currentColor));
+	//tigl::addVertex(Vertex::PTC(glm::vec3(0.5, 0.5, -0.5), glm::vec2(1, 1), currentColor));
+	//tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, 0.5, -0.5), glm::vec2(0, 1), currentColor));
+	//tigl::end();
+
+	glEnable(GL_DEPTH_TEST);
+
+	std::vector<tigl::Vertex> vertices = create_square(1, textures[currentCrosshair]);
+
+	tigl::drawVertices(GL_QUADS, vertices);
+
+	glDisable(GL_DEPTH_TEST);
+
+	glm::mat4 modelMatrix(1.0f);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / 1280) * currentPoint.x) / 75 - 4.0f, ((float)((windowHeight / 650) * currentPoint.y) / 75) * -1.0f + 3.5f, 0.0f));
+	tigl::shader->setModelMatrix(modelMatrix);
+}
+
+
+std::vector<tigl::Vertex> create_square(int size, Texture* texture) {
+	texture->bind();
+
+	std::vector<tigl::Vertex> vertices;
+
+	vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
+	vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(1, 1)));
+	vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 0)));
+	vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
+
+	return vertices;
 }

@@ -4,7 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture(const std::string & fileName)
+Texture::Texture(const std::string& fileName)
 {
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);

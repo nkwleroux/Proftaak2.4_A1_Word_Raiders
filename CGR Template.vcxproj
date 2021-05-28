@@ -168,6 +168,8 @@
     <ClInclude Include="tigl.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="container.jpg" />
+    <Image Include="rainbow.jpg" />
     <Image Include="Resources\closedHand.png" />
     <Image Include="Resources\crossair.png" />
     <Image Include="Resources\openHand.png" />
