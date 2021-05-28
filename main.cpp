@@ -42,7 +42,7 @@ int windowWidth = 1920;
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
 	//{0, 194, 75, 18, 246, 255} //red
-	{hmin, smin, vmin, hmax, smax, vmax} //red - temp (delete after)
+	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 };
 vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -180,6 +180,9 @@ int main(void)
 	//delete after
 	//colorSettings();
 
+	thread t1(openAction);
+	thread t2(closedAction);
+
 	if (!glfwInit())
 		throw "Could not initialize glwf";
 	window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
@@ -211,8 +214,6 @@ int main(void)
 
 void init()
 {
-	thread t1(openAction);
-	thread t2(closedAction);
 
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
@@ -220,7 +221,7 @@ void init()
 				glfwSetWindowShouldClose(window, true);
 		});
 
-	textures[0] = new Texture("rainbow.jpg");
+	textures[0] = new Texture("closedHand.png");
 	textures[1] = new Texture("container.jpg");
 
 	currentCrosshair = 0;
