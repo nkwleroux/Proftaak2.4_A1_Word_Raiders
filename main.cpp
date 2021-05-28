@@ -6,6 +6,7 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <thread>
+#include "Texture.h"
 
 using tigl::Vertex;
 
@@ -24,12 +25,22 @@ int hmax = 110, smax = 240, vmax = 255;
 
 VideoCapture cap(0);
 Point currentPoint;
+glm::vec4 currentColor;
+glm::vec4 red(1, 0, 0, 1);
+glm::vec4 green(0, 1, 0, 1);
+
+Texture* currentCrosshair;
+Texture* openCrosshair;
+Texture* closedCrosshair;
+
 bool openHand = true;
 bool handDetected = false;
+int windowHeight = 1000;
+int windowWidth = 1920;
 
 vector<vector<int>> myColors{
-	{45, 110, 75, 110, 240, 255}, //blue
-	{28, 61, 114, 67, 220, 247} //green
+	{44, 52, 75, 66, 118, 255}, //green
+	{0, 194, 75, 18, 246, 255} //red
 };
 vector<Scalar> myColorValues{{0, 255, 0}};
 
@@ -124,9 +135,13 @@ void findColor()
 			handDetected = true;
 			if (i == 0) {
 				openHand = true;
+				currentColor = green;
+				currentCrosshair= openCrosshair;
 			}
 			else if (i == 1) {
 				openHand = false;
+				currentColor = red;
+				currentCrosshair = closedCrosshair;
 			}
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 			currentPoint = myPoint;
@@ -157,15 +172,17 @@ void display_image()
 int main(void)
 {
 	//delete after
-	colorSettings();
-	
+	//colorSettings();
+	openCrosshair = new Texture("Resources/openHand.png");
+	closedCrosshair = new Texture("Resources/closedHand.png");
+	currentCrosshair = openCrosshair;
 
 	thread t1(openAction);
 	thread t2(closedAction);
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
-	window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -204,10 +221,10 @@ void init()
 
 void update()
 {
-	/*cap.read(img);
+	cap.read(img);
 	findColor();
 	imshow("video", img);
-	waitKey(1);*/
+	waitKey(1);
 }
 
 void closedAction()
@@ -215,7 +232,7 @@ void closedAction()
 	while (true)
 	{
 		if (handDetected && !openHand) {
-			cout << "Closed hand detected!" << endl;
+			cout << currentPoint.x << "," << currentPoint.y << endl;
 		}
 		std::this_thread::sleep_for(1000ms);
 	}
@@ -226,21 +243,16 @@ void openAction()
 	while (true)
 	{
 		if (handDetected && openHand) {
-			cout << "Open hand detected!" << endl;
+			//cout << "Open hand detected!" << endl;
+			cout << currentPoint.x << "," << currentPoint.y << endl;
 		}
 		std::this_thread::sleep_for(10ms);
 	}
 }
 
 void createRectangle(glm::mat4 modelMatrix) {
-	tigl::shader->setModelMatrix(modelMatrix);
-
-	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PC(glm::vec3(-0.5, -0.5, -0.5), glm::vec4(1, 0, 0, 1)));
-	tigl::addVertex(Vertex::PC(glm::vec3(0.5, -0.5, -0.5), glm::vec4(1, 0, 0, 1)));
-	tigl::addVertex(Vertex::PC(glm::vec3(0.5, 0.5, -0.5), glm::vec4(1, 0, 0, 1)));
-	tigl::addVertex(Vertex::PC(glm::vec3(-0.5, 0.5, -0.5), glm::vec4(1, 0, 0, 1)));
-	tigl::end();
+	
+	
 }
 
 void draw()
@@ -248,11 +260,19 @@ void draw()
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	tigl::shader->setProjectionMatrix(glm::ortho(-10.0f, 10.0f, -5.625f, 5.625f, -100.0f, 100.0f));
+	tigl::shader->setProjectionMatrix(glm::perspective(glm::radians(70.0f), (float)(windowWidth / 800), 0.1f, 200.0f));
 	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	tigl::shader->enableColor(true);
-
+	tigl::shader->enableTexture(true);
+	currentCrosshair->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, -0.5, -0.5), glm::vec2(0, 0), currentColor));
+	tigl::addVertex(Vertex::PTC(glm::vec3(0.5, -0.5, -0.5), glm::vec2(1, 0), currentColor));
+	tigl::addVertex(Vertex::PTC(glm::vec3(0.5, 0.5, -0.5), glm::vec2(1, 1), currentColor));
+	tigl::addVertex(Vertex::PTC(glm::vec3(-0.5, 0.5, -0.5), glm::vec2(0, 1), currentColor));
+	tigl::end();
+	
 	glm::mat4 modelMatrix(1.0f);
-	modelMatrix = glm::translate(modelMatrix, glm::vec3(currentPoint.x / 75, currentPoint.y / 75, 0));
-	createRectangle(modelMatrix);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth/1280) * currentPoint.x)/75 - 4.0f, ((float)((windowHeight / 650) * currentPoint.y) / 75)* -1.0f + 3.5f, 0.0f));
+	tigl::shader->setModelMatrix(modelMatrix);
+
 }
