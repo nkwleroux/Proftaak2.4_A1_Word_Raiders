@@ -12,6 +12,7 @@ class CubeComponent : public DrawComponent
 public:
 	CubeComponent(float size);
 	~CubeComponent();
+	std::vector<Vertex> getVerts();
 
 
 	virtual void draw() override;

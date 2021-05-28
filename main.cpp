@@ -18,6 +18,8 @@
 #include "MoveToComponent.h"
 #include "SpinComponent.h"
 #include "TimerJumper.h"
+#include <limits>
+#include "BoundingBox.h"
 
 using tigl::Vertex;
 
@@ -101,6 +103,13 @@ void init()
     backgroundBox->addComponent(new CubeComponent(10));
     objects.push_back(backgroundBox);
 
+    float xMin, xMax, yMin, yMax, zMin, zMax;
+
+    xMin = yMin = zMin = numeric_limits<float>::max();
+    xMax = yMax = xMax = numeric_limits<float>::min();
+    std::vector<Vertex> verts;
+
+
     for (int i = 1; i < 6; i++) {
         GameObject* o = new GameObject(i);
         o->position = glm::vec3(rand() % 5, 0, -1);
@@ -108,7 +117,33 @@ void init()
         o->addComponent(new MoveToComponent());
         o->getComponent<MoveToComponent>()->target = o->position;
         o->addComponent(new SpinComponent(1.0f));
+        verts = o->verts = o->getComponent<CubeComponent>()->getVerts();
+
+
         objects.push_back(o);
+
+        for (auto  &vert : o->verts) {
+            if (vert.position.x < xMin) {
+                xMin = vert.position.x;
+            }
+            else if (vert.position.x > xMax) {
+                xMax = vert.position.x;
+            }
+            else if (vert.position.y < xMin) {
+                yMin = vert.position.y;
+            }
+            else if (vert.position.y > yMax) {
+                yMax = vert.position.y;
+            }
+            else if (vert.position.z < zMin) {
+                zMin = vert.position.z;
+            }
+            else if (vert.position.z > zMax) {
+                zMax = vert.position.z;
+            }
+        }
+
+        
     }
 }
 
@@ -139,12 +174,16 @@ void update()
             cout << "NOT TESTING" << endl;
         }
 
+
+
         if (o != backgroundBox) {
             o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
             o->getComponent<MoveToComponent>()->target = o->position;
         }
         o->update(deltaTime);
     }
+
+    
 }
 
 void draw()

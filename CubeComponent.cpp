@@ -52,3 +52,7 @@ void CubeComponent::draw()
 {
 	tigl::drawVertices(GL_QUADS, verts);
 }
+
+std::vector<Vertex> CubeComponent::getVerts() {
+	return verts;
+}

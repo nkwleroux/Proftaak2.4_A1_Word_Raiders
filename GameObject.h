@@ -2,15 +2,20 @@
 
 #include <list>
 #include <glm/glm.hpp>
+#include "BoundingBox.h"
+
+using tigl::Vertex;
 
 class Component;
 class DrawComponent;
+
 
 class GameObject
 {
 	DrawComponent* drawComponent = nullptr;
 	
 	std::list<Component*> components;
+
 public:
 	GameObject(int id);
 	~GameObject();
@@ -20,6 +25,8 @@ public:
 	glm::vec3 rotation;
 	glm::vec3 scale = glm::vec3(1,1,1);
 	int id;
+	std::vector<Vertex> verts;
+	BoundingBox *boundingBox;
 
 	void addComponent(Component* component);
 	std::list<Component*> getComponents();
