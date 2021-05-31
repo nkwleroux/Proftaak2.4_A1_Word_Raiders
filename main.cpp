@@ -36,13 +36,18 @@ Texture* closedCrosshair;
 
 bool openHand = true;
 bool handDetected = false;
-int windowHeight = 1000;
+int windowHeight = 1080;
 int windowWidth = 1920;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
+<<<<<<< HEAD
 	//{0, 194, 75, 18, 246, 255} //red
 	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+=======
+	{0, 194, 75, 18, 246, 255} //red
+	//{hmin, smin, vmin, hmax, smax, vmax} //red - temp (delete after)
+>>>>>>> vision
 };
 vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -51,6 +56,7 @@ void update();
 void draw();
 void closedAction();
 void openAction();
+std::vector<tigl::Vertex> create_square(float size, Texture* texture);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -214,16 +220,18 @@ int main(void)
 
 void init()
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> vision
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			if (key == GLFW_KEY_ESCAPE)
 				glfwSetWindowShouldClose(window, true);
 		});
 
-	textures[0] = new Texture("rainbow.jpg");
-	textures[1] = new Texture("container.jpg");
-
+	textures[0] = new Texture("data/openHand.png");
+	textures[1] = new Texture("data/closeHand.png");
 	currentCrosshair = 0;
 }
 
@@ -232,6 +240,7 @@ void update()
 	cap.read(img);
 	findColor();
 	imshow("video", img);
+	waitKey(1);
 
 	//if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	//	currentCrosshair = 1;
@@ -263,12 +272,14 @@ void openAction()
 	}
 }
 
-std::vector<tigl::Vertex> create_square(int size, Texture* texture);
+
 
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
@@ -290,19 +301,26 @@ void draw()
 
 	glEnable(GL_DEPTH_TEST);
 
-	std::vector<tigl::Vertex> vertices = create_square(1, textures[currentCrosshair]);
+	std::vector<tigl::Vertex> vertices = create_square(0.5f, textures[currentCrosshair]);
 
 	tigl::drawVertices(GL_QUADS, vertices);
 
-	glDisable(GL_DEPTH_TEST);
+	float videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
+	float videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
 
 	glm::mat4 modelMatrix(1.0f);
-	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / 1280) * currentPoint.x) / 75 - 4.0f, ((float)((windowHeight / 650) * currentPoint.y) / 75) * -1.0f + 3.5f, 0.0f));
+	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
+
+	cout << "Width: " << (float)((windowWidth / videoWidth) * currentPoint.x) << " Height: " << (float)((windowHeight / videoHeight) * currentPoint.y) << endl;
+	cout << "VideoHeight: " << videoHeight << " VideoWidth: " << videoWidth << endl;
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 }
 
 
-std::vector<tigl::Vertex> create_square(int size, Texture* texture) {
+std::vector<tigl::Vertex> create_square(float size, Texture* texture) {
 	texture->bind();
 
 	std::vector<tigl::Vertex> vertices;
