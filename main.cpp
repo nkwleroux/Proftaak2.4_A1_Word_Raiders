@@ -2,6 +2,7 @@
 #include <Gl/GLU.h>
 #include <GLFW/glfw3.h>
 #include "tigl.h"
+#include "ObjModel.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
@@ -27,11 +28,9 @@ using tigl::Vertex;
 #pragma comment(lib, "glew32s.lib")
 #pragma comment(lib, "opengl32.lib")
 
-using namespace cv;
-using namespace std;
-
 GLFWwindow* window;
 //FpsCam* camera;
+std::vector<ObjModel*> models;
 
 Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
@@ -274,7 +273,14 @@ void init()
 		objects.push_back(o);
 	}
 
+
+    //models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
+    models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
+    //models.push_back(new ObjModel("resources/scene.obj"));
+    //models.push_back(new ObjModel("resources/cube2.obj"));
 }
+
+float rotation = 0;
 
 void update()
 {
@@ -313,6 +319,7 @@ void update()
 		}
 		o->update(deltaTime);
 	}
+    rotation += 0.01f;
 }
 
 
@@ -394,4 +401,40 @@ void draw()
 	}
 	glDisable(GL_DEPTH_TEST);
 
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    int viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 500.0f);
+
+    tigl::shader->setProjectionMatrix(projection);
+    tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0,5.0f,10.0f), glm::vec3(0,0,0), glm::vec3(0,1,0)));
+    tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
+
+    
+    tigl::shader->enableLighting(true);
+    tigl::shader->setLightCount(1);
+    tigl::shader->setLightAmbient(0, glm::vec3(0.5f, 0.5f, 0.5f));
+    tigl::shader->setLightDiffuse(0, glm::vec3(0.5f, 0.5f, 0.5f));
+    tigl::shader->setLightSpecular(0, glm::vec3(0,0,0));
+    tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
+    tigl::shader->setLightDirectional(0, true);
+
+    tigl::shader->enableTexture(true);
+
+    glEnable(GL_DEPTH_TEST);
+
+    for (int i = 0; i < models.size();i++) {
+        if (models[i]->hasTexture())
+        {
+            tigl::shader->enableColor(false);
+            tigl::shader->enableTexture(true);
+        }
+        else {
+            tigl::shader->enableColor(true);
+            tigl::shader->enableTexture(false);
+        }
+        models[i]->draw();
+    }
 }
