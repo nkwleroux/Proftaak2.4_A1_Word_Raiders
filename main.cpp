@@ -57,8 +57,8 @@ void init()
 
 
     //models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
-    //models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
-    models.push_back(new ObjModel("resources/scene.obj"));
+    models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
+    //models.push_back(new ObjModel("resources/scene.obj"));
     //models.push_back(new ObjModel("resources/cube2.obj"));
 }
 
@@ -71,7 +71,7 @@ void update()
 
 void draw()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     int viewport[4];
@@ -82,6 +82,7 @@ void draw()
     tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0,5.0f,10.0f), glm::vec3(0,0,0), glm::vec3(0,1,0)));
     tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
 
+    
     //tigl::shader->enableLighting(true);
     tigl::shader->setLightCount(1);
     tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
@@ -92,7 +93,6 @@ void draw()
     tigl::shader->enableTexture(true);
 
     glEnable(GL_DEPTH_TEST);
-    glPointSize(3.f);
 
     for (auto model : models) {
         if (model->hasTexture())
