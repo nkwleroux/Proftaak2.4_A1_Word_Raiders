@@ -19,6 +19,7 @@
 #include "MoveToComponent.h"
 #include "SpinComponent.h"
 #include "TimerJumper.h"
+#include "CrosshairComponent.h"
 
 using tigl::Vertex;
 
@@ -235,7 +236,7 @@ void init()
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-		if (key == GLFW_KEY_ESCAPE) {
+		if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
 			glfwSetWindowShouldClose(window, true);
 			destroyAllWindows();
 			appIsRunning = false;
@@ -260,10 +261,11 @@ void init()
     for (int i = 1; i < 6; i++) {
         GameObject* o = new GameObject(i);
         o->position = glm::vec3(rand() % 5, 0, -1);
+		o->position = glm::vec3(i, 0, -1);
         o->addComponent(new CubeComponent(0.2));
         o->addComponent(new MoveToComponent());
         o->getComponent<MoveToComponent>()->target = o->position;
-        o->addComponent(new SpinComponent(1.0f));
+        //o->addComponent(new SpinComponent(1.0f));
         objects.push_back(o);
     }
 }
@@ -272,10 +274,10 @@ void update()
 {
 	cap.read(img);
 	findColor();
-	imshow("video", img);
-    //Dont forget to remove camera update so the user cant move
+	imshow("Video", img);
 
-    camera->update(window, &lastX, &lastY, &textureIndex);
+    //Dont forget to remove camera update so the user cant move
+	camera->update(window, &lastX, &lastY, &textureIndex);
 
     double currentFrameTime = glfwGetTime();
     double deltaTime = currentFrameTime - lastFrameTime;
@@ -300,8 +302,8 @@ void update()
         //}
 
         if (o != backgroundBox) {
-            o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-            o->getComponent<MoveToComponent>()->target = o->position;
+            //o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
+            //o->getComponent<MoveToComponent>()->target = o->position;
         }
         o->update(deltaTime);
     }
@@ -311,7 +313,6 @@ void closedAction()
 {
 	while (appIsRunning)
 	{
-
 		if (handDetected && !openHand) {
 			cout << currentPoint.x << "," << currentPoint.y << endl;
 		}
@@ -324,7 +325,6 @@ void openAction()
 {
 	while (appIsRunning)
 	{
-
 		if (handDetected && openHand) {
 			//cout << "Open hand detected!" << endl;
 			cout << currentPoint.x << "," << currentPoint.y << endl;
@@ -360,9 +360,11 @@ void draw()
 	tigl::shader->enableColor(false);
 	tigl::shader->enableTexture(true);
 
-	std::vector<tigl::Vertex> vertices = create_square(0.5, textures[2]);
-
-	tigl::drawVertices(GL_QUADS, vertices);
+	GameObject* o = new GameObject(10);
+	o->addComponent(new CrosshairComponent(0.5));
+	textures[2]->bind();
+	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]);
+	o->draw(modelMatrix);
 
     for (auto& o : objects) {
         if (o == backgroundBox) {
@@ -377,24 +379,6 @@ void draw()
         o->draw();
 
     }       
-
-
     glDisable(GL_DEPTH_TEST);
 
-
-
-}
-
-
-std::vector<tigl::Vertex> create_square(double size, Texture* texture) {
-	texture->bind();
-
-	std::vector<tigl::Vertex> vertices;
-
-	vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, -size, -size), glm::vec2(0, 1)));
-	vertices.push_back(tigl::Vertex::PT(glm::vec3(-size, size, -size), glm::vec2(1, 1)));
-	vertices.push_back(tigl::Vertex::PT(glm::vec3(size, size, -size), glm::vec2(1, 0)));
-	vertices.push_back(tigl::Vertex::PT(glm::vec3(size, -size, -size), glm::vec2(0, 0)));
-
-	return vertices;
 }

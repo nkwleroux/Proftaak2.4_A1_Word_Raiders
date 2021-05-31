@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="boundingBox.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="CrosshairComponent.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FpsCam.cpp" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClInclude Include="boundingBox.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="CrosshairComponent.h" />
     <ClInclude Include="CubeComponent.h" />
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FpsCam.h" />

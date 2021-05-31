@@ -7,13 +7,13 @@ using tigl::Vertex;
 
 #include <vector>
 
-class CubeComponent : public DrawComponent
+class CrosshairComponent : public DrawComponent
 {
 	std::vector<Vertex> verts;
 	Texture* texture;
 public:
-	CubeComponent(float size);
-	~CubeComponent();
+	CrosshairComponent(float size);
+	~CrosshairComponent();
 
 	//virtual void setTexture(Texture* t) override;
 	virtual void draw() override;

@@ -48,6 +48,12 @@ CubeComponent::~CubeComponent()
 {
 }
 
+//void CubeComponent::setTexture(Texture* t)
+//{
+//	texture = t;
+//	texture->bind();
+//}
+
 void CubeComponent::draw()
 {
 	tigl::drawVertices(GL_QUADS, verts);

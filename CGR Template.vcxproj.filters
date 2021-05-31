@@ -66,6 +66,9 @@
     <ClCompile Include="tigl.cpp">
       <Filter>lib</Filter>
     </ClCompile>
+    <ClCompile Include="CrosshairComponent.cpp">
+      <Filter>Components\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="tigl.h">
       <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="CrosshairComponent.h">
+      <Filter>Components\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
