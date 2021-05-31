@@ -36,9 +36,6 @@
     <ClCompile Include="FpsCam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="boundingBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,15 +66,15 @@
     <ClCompile Include="CrosshairComponent.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FpsCam.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="boundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
@@ -110,24 +107,24 @@
     <ClInclude Include="CrosshairComponent.h">
       <Filter>Components\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ObjModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\crosshairDave.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="shapes.png">
+    <Image Include="Images\closeHand.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="rainbow.jpg">
+    <Image Include="Images\container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="container.jpg">
+    <Image Include="Images\openHand.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="data\openHand.png">
+    <Image Include="Images\rainbow.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="data\closeHand.png">
+    <Image Include="Images\shapes.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
