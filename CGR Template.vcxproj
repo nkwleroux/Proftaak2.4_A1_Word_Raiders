@@ -191,8 +191,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="container.jpg" />
+    <Image Include="data\crosshairRed.png" />
+    <Image Include="data\testCrosshair.png" />
     <Image Include="rainbow.jpg" />
     <Image Include="shapes.png" />
+    <Image Include="Resources\closedHand.png" />
+    <Image Include="Resources\closeHand.jpg" />
+    <Image Include="data\closeHand.png" />
+    <Image Include="data\crossair.png" />
+    <Image Include="data\crosshair.png" />
+    <Image Include="data\openHand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\crosshairDave.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

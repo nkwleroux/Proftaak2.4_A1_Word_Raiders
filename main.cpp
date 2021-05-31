@@ -50,15 +50,20 @@ Texture* closedCrosshair;
 
 bool openHand = true;
 bool handDetected = false;
-int windowHeight = 1000;
+int windowHeight = 1080;
 int windowWidth = 1920;
 
 bool appIsRunning = true;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
+<<<<<<< HEAD
 	//{0, 194, 75, 18, 246, 255} //red
 	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+=======
+	{0, 194, 75, 18, 246, 255} //red
+	//{hmin, smin, vmin, hmax, smax, vmax} //red - temp (delete after)
+>>>>>>> vision
 };
 vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -70,6 +75,7 @@ void update();
 void draw();
 void closedAction();
 void openAction();
+std::vector<tigl::Vertex> create_square(float size, Texture* texture);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -233,41 +239,17 @@ GameObject* backgroundBox;
 
 void init()
 {
-    glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
 		if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
 			glfwSetWindowShouldClose(window, true);
 			destroyAllWindows();
 			appIsRunning = false;
-		}
 
-    });
+	textures[0] = new Texture("rainbow.jpg");
+	textures[1] = new Texture("container.jpg");
 
 	currentCrosshair = 0;
-    textures[0] = new Texture("rainbow.jpg");
-    textures[1] = new Texture("container.jpg");
-	textures[2] = new Texture("shapes.png");
-
-    glfwGetCursorPos(window, &lastX, &lastY);
-
-    camera = new FpsCam(window);
-
-    backgroundBox = new GameObject(0);
-    backgroundBox->position = glm::vec3(0, 0, 5);
-    backgroundBox->addComponent(new CubeComponent(10));
-    objects.push_back(backgroundBox);
-
-    for (int i = 1; i < 6; i++) {
-        GameObject* o = new GameObject(i);
-        o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i, 0, -1);
-        o->addComponent(new CubeComponent(0.2));
-        o->addComponent(new MoveToComponent());
-        o->getComponent<MoveToComponent>()->target = o->position;
-        //o->addComponent(new SpinComponent(1.0f));
-        objects.push_back(o);
-    }
 }
 
 void update()
@@ -333,12 +315,10 @@ void openAction()
 	}
 }
 
-std::vector<tigl::Vertex> create_square(double size, Texture* texture);
-
 void draw()
 {
-    glClearColor(0, 0, 0, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     int viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -350,15 +330,13 @@ void draw()
     //tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	glm::mat4 modelMatrix(1.0f);
-	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / 1280) * currentPoint.x) / 75 - 4.0f, ((float)((windowHeight / 650) * currentPoint.y) / 75) * -1.0f + 3.5f, 0.0f));
+	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
+}
 
     glEnable(GL_DEPTH_TEST);
     //for outlines only
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	tigl::shader->enableColor(false);
-	tigl::shader->enableTexture(true);
 
 	GameObject* o = new GameObject(10);
 	o->addComponent(new CrosshairComponent(0.5));
