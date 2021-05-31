@@ -83,10 +83,11 @@ void draw()
     tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
 
     
-    //tigl::shader->enableLighting(true);
+    tigl::shader->enableLighting(true);
     tigl::shader->setLightCount(1);
-    tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
-    tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
+    tigl::shader->setLightAmbient(0, glm::vec3(0.5f, 0.5f, 0.5f));
+    tigl::shader->setLightDiffuse(0, glm::vec3(0.5f, 0.5f, 0.5f));
+    tigl::shader->setLightSpecular(0, glm::vec3(0,0,0));
     tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
     tigl::shader->setLightDirectional(0, true);
 
@@ -94,8 +95,8 @@ void draw()
 
     glEnable(GL_DEPTH_TEST);
 
-    for (auto model : models) {
-        if (model->hasTexture())
+    for (int i = 0; i < models.size();i++) {
+        if (models[i]->hasTexture())
         {
             tigl::shader->enableColor(false);
             tigl::shader->enableTexture(true);
@@ -104,6 +105,6 @@ void draw()
             tigl::shader->enableColor(true);
             tigl::shader->enableTexture(false);
         }
-        model->draw();
+        models[i]->draw();
     }
 }
