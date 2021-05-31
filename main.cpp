@@ -275,7 +275,6 @@ void init()
 		objects.push_back(o);
 	}
 
-
 	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
 	models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
 	//models.push_back(new ObjModel("resources/scene.obj"));
@@ -297,6 +296,8 @@ void update()
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
 
+	//Test collision detection
+
 	//GameObject* tempObject = new GameObject(0);
 	//tempObject->modelMatrix = backgroundBox->modelMatrix;
 	//tempObject->position = backgroundBox->position;
@@ -316,8 +317,8 @@ void update()
 		//}
 
 		if (o != backgroundBox && o != crosshair) {
-			o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-			o->getComponent<MoveToComponent>()->target = o->position;
+			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
+			o->getComponent<MoveToComponent>()->target = o->position;*/
 		}
 		o->update(deltaTime);
 	}
@@ -360,8 +361,8 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	float videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
@@ -383,7 +384,7 @@ void draw()
 			o->draw();
 		}
 		else if (o == crosshair) {
-			glDisable(GL_DEPTH_TEST);
+			//glDisable(GL_DEPTH_TEST);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -393,7 +394,7 @@ void draw()
 			o->draw(modelMatrix);
 
 			glDisable(GL_BLEND);
-			glEnable(GL_DEPTH_TEST);
+			//glEnable(GL_DEPTH_TEST);
 		}
 		else {
 			
@@ -401,15 +402,13 @@ void draw()
 			tigl::shader->enableTexture(false);
 			o->draw();
 		}
-
 	}
-
 	
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
 
 	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->materialIndex!=-1)
+		if (models[i]->materialIndex != -1)
 		{
 			tigl::shader->enableColor(false);
 			tigl::shader->enableTexture(true);
@@ -422,30 +421,4 @@ void draw()
 	}
 
 	glDisable(GL_DEPTH_TEST);
-
-	//glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//int viewport[4];
-	//glGetIntegerv(GL_VIEWPORT, viewport);
-	//glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 500.0f);
-
-	//tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0,5.0f,10.0f), glm::vec3(0,0,0), glm::vec3(0,1,0)));
-	//tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
-
-	//
-	//tigl::shader->enableLighting(true);
-	//tigl::shader->setLightCount(1);
-	//tigl::shader->setLightAmbient(0, glm::vec3(0.5f, 0.5f, 0.5f));
-	//tigl::shader->setLightDiffuse(0, glm::vec3(0.5f, 0.5f, 0.5f));
-	//tigl::shader->setLightSpecular(0, glm::vec3(0,0,0));
-	//tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
-	//tigl::shader->setLightDirectional(0, true);
-
-	//
-
-	//glEnable(GL_DEPTH_TEST);
-
-
 }
