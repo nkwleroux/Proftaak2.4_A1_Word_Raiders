@@ -31,7 +31,7 @@ using namespace cv;
 using namespace std;
 
 GLFWwindow* window;
-FpsCam* camera;
+//FpsCam* camera;
 
 Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
@@ -57,13 +57,8 @@ bool appIsRunning = true;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
-<<<<<<< HEAD
 	//{0, 194, 75, 18, 246, 255} //red
 	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
-=======
-	{0, 194, 75, 18, 246, 255} //red
-	//{hmin, smin, vmin, hmax, smax, vmax} //red - temp (delete after)
->>>>>>> vision
 };
 vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -75,7 +70,6 @@ void update();
 void draw();
 void closedAction();
 void openAction();
-std::vector<tigl::Vertex> create_square(float size, Texture* texture);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -186,18 +180,18 @@ void findColor()
 void display_image()
 {
 
-    //Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
-    Mat img(512, 512, CV_8UC3, Scalar(255, 255, 255));
+	//Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
+	Mat img(512, 512, CV_8UC3, Scalar(255, 255, 255));
 
-    //Draw a circle in the image - input, center point, size of circle, BGR calue, thickness of border brush/circle (or put FILLED)
-    circle(img, Point(256, 256), 155, Scalar(0, 0, 255), FILLED);
+	//Draw a circle in the image - input, center point, size of circle, BGR calue, thickness of border brush/circle (or put FILLED)
+	circle(img, Point(256, 256), 155, Scalar(0, 0, 255), FILLED);
 
-    //Draw a rectangle in the image - input, rect(x, y, width, height), BGR values, thickness of border brush/circle (or put FILLED)
-    //Can also make from points, replaces rect with 2 points (point 1 = top left, point 2 = bottom right)
-    rectangle(img, Point(130, 226), Point(382, 286), Scalar(0, 0, 0), FILLED);
-    
-    imshow("Image", img); 
-    waitKey(1);
+	//Draw a rectangle in the image - input, rect(x, y, width, height), BGR values, thickness of border brush/circle (or put FILLED)
+	//Can also make from points, replaces rect with 2 points (point 1 = top left, point 2 = bottom right)
+	rectangle(img, Point(130, 226), Point(382, 286), Scalar(0, 0, 0), FILLED);
+
+	imshow("Image", img);
+	waitKey(1);
 }
 
 int main(void)
@@ -230,26 +224,56 @@ int main(void)
 
 	glfwTerminate();
 
-    return 0;
+	return 0;
 }
 
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
+GameObject* crosshair;
 
 void init()
 {
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-		if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
-			glfwSetWindowShouldClose(window, true);
-			destroyAllWindows();
-			appIsRunning = false;
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
+				glfwSetWindowShouldClose(window, true);
+				destroyAllWindows();
+				appIsRunning = false;
+			}
+		});
 
 	textures[0] = new Texture("rainbow.jpg");
 	textures[1] = new Texture("container.jpg");
+	textures[2] = new Texture("data/closeHand.png");
 
 	currentCrosshair = 0;
+
+	glfwGetCursorPos(window, &lastX, &lastY);
+
+	//camera = new FpsCam(window);
+
+	backgroundBox = new GameObject(0);
+	backgroundBox->position = glm::vec3(0, 0, 5);
+	backgroundBox->addComponent(new CubeComponent(10));
+	objects.push_back(backgroundBox);
+
+	crosshair = new GameObject(10);
+	crosshair->addComponent(new CrosshairComponent(0.5));
+	objects.push_back(crosshair);
+	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
+
+	for (int i = 1; i < 6; i++) {
+		GameObject* o = new GameObject(i);
+		o->position = glm::vec3(rand() % 5, 0, -1);
+		o->position = glm::vec3(i, 0, -1);
+		o->addComponent(new CubeComponent(0.2));
+		o->addComponent(new MoveToComponent());
+		o->getComponent<MoveToComponent>()->target = o->position;
+		//o->addComponent(new SpinComponent(1.0f));
+		objects.push_back(o);
+	}
+
 }
 
 void update()
@@ -258,38 +282,40 @@ void update()
 	findColor();
 	imshow("Video", img);
 
-    //Dont forget to remove camera update so the user cant move
-	camera->update(window, &lastX, &lastY, &textureIndex);
+	//Dont forget to remove camera update so the user cant move
+	/*camera->update(window, &lastX, &lastY, &textureIndex);*/
 
-    double currentFrameTime = glfwGetTime();
-    double deltaTime = currentFrameTime - lastFrameTime;
-    lastFrameTime = currentFrameTime;
+	double currentFrameTime = glfwGetTime();
+	double deltaTime = currentFrameTime - lastFrameTime;
+	lastFrameTime = currentFrameTime;
 
-    GameObject* tempObject = new GameObject(0);
-    tempObject->modelMatrix = backgroundBox->modelMatrix;
-    tempObject->position = backgroundBox->position;
-    tempObject->rotation = backgroundBox->rotation;
-    tempObject->scale = backgroundBox->scale;
+	//GameObject* tempObject = new GameObject(0);
+	//tempObject->modelMatrix = backgroundBox->modelMatrix;
+	//tempObject->position = backgroundBox->position;
+	//tempObject->rotation = backgroundBox->rotation;
+	//tempObject->scale = backgroundBox->scale;
 
-    //glm::mat4 inverseModelMatrix = glm::inverse(tempObject->modelMatrix);
-    //glm::vec4 pointA = glm::vec4(5);
-    
-    for (auto& o : objects) {
-        //glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
-        //if (pointA == pointB) {
-        //    cout << "TESTING" << endl;
-        //}
-        //else {
-        //    cout << "NOT TESTING" << endl;
-        //}
+	//glm::mat4 inverseModelMatrix = glm::inverse(tempObject->modelMatrix);
+	//glm::vec4 pointA = glm::vec4(5);
 
-        if (o != backgroundBox) {
-            //o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-            //o->getComponent<MoveToComponent>()->target = o->position;
-        }
-        o->update(deltaTime);
-    }
+	for (auto& o : objects) {
+		//glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
+		//if (pointA == pointB) {
+		//    cout << "TESTING" << endl;
+		//}
+		//else {
+		//    cout << "NOT TESTING" << endl;
+		//}
+
+		if (o != backgroundBox) {
+			//o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
+			//o->getComponent<MoveToComponent>()->target = o->position;
+		}
+		o->update(deltaTime);
+	}
 }
+
+
 
 void closedAction()
 {
@@ -320,43 +346,52 @@ void draw()
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    int viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
-    tigl::shader->setProjectionMatrix(projection);
-    //tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	tigl::shader->setProjectionMatrix(projection);
+	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
 	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-    //tigl::shader->setModelMatrix(glm::mat4(1.0f));
+	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
+
+	float videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
+	float videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
 
 	glm::mat4 modelMatrix(1.0f);
 	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
-}
 
-    glEnable(GL_DEPTH_TEST);
-    //for outlines only
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
+	//for outlines only
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	GameObject* o = new GameObject(10);
-	o->addComponent(new CrosshairComponent(0.5));
-	textures[2]->bind();
-	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]);
-	o->draw(modelMatrix);
-
-    for (auto& o : objects) {
-        if (o == backgroundBox) {
+	for (auto& o : objects) {
+		if (o == backgroundBox) {
 			textures[1]->bind();
-            tigl::shader->enableColor(false);
-            tigl::shader->enableTexture(true);
-        }
-        else {
-            tigl::shader->enableColor(true);
-            tigl::shader->enableTexture(false);
-        }
-        o->draw();
+			tigl::shader->enableColor(false);
+			tigl::shader->enableTexture(true);
+			o->draw();
+		}
+		else if (o == crosshair) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    }       
-    glDisable(GL_DEPTH_TEST);
+			tigl::shader->enableColor(false);
+			tigl::shader->enableTexture(true);
+			textures[2]->bind();
+			o->draw(modelMatrix);
+
+			glDisable(GL_BLEND);
+		}
+		else {
+			tigl::shader->enableColor(true);
+			tigl::shader->enableTexture(false);
+			o->draw();
+		}
+
+
+	}
+	glDisable(GL_DEPTH_TEST);
 
 }

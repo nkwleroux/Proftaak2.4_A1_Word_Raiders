@@ -112,38 +112,23 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\crosshairDave.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="shapes.png">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="rainbow.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="shapes.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\closeHand.jpg">
+    <Image Include="data\openHand.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\closeHand.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="data\openHand.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\crossair.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\crosshair.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\testCrosshair.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\crosshairRed.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\crosshairDave.png" />
   </ItemGroup>
 </Project>
