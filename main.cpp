@@ -409,7 +409,7 @@ void draw()
 	tigl::shader->enableLighting(false);
 
 	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->hasTexture())
+		if (models[i]->materialIndex!=-1)
 		{
 			tigl::shader->enableColor(false);
 			tigl::shader->enableTexture(true);

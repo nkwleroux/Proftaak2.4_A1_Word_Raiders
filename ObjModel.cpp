@@ -81,7 +81,6 @@ void ObjModel::createVBO() {
 	//foreach group in groups
 	for (int groupPos = 0; groupPos < this->groups.size(); groupPos++)
 	{
-		texture = false;
 		glm::vec4 color = glm::vec4(1.0f);
 		std::vector<tigl::Vertex> verticesList;
 
@@ -90,8 +89,7 @@ void ObjModel::createVBO() {
 		{
 			if (materials[(this->groups[groupPos]->materialIndex)]->texture != NULL)
 			{
-				texture = true;
-				materials[(this->groups[groupPos]->materialIndex)]->texture->bind();
+				materialIndex = this->groups[groupPos]->materialIndex;
 			}
 
 			color = materials[(this->groups[groupPos]->materialIndex)]->getColor();
@@ -104,7 +102,7 @@ void ObjModel::createVBO() {
 			//    foreach vertex in face
 			for (auto vertex : face.vertices) {
 				//emit vertex
-				if (texture)
+				if (materialIndex!=-1)
 				{
 					//verticesList.push_back(tigl::Vertex::PT(vertices[(face.vertices[vertexPos].position)], texcoords[(face.vertices[vertexPos].texcoord)] ));
 					verticesList.push_back(tigl::Vertex::PTN(
@@ -129,6 +127,8 @@ void ObjModel::createVBO() {
 */
 ObjModel::ObjModel(const std::string &fileName)
 {
+	materialIndex = -1;
+
 	std::cout << "Loading " << fileName << std::endl;
 	std::string dirName = fileName;
 	if(dirName.rfind("/") != std::string::npos)
@@ -236,15 +236,11 @@ void ObjModel::draw()
 {
 	
 	for (auto vbo : vbos) {
-		
+		materials[materialIndex]->texture->bind();
 		tigl::drawVertices(GL_TRIANGLES, vbo);
 	}
 }
 
-bool ObjModel::hasTexture()
-{
-	return texture;
-}
 
 void ObjModel::loadMaterialFile( const std::string &fileName, const std::string &dirName )
 {

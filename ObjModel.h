@@ -58,7 +58,6 @@ private:
 	std::vector<ObjGroup*> groups;
 	std::vector<MaterialInfo*> materials;
 	std::vector<tigl::VBO*> vbos;
-	bool texture;
 
 	void loadMaterialFile(const std::string& fileName, const std::string& dirName);
 
@@ -66,8 +65,8 @@ public:
 	void createVBO();
 	ObjModel(const std::string &filename);
 	~ObjModel(void);
+	int materialIndex;
 
 	void draw();
-	bool hasTexture();
 };
 
