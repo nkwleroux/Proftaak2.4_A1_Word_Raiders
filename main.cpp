@@ -223,7 +223,14 @@ int main(void)
 		glfwPollEvents();
 	}
 
-	glfwTerminate();
+	appIsRunning = false;
+
+	t1.join();
+	t2.join();
+
+	glfwTerminate();	
+	destroyAllWindows();
+
 
 	return 0;
 }
@@ -239,8 +246,6 @@ void init()
 		{
 			if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
 				glfwSetWindowShouldClose(window, true);
-				destroyAllWindows();
-				appIsRunning = false;
 			}
 		});
 
@@ -296,36 +301,16 @@ void update()
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
 
-	//Test collision detection
-
-	//GameObject* tempObject = new GameObject(0);
-	//tempObject->modelMatrix = backgroundBox->modelMatrix;
-	//tempObject->position = backgroundBox->position;
-	//tempObject->rotation = backgroundBox->rotation;
-	//tempObject->scale = backgroundBox->scale;
-
-	//glm::mat4 inverseModelMatrix = glm::inverse(tempObject->modelMatrix);
-	//glm::vec4 pointA = glm::vec4(5);
-
 	for (auto& o : objects) {
-		//glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
-		//if (pointA == pointB) {
-		//    cout << "TESTING" << endl;
-		//}
-		//else {
-		//    cout << "NOT TESTING" << endl;
-		//}
-
 		if (o != backgroundBox && o != crosshair) {
 			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
 			o->getComponent<MoveToComponent>()->target = o->position;*/
 		}
 		o->update(deltaTime);
 	}
+
 	rotation += 0.01f;
 }
-
-
 
 void closedAction()
 {
