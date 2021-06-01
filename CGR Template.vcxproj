@@ -177,6 +177,7 @@
     <ClCompile Include="tigl.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
     <ClCompile Include="VisionCamera.cpp" />
+    <ClCompile Include="WallComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="tigl.h" />
     <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="VisionCamera.h" />
+    <ClInclude Include="WallComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closeHand.png" />
@@ -200,6 +202,13 @@
     <Image Include="Images\openHand.png" />
     <Image Include="Images\rainbow.jpg" />
     <Image Include="Images\shapes.png" />
+    <Image Include="Images\skybox_bottom.png" />
+    <Image Include="Images\skybox_galaxy_original.png" />
+    <Image Include="Images\skybox_left.png" />
+    <Image Include="Images\skybox_middle.png" />
+    <Image Include="Images\skybox_right.png" />
+    <Image Include="Images\skybox_right2.png" />
+    <Image Include="Images\skybox_top.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

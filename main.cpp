@@ -22,7 +22,7 @@
 #include "TimerJumper.h"
 #include "CrosshairComponent.h"
 #include "VisionCamera.h"
-#include <stdlib.h>
+#include "WallComponent.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -38,6 +38,8 @@ std::vector<ObjModel*> models;
 VisionCamera* VC;
 
 Texture* textures[3];
+Texture* textureSkybox[6];
+//WallComponent* skybox[6];
 
 int windowHeight = 1080;
 int windowWidth = 1920;
@@ -48,6 +50,8 @@ int textureIndex;
 void init();
 void update();
 void draw();
+void skybox(Texture** textures);
+void initSkybox();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -58,9 +62,9 @@ int main(void)
 {
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
-	
-	thread t1(&VisionCamera::openAction,VC);
-	thread t2(&VisionCamera::closedAction,VC);
+
+	thread t1(&VisionCamera::openAction, VC);
+	thread t2(&VisionCamera::closedAction, VC);
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
@@ -90,7 +94,7 @@ int main(void)
 	t1.join();
 	t2.join();
 
-	glfwTerminate();	
+	glfwTerminate();
 	destroyAllWindows();
 
 	return 0;
@@ -142,18 +146,16 @@ void init()
 	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
 	//models.push_back(new ObjModel("resources/scene.obj"));
 	//models.push_back(new ObjModel("resources/cube2.obj"));
-	
+
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
+
+	initSkybox();
 }
 
 float rotation = 0;
 
 void update()
 {
-	/*cap.read(img);
-	findColor();
-	imshow("Video", img);*/
-
 	VC->update();
 
 	//Dont forget to remove camera update so the user cant move
@@ -184,63 +186,175 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
+	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
-	glm::mat4 modelMatrix(1.0f);
-	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
-	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
-	tigl::shader->setModelMatrix(modelMatrix);
+	//glm::mat4 modelMatrix(1.0f);
+	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
+	//tigl::shader->setModelMatrix(modelMatrix);
 
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	for (auto& o : objects) {
-		if (o == backgroundBox) {
-			textures[2]->bind();
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			o->draw();
-		}
-		else if (o == crosshair) {
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//for (auto& o : objects) {
+	//	if (o == backgroundBox) {
+	//		textures[2]->bind();
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//		o->draw();
+	//	}
+	//	else if (o == crosshair) {
+	//		glEnable(GL_BLEND);
+	//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			/*tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);*/
+	//		/*tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);*/
 
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			textures[VC->currentCrosshair]->bind();
-			o->draw(modelMatrix);
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//		textures[VC->currentCrosshair]->bind();
+	//		o->draw(modelMatrix);
 
-			glDisable(GL_BLEND);
-		}
-		else {
-			
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-			o->draw();
-		}
-	}
-	
+	//		glDisable(GL_BLEND);
+	//	}
+	//	else {
+	//		
+	//		tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);
+	//		o->draw();
+	//	}
+	//}
+	//
+	//tigl::shader->enableTexture(true);
+	//tigl::shader->enableLighting(false);
+
+	//for (int i = 0; i < models.size(); i++) {
+	//	if (models[i]->materialIndex != -1)
+	//	{
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//	}
+	//	else {
+	//		tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);
+	//	}
+	//	models[i]->draw();
+	//}
+	glLoadIdentity();
 	tigl::shader->enableTexture(true);
-	tigl::shader->enableLighting(false);
+	tigl::shader->enableColor(false);
+	glEnable(GL_TEXTURE_2D);
 
-	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->materialIndex != -1)
-		{
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-		}
-		else {
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-		}
-		models[i]->draw();
+	skybox(textureSkybox);
+
+	/*for each (WallComponent var in collection_to_loop)
+	{
+
 	}
+	skybox[0]->draw*/
 
 	glDisable(GL_DEPTH_TEST);
+}
+
+void initSkybox() {
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	float width = 50;
+	float height = 50;
+	float length = 50;
+
+	// Center the skybox
+	x = x - width / 2;
+	y = y - height / 2;
+	z = z - length / 2;
+
+	textureSkybox[0] = new Texture("Images/skybox_middle.png"); //middle
+	//skybox[0] = new WallComponent(glm::vec3(x + width, y, z),
+	//	glm::vec3(x + width, y + height, z),
+	//	glm::vec3(x, y + height, z),
+	//	glm::vec3(x, y, z),
+	//	glm::vec2(1, 0),
+	//	glm::vec2(1, 1),
+	//	glm::vec2(0, 1),
+	//	glm::vec2(0, 0),
+	//	glm::vec3(0, -1, 0));
+
+	textureSkybox[1] = new Texture("Images/skybox_right.png"); //right
+	textureSkybox[2] = new Texture("Images/skybox_left.png"); //left
+	textureSkybox[3] = new Texture("Images/skybox_right2.png"); //back
+	textureSkybox[4] = new Texture("Images/skybox_bottom.png"); // bottom
+	textureSkybox[5] = new Texture("Images/skybox_top.png"); // top
+}
+
+void skybox(Texture** texture) {
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	float width = 50;
+	float height = 50;
+	float length = 50;
+
+	// Center the skybox
+	x = x - width / 2;
+	y = y - height / 2;
+	z = z - length / 2;
+
+	glm::vec3 p(0, 0, 0);
+
+	//middle
+	texture[0]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z),				glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z),	glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z),			glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z),						glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::end();
+
+	//right
+	texture[1]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z),						glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length),			glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length),	glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z),			glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::end();
+
+	//left
+	texture[2]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z),			glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length),	glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length),			glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z),						glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::end();
+
+	//back
+	texture[3]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length),					glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length),			glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length),	glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length),			glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::end();
+
+	//bottom
+	texture[4]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::end();
+
+	//top
+	texture[5]->bind();
+	tigl::begin(GL_QUADS);
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::end();
 }
