@@ -58,7 +58,7 @@ void init()
 
     //model = new ObjModel("resources/Diamond_Word_Raiders.obj");
     //model = new ObjModel("resources/Cube_Word_Raiders.obj");
-    model = new ObjModel("resources/cube.obj");
+    model = new ObjModel("resources/spheres.obj");
 }
 
 float rotation = 0;
