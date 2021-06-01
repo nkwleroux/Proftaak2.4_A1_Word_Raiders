@@ -21,6 +21,11 @@
 #include "SpinComponent.h"
 #include "TimerJumper.h"
 #include "CrosshairComponent.h"
+#include "json.hpp"
+#include "Word.h"
+#include "WordLoader.h"
+#include <vector>
+
 
 using tigl::Vertex;
 using namespace std;
@@ -197,7 +202,7 @@ void display_image()
 
 int main(void)
 {
-	thread t1(openAction);
+	/*thread t1(openAction);
 	thread t2(closedAction);
 
 	if (!glfwInit())
@@ -225,7 +230,18 @@ int main(void)
 
 	glfwTerminate();
 
-	return 0;
+	return 0;*/
+
+
+	//Word* appel = new Word("appel", 5);
+	//appel->createLettersArray();
+	//appel->writeLetters();
+	//appel->writeLetters();
+
+	WordLoader* wordloader = new WordLoader();
+	//wordloader->loadWords("fiveletterwords", 20);
+	wordloader->printWords(wordloader->loadWords(7, easy));
+	wordloader->printWords(wordloader->loadWords(5, medium));
 }
 
 std::list<GameObject*> objects;

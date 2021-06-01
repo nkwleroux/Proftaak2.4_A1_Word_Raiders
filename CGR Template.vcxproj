@@ -176,6 +176,8 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
+    <ClCompile Include="Word.cpp" />
+    <ClCompile Include="WordLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
@@ -191,6 +193,8 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />
     <ClInclude Include="TimerJumper.h" />
+    <ClInclude Include="Word.h" />
+    <ClInclude Include="WordLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closeHand.png" />
@@ -198,6 +202,9 @@
     <Image Include="Images\openHand.png" />
     <Image Include="Images\rainbow.jpg" />
     <Image Include="Images\shapes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="words.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
