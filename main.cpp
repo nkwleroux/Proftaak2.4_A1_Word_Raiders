@@ -2,7 +2,6 @@
 #include <Gl/GLU.h>
 #include <GLFW/glfw3.h>
 #include "tigl.h"
-#include "ObjModel.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
@@ -21,6 +20,8 @@
 #include "SpinComponent.h"
 #include "TimerJumper.h"
 #include "CrosshairComponent.h"
+#include "LetterModelComponent.h"
+#include "ObjectModelComponent.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -32,7 +33,7 @@ using namespace cv;
 
 GLFWwindow* window;
 FpsCam* camera;
-std::vector<ObjModel*> models;
+std::vector<ObjectModelComponent*> models;
 
 Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
@@ -264,21 +265,18 @@ void init()
 	objects.push_back(crosshair);
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
-	for (int i = 1; i < 6; i++) {
+	for (int i = 1; i < 3; i++) {
 		GameObject* o = new GameObject(i);
 		o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i, 0, -1);
-		o->addComponent(new CubeComponent(0.2));
+		o->position = glm::vec3(i*3, 0, -1);
 		o->addComponent(new MoveToComponent());
+		//o->addComponent(new CubeComponent(1.0f));
+		o->addComponent(new LetterModelComponent('B'));
 		o->getComponent<MoveToComponent>()->target = o->position;
 		//o->addComponent(new SpinComponent(1.0f));
 		objects.push_back(o);
 	}
 
-	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
-	models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj"));
-	//models.push_back(new ObjModel("resources/scene.obj"));
-	//models.push_back(new ObjModel("resources/cube2.obj"));
 }
 
 float rotation = 0;
@@ -377,6 +375,8 @@ void draw()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	for (auto& o : objects) {
+		tigl::shader->enableColor(false);
+		tigl::shader->enableTexture(false);
 		if (o == backgroundBox) {
 			textures[1]->bind();
 			tigl::shader->enableColor(false);
@@ -397,9 +397,6 @@ void draw()
 			//glEnable(GL_DEPTH_TEST);
 		}
 		else {
-			
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
 			o->draw();
 		}
 	}

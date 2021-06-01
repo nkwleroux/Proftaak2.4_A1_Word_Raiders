@@ -1,4 +1,5 @@
 #pragma once
+#include "DrawComponent.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -12,7 +13,7 @@ class Texture;
 
 
 
-class ObjModel
+class ObjectModelComponent : public DrawComponent
 {
 private:
 	class Vertex
@@ -33,14 +34,11 @@ private:
 	class MaterialInfo
 	{
 	public:
-		MaterialInfo();
 		std::string name;
 		Texture* texture;
 		glm::vec3 ka;
 		glm::vec3 kd;
 		glm::vec3 ks;
-
-		glm::vec4 getColor();
 	};
 
 	class ObjGroup
@@ -63,10 +61,10 @@ private:
 
 public:
 	void createVBO();
-	ObjModel(const std::string &filename);
-	~ObjModel(void);
+	ObjectModelComponent(const std::string &filename);
+	~ObjectModelComponent(void);
 	int materialIndex;
 
-	void draw();
+	virtual void draw() override;
 };
 

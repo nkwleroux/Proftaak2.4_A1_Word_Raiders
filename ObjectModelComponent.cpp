@@ -1,4 +1,4 @@
-#include "ObjModel.h"
+#include "ObjectModelComponent.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -77,7 +77,7 @@ static inline std::string cleanLine(std::string line)
 }
 
 
-void ObjModel::createVBO() {
+void ObjectModelComponent::createVBO() {
 	//foreach group in groups
 	for (int groupPos = 0; groupPos < this->groups.size(); groupPos++)
 	{
@@ -92,7 +92,7 @@ void ObjModel::createVBO() {
 				materialIndex = this->groups[groupPos]->materialIndex;
 			}
 
-			color = materials[(this->groups[groupPos]->materialIndex)]->getColor();
+			color = glm::vec4(1.0f);
 		}
 
 
@@ -125,7 +125,7 @@ void ObjModel::createVBO() {
 /**
 * Loads an object model
 */
-ObjModel::ObjModel(const std::string &fileName)
+ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 {
 	materialIndex = -1;
 
@@ -228,21 +228,24 @@ ObjModel::ObjModel(const std::string &fileName)
 }
 
 
-ObjModel::~ObjModel(void)
+ObjectModelComponent::~ObjectModelComponent(void)
 {
 }
 
-void ObjModel::draw()
+void ObjectModelComponent::draw()
 {
 	
 	for (auto vbo : vbos) {
+		tigl::shader->enableColor(false);
+		tigl::shader->enableTexture(true);
+
 		materials[materialIndex]->texture->bind();
 		tigl::drawVertices(GL_TRIANGLES, vbo);
 	}
 }
 
 
-void ObjModel::loadMaterialFile( const std::string &fileName, const std::string &dirName )
+void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const std::string &dirName )
 {
 	std::cout << "Loading " << fileName << std::endl;
 	std::ifstream pFile(fileName.c_str());
@@ -317,21 +320,6 @@ void ObjModel::loadMaterialFile( const std::string &fileName, const std::string 
 		else
 			std::cout<<"Didn't parse "<<params[0]<<" in material file"<<std::endl;
 	}
-}
-
-ObjModel::MaterialInfo::MaterialInfo()
-{
-	texture = NULL;
-}
-
-glm::vec4 ObjModel::MaterialInfo::getColor()
-{
-	float color = 1.0f;
-
-	/*float color = this->ka * ambientcolor +
-		this->kd * lambertian * diffusecolor +
-		this->ks * specular * specularColor;*/
-	return glm::vec4(color,color,color,1.0f);
 }
 
 

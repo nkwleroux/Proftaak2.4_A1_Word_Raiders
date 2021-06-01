@@ -168,9 +168,10 @@
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FpsCam.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="LetterModelComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MoveToComponent.cpp" />
-    <ClCompile Include="ObjModel.cpp" />
+    <ClCompile Include="ObjectModelComponent.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -184,8 +185,9 @@
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FpsCam.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="LetterModelComponent.h" />
     <ClInclude Include="MoveToComponent.h" />
-    <ClInclude Include="ObjModel.h" />
+    <ClInclude Include="ObjectModelComponent.h" />
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
