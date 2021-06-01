@@ -33,7 +33,6 @@ using namespace cv;
 
 GLFWwindow* window;
 FpsCam* camera;
-std::vector<ObjectModelComponent*> models;
 
 Mat img, imgHSV, mask, imgColor;
 int hmin = 45, smin = 110, vmin = 75;
@@ -361,7 +360,6 @@ void draw()
 	tigl::shader->setProjectionMatrix(projection);
 	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
 	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	float videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
 	float videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
@@ -369,6 +367,14 @@ void draw()
 	glm::mat4 modelMatrix(1.0f);
 	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
+
+	/*tigl::shader->setLightCount(1);
+	tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
+	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
+	tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
+	tigl::shader->setLightDirectional(0, true);
+	tigl::shader->enableLighting(true);*/
+
 
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
@@ -401,21 +407,5 @@ void draw()
 		}
 	}
 	
-	tigl::shader->enableTexture(true);
-	tigl::shader->enableLighting(false);
-
-	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->materialIndex != -1)
-		{
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-		}
-		else {
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-		}
-		models[i]->draw();
-	}
-
 	glDisable(GL_DEPTH_TEST);
 }
