@@ -176,6 +176,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
+    <ClCompile Include="VisionCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />
     <ClInclude Include="TimerJumper.h" />
+    <ClInclude Include="VisionCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closeHand.png" />
