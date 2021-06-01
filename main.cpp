@@ -3,6 +3,7 @@
 #include "tigl.h"
 #include "ObjModel.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "FpsCam.h"
 
 using tigl::Vertex;
 
@@ -12,6 +13,8 @@ using tigl::Vertex;
 
 GLFWwindow* window;
 ObjModel* model;
+FpsCam* fpsCam;
+
 
 void init();
 void update();
@@ -19,19 +22,19 @@ void draw();
 
 int main(void)
 {
-    if (!glfwInit())
-        throw "Could not initialize glwf";
-    window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        throw "Could not initialize glwf";
-    }
-    glfwMakeContextCurrent(window);
+	if (!glfwInit())
+		throw "Could not initialize glwf";
+	window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+		throw "Could not initialize glwf";
+	}
+	glfwMakeContextCurrent(window);
 
-    tigl::init();
+	tigl::init();
 
-    init();
+	init();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -44,55 +47,59 @@ int main(void)
 	glfwTerminate();
 
 
-    return 0;
+	return 0;
 }
 
 void init()
 {
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (key == GLFW_KEY_ESCAPE)
-            glfwSetWindowShouldClose(window, true);
-    });
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE)
+				glfwSetWindowShouldClose(window, true);
+		});
 
+	fpsCam = new FpsCam(window);
 
-    //model = new ObjModel("resources/Diamond_Word_Raiders.obj");
-    //model = new ObjModel("resources/Cube_Word_Raiders.obj");
-    model = new ObjModel("resources/spheres.obj");
+	//model = new ObjModel("resources/Diamond_Word_Raiders.obj");
+	model = new ObjModel("resources/cube.obj");
+	//model = new ObjModel("resources/spheres.obj");
 }
 
 float rotation = 0;
 
 void update()
 {
-    rotation += 0.01f;
+	fpsCam->update(window);
+	rotation += 0.001f;
 }
 
 void draw()
 {
-    glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    int viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 500.0f);
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 500.0f);
 
-    tigl::shader->setProjectionMatrix(projection);
-    tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0,5.0f,10.0f), glm::vec3(0,0,0), glm::vec3(0,1,0)));
-    tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0,1,0)));
+	tigl::shader->setProjectionMatrix(projection);
+	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 5.0f, 10.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	tigl::shader->setViewMatrix(fpsCam->getMatrix());
+	tigl::shader->setModelMatrix(glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 1, 0)));
 
-    tigl::shader->enableLighting(true);
-    tigl::shader->setLightCount(1);
-    tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
-    tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
-    tigl::shader->setLightPosition(0, glm::vec3(0, 10, -5));
-    tigl::shader->setLightDirectional(0, true);
+	tigl::shader->setLightCount(1);
+	tigl::shader->setLightAmbient(0, glm::vec3(0.3f));
+	tigl::shader->setLightDiffuse(0, glm::vec3(0.3f));
+	tigl::shader->setLightSpecular(0, glm::vec3(0.0f));
+	tigl::shader->setLightPosition(0, glm::vec3(0, 0, -1));
+	tigl::shader->setLightDirectional(0, false);
+	tigl::shader->enableLighting(true);
 
-    tigl::shader->enableColor(true);
-    tigl::shader->enableTexture(true);
+	tigl::shader->enableColor(false);
+	tigl::shader->enableTexture(true);
 
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 
-    model->draw();
+	model->draw();
 }

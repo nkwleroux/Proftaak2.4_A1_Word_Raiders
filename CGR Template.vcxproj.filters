@@ -66,6 +66,9 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="FpsCam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tigl.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="imstb_truetype.h">
       <Filter>Header Files\imstb</Filter>
+    </ClInclude>
+    <ClInclude Include="FpsCam.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
