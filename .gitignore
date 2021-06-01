@@ -42,3 +42,5 @@
 
 .vs
 Debug
+
+*.dll
