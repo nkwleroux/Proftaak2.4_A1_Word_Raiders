@@ -1,5 +1,6 @@
 #include "WordLoader.h"
 #include <cstdlib>
+#include <ctime>
 
 using json = nlohmann::json;
 
@@ -50,6 +51,7 @@ bool WordLoader::checkIfNumberExists(int arr[], int number, int size) {
 
 void WordLoader::printWords(std::vector<Word*> words) {
 	for (Word* w : words) {
-		std::cout << w->getWord() << std::endl;
+		//std::cout << w->getWord() << std::endl;
+		w->writeLetters();
 	}
 }

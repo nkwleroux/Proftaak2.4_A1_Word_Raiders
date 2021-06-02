@@ -15,8 +15,11 @@ public:
 	std::vector<char> getLetters();
 	void createLettersArray();
 	void writeLetters();
+	void createRandomLetters();
+	char getFirstLetter();
 
 private:
 	std::string word;
 	std::vector<char> letters;
+	void addLetter(char letter);
 };

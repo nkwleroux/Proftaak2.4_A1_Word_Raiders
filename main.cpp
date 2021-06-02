@@ -61,6 +61,8 @@ int windowWidth = 1920;
 
 bool appIsRunning = true;
 
+int wordLength = 5;
+
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
 	//{0, 194, 75, 18, 246, 255} //red
@@ -232,16 +234,34 @@ int main(void)
 
 	return 0;*/
 
-
-	//Word* appel = new Word("appel", 5);
-	//appel->createLettersArray();
-	//appel->writeLetters();
-	//appel->writeLetters();
-
 	WordLoader* wordloader = new WordLoader();
 	//wordloader->loadWords("fiveletterwords", 20);
-	wordloader->printWords(wordloader->loadWords(7, easy));
-	wordloader->printWords(wordloader->loadWords(5, medium));
+	//wordloader->printWords(wordloader->loadWords(5, easy));
+	//wordloader->printWords(wordloader->loadWords(5, easy));
+	std::vector<Word*> wordsToGuess = wordloader->loadWords(7, hard);
+	int size = wordsToGuess.size();
+	char enteredKey;
+	string chosenWord;
+	while (size > 0) {
+		Word* currentWord = wordsToGuess.at(size-1);
+		chosenWord = currentWord->getFirstLetter();
+		currentWord->writeLetters();
+		for (int i = 0; i < hard-1; i ++) {
+			cout << chosenWord << endl;
+			cin >> enteredKey;
+			chosenWord += enteredKey;
+		}
+
+		if (chosenWord == currentWord->getWord()) {
+			cout << "Correct" << endl;
+			size--;
+			delete currentWord; currentWord = nullptr;
+			wordsToGuess.pop_back();
+		}
+		else {
+			cout << "Incorrect, try again!" << endl;
+		}
+	}
 }
 
 std::list<GameObject*> objects;
