@@ -368,12 +368,14 @@ void draw()
 	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
 
-	/*tigl::shader->setLightCount(1);
+	tigl::shader->setLightCount(1);
+	tigl::shader->setShinyness(100.0f);
 	tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
 	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
+	tigl::shader->setLightSpecular(0,glm::vec3(0.0f));
 	tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
 	tigl::shader->setLightDirectional(0, true);
-	tigl::shader->enableLighting(true);*/
+	tigl::shader->enableLighting(true);
 
 
 	glEnable(GL_DEPTH_TEST);

@@ -79,17 +79,17 @@ static inline std::string cleanLine(std::string line)
 
 void ObjectModelComponent::createVBO() {
 	//foreach group in groups
-	for (int groupPos = 0; groupPos < this->groups.size(); groupPos++)
+	for (auto group : this->groups)
 	{
 		glm::vec4 color = glm::vec4(1.0f);
 		std::vector<tigl::Vertex> verticesList;
 
 		//  set material texture, if available
-		if (materials.size() > this->groups[groupPos]->materialIndex && this->groups[groupPos]->materialIndex != -1)
+		if (materials.size() > group->materialIndex && group->materialIndex != -1)
 		{
-			if (materials[(this->groups[groupPos]->materialIndex)]->texture != NULL)
+			if (materials[(group->materialIndex)]->texture != NULL)
 			{
-				materialIndex = this->groups[groupPos]->materialIndex;
+				materialIndex = group->materialIndex;
 			}
 
 			color = glm::vec4(1.0f);
@@ -97,10 +97,10 @@ void ObjectModelComponent::createVBO() {
 
 
 		//  foreach face in group
-		for (auto face : this->groups[groupPos]->faces) {
+		for (const auto &face : group->faces) {
 
 			//    foreach vertex in face
-			for (auto vertex : face.vertices) {
+			for (const auto &vertex : face.vertices) {
 				//emit vertex
 				if (materialIndex!=-1)
 				{
