@@ -67,6 +67,6 @@ public:
 
 	virtual void draw() override;
 
-	std::list<glm::vec3> getVertices() override;
+	std::vector<glm::vec3> getVertices() override;
 };
 

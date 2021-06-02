@@ -59,7 +59,11 @@ void CubeComponent::draw()
 	tigl::drawVertices(GL_QUADS, verts);
 }
 
-std::list<glm::vec3> CubeComponent::getVertices()
+std::vector<glm::vec3> CubeComponent::getVertices()
 {
-	return std::list<glm::vec3>();
+	std::vector<glm::vec3> list;
+	for (const auto &vert : verts) {
+		list.push_back(vert.position);
+	}
+	return list;
 }

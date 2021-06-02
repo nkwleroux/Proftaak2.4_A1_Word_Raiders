@@ -12,7 +12,7 @@ public:
 	//virtual void setTexture(Texture* t) = 0;
 	virtual void draw() = 0;
 
-	virtual	std::list<glm::vec3> getVertices() = 0;
+	virtual	std::vector<glm::vec3> getVertices() = 0;
 
 };
 

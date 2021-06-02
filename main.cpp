@@ -292,6 +292,8 @@ void init()
 	objects.push_back(square2);
 
 
+	glm::unProject();
+
 	if (square->getComponent<BoundingBox>()->collide(square2))
 	{
 		std::cout << "Collision!" << std::endl;
@@ -312,28 +314,12 @@ void update()
 
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
-	lastFrameTime = currentFrameTime;
-
-	//Test collision detection
-
-	//GameObject* tempObject = new GameObject(0);
-	//tempObject->modelMatrix = backgroundBox->modelMatrix;
-	//tempObject->position = backgroundBox->position;
-	//tempObject->rotation = backgroundBox->rotation;
-	//tempObject->scale = backgroundBox->scale;
-
-	//glm::mat4 inverseModelMatrix = glm::inverse(tempObject->modelMatrix);
-	//glm::vec4 pointA = glm::vec4(5);
+	lastFrameTime = currentFrameTime;	
 
 	for (auto& o : objects) {
 
-		//glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
-		//if (pointA == pointB) {
-		//    cout << "TESTING" << endl;
-		//}
-		//else {
-		//    cout << "NOT TESTING" << endl;
-		//}
+		o->getComponent<BoundingBox>()->collide(std::next(o));
+
 
 		if (o != backgroundBox && o != crosshair) {
 			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);

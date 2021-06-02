@@ -321,5 +321,8 @@ void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const 
 			std::cout<<"Didn't parse "<<params[0]<<" in material file"<<std::endl;
 	}
 }
+std::vector<glm::vec3> ObjectModelComponent::getVertices() {
+	return vertices;
+}
 
 

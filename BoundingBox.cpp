@@ -40,6 +40,9 @@ bool BoundingBox::collide(GameObject* otherObject)
 	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
 	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
 
+	//Chech for collision
+	return (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x) && (realMin.y <= ;
 
+	a.minX <= b.maxX && a.maxX >= b.minX) && (a.minY <= b.maxY && a.maxY >= b.minY) && (a.minZ <= b.maxZ && a.maxZ >= b.minZ
 
 }

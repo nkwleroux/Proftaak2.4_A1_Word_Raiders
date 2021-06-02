@@ -22,7 +22,7 @@ public:
 
 
 	// Inherited via DrawComponent
-	virtual std::list<glm::vec3> getVertices() override;
+	virtual std::vector<glm::vec3> getVertices() override;
 
 };
 
