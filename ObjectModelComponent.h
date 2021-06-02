@@ -66,5 +66,7 @@ public:
 	int materialIndex;
 
 	virtual void draw() override;
+
+	std::list<glm::vec3> getVertices() override;
 };
 

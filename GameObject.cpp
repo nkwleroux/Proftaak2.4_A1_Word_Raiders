@@ -27,6 +27,38 @@ std::list<Component*> GameObject::getComponents()
 	return components;
 }
 
+BoundingBox* GameObject::createBoundingBox(std::vector<Vertex> verts) {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+    minX = minY = minZ = std::numeric_limits<float>::max();
+    maxX = maxY = maxZ = std::numeric_limits<float>::min();
+
+    for (auto& vert : verts) {
+        if (minX > vert.position.x) {
+            minX = vert.position.x;
+        }
+        else if (maxX < vert.position.x) {
+            maxX = vert.position.x;
+        }
+        else if (minY > vert.position.y) {
+            minY = vert.position.y;
+        }
+        else if (maxY < vert.position.y) {
+            maxY = vert.position.y;
+        }
+        else if (minZ > vert.position.z) {
+            minZ = vert.position.z;
+        }
+        else if (maxZ < vert.position.z) {
+            maxZ = vert.position.z;
+        }
+    }
+
+    boundingBox = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
+    return boundingBox;
+	
+}
+
 
 void GameObject::draw(const glm::mat4 &parentMatrix)
 {

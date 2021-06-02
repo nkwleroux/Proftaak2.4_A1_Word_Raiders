@@ -22,6 +22,7 @@
 #include "CrosshairComponent.h"
 #include "LetterModelComponent.h"
 #include "ObjectModelComponent.h"
+#include "BoundingBox.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -254,26 +255,46 @@ void init()
 
 	camera = new FpsCam(window);
 
-	backgroundBox = new GameObject(0);
+	/*backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
 	backgroundBox->addComponent(new CubeComponent(10));
-	objects.push_back(backgroundBox);
+	objects.push_back(backgroundBox);*/
 
-	crosshair = new GameObject(10);
+	/*crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
-	objects.push_back(crosshair);
+	objects.push_back(crosshair);*/
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
-	for (int i = 1; i < 3; i++) {
-		GameObject* o = new GameObject(i);
-		o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i*3, 0, -1);
-		o->addComponent(new MoveToComponent());
-		//o->addComponent(new CubeComponent(1.0f));
-		o->addComponent(new LetterModelComponent('B'));
-		o->getComponent<MoveToComponent>()->target = o->position;
-		//o->addComponent(new SpinComponent(1.0f));
-		objects.push_back(o);
+	//for (int i = 1; i < 3; i++) {
+	//	GameObject* o = new GameObject(i);
+	//	o->position = glm::vec3(rand() % 5, 0, -1);
+	//	o->position = glm::vec3(i*3, 0, -1);
+	//	o->addComponent(new MoveToComponent());
+	//	//o->addComponent(new CubeComponent(1.0f));
+	//	o->addComponent(new LetterModelComponent('B'));
+	//	o->getComponent<MoveToComponent>()->target = o->position;
+	//	//o->addComponent(new SpinComponent(1.0f));
+	//	objects.push_back(o);
+	//}
+
+	GameObject* square = new GameObject(1);
+	square->position = glm::vec3(2, -3, 1);
+	square->addComponent(new MoveToComponent());
+	square->addComponent(new CubeComponent(1.0f));
+	square->addComponent(new BoundingBox());
+	objects.push_back(square);
+
+	GameObject* square2 = new GameObject(1);
+	square2->position = glm::vec3(3, 4, 5);
+	square2->addComponent(new MoveToComponent());
+	square2->addComponent(new CubeComponent(1.0f));
+	square2->addComponent(new BoundingBox());
+	objects.push_back(square2);
+
+
+	if (square->getComponent<BoundingBox>()->collide(square2))
+	{
+		std::cout << "Collision!" << std::endl;
 	}
 
 }
@@ -305,6 +326,7 @@ void update()
 	//glm::vec4 pointA = glm::vec4(5);
 
 	for (auto& o : objects) {
+
 		//glm::vec4 pointB = o->modelMatrix * (inverseModelMatrix * pointA);
 		//if (pointA == pointB) {
 		//    cout << "TESTING" << endl;
@@ -321,8 +343,6 @@ void update()
 	}
 	rotation += 0.01f;
 }
-
-
 
 void closedAction()
 {
@@ -346,6 +366,10 @@ void openAction()
 		}
 		std::this_thread::sleep_for(10ms);
 	}
+}
+
+bool isOverlap(BoundingBox a, BoundingBox b) {
+	return (a.minX <= b.maxX && a.maxX >= b.minX) && (a.minY <= b.maxY && a.maxY >= b.minY) && (a.minZ <= b.maxZ && a.maxZ >= b.minZ);
 }
 
 void draw()
