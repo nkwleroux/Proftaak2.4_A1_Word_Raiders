@@ -12,8 +12,9 @@ namespace tigl
 		class Shader
 		{
 		public:
-			virtual ~Shader() {};
-			
+			virtual ~Shader() {}
+
+
 			// Sets the projection matrix
 			virtual void setProjectionMatrix(const glm::mat4& matrix) = 0;
 
@@ -28,7 +29,7 @@ namespace tigl
 
 			// enables the use of texture coordinats set in vertices, and uses textures set in texture sampler
 			virtual void enableTexture(bool enabled) = 0;
-			
+
 			// enables the lighting
 			virtual void enableLighting(bool enabled) = 0;
 
@@ -76,6 +77,7 @@ namespace tigl
 
 			// Sets the color of the fog
 			virtual void setFogColor(const glm::vec3 &color) = 0;
+			virtual void setColorAdd(const glm::vec4& color) = 0;
 		};
 	}
 	// A simple structure to store vertices. Can store positions, normals, colors and texture coordinats

@@ -27,7 +27,7 @@ namespace tigl
 		void setLightDiffuse(int lightNr, const glm::vec3& color) { setUniform("lights[" + std::to_string(lightNr) + "].diffuse", color); }
 		void setLightSpecular(int lightNr, const glm::vec3& color) { setUniform("lights[" + std::to_string(lightNr) + "].specular", color); }
 		void setShinyness(float shinyness) { setUniform(Uniform::shinyness, shinyness); }
-
+		void setColorAdd(const glm::vec4& color) { setUniform(Uniform::colorAdd, color); }
 		void enableColorMult(bool enabled) { setUniform(Uniform::useColorMult, enabled); }
 		void setColorMult(const glm::vec4& color) { setUniform(Uniform::colorMult, color); }
 
@@ -76,7 +76,7 @@ namespace tigl
 			fogLinFar,
 			fogExpDensity,
 			fogColor,
-
+			colorAdd,
 
 			UniformMax
 		};
@@ -235,6 +235,7 @@ uniform bool useFog = false;
 uniform vec4 colorMult = vec4(1,1,1,1);
 uniform vec3 fogColor = vec3(1.0);
 uniform vec3 cameraPosition;
+uniform vec4 colorAdd = vec4(0,0,0,0);
 
 uniform int fogType = 0;
 uniform float fogLinNear = 0;
@@ -284,6 +285,7 @@ void main()
 		outputColor *= colorMult;
 	if(useTexture)
 		outputColor *= texture2D(s_texture, texCoord);
+	outputColor += colorAdd;
 
 	if(useLighting) {
 		vec3 ambient = vec3(0,0,0);
@@ -291,7 +293,7 @@ void main()
 		vec3 diffuse = vec3(0,0,0);
 
 		for(int i = 0; i < lightCount; i++) {
-		
+
 			vec3 lightDir = normalize(lights[i].position - position);
 			if(lights[i].directional)
 				lightDir = normalize(lights[i].position);
@@ -300,12 +302,12 @@ void main()
 
 			float diffuseFactor = max(0, dot(lightDir, normalize(normal)));
 			diffuse += diffuseFactor * lights[i].diffuse;
-		
+
 			vec3 reflectDir = reflect(-lightDir, normalize(normal));
 			float specularFactor = pow(max(dot(normalize(cameraPosition-position), reflectDir), 0.0), shinyness);
 			specular += specularFactor * lights[i].specular;
 		}
-		
+
 		outputColor.rgb = (ambient + specular + diffuse) * outputColor.rgb;
 	}
 	if(useFog) {
@@ -350,7 +352,7 @@ void main()
 		uniforms[Uniform::useTexture] = glGetUniformLocation(programId, "useTexture");
 		uniforms[Uniform::useLighting] = glGetUniformLocation(programId, "useLighting");
 		uniforms[Uniform::lightCount] = glGetUniformLocation(programId, "lightCount");
-		
+
 		uniforms[Uniform::useAlphaTest] = glGetUniformLocation(programId, "useAlphaTest");
 		uniforms[Uniform::useFog] = glGetUniformLocation(programId, "useFog");
 		uniforms[Uniform::colorMult] = glGetUniformLocation(programId, "colorMult");
@@ -361,6 +363,7 @@ void main()
 		uniforms[Uniform::fogLinFar] = glGetUniformLocation(programId, "fogLinFar");
 		uniforms[Uniform::fogExpDensity] = glGetUniformLocation(programId, "fogExpDensity");
 		uniforms[Uniform::fogColor] = glGetUniformLocation(programId, "fogColor");
+		uniforms[Uniform::colorAdd] = glGetUniformLocation(programId, "colorAdd");
 
 		use();
 	}

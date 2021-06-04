@@ -24,6 +24,8 @@
 #include "VisionCamera.h"
 #include <stdlib.h>
 
+#include "Text/Text.h"
+
 using tigl::Vertex;
 using namespace std;
 using namespace cv;
@@ -36,8 +38,9 @@ GLFWwindow* window;
 FpsCam* camera;
 std::vector<ObjModel*> models;
 VisionCamera* VC;
-
+Text* textObject;
 Texture* textures[3];
+int ctr = 1;
 
 int windowHeight = 1080;
 int windowWidth = 1920;
@@ -58,7 +61,7 @@ int main(void)
 {
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
-	
+
 	thread t1(&VisionCamera::openAction,VC);
 	thread t2(&VisionCamera::closedAction,VC);
 
@@ -90,7 +93,7 @@ int main(void)
 	t1.join();
 	t2.join();
 
-	glfwTerminate();	
+	glfwTerminate();
 	destroyAllWindows();
 
 	return 0;
@@ -113,6 +116,8 @@ void init()
 	textures[0] = new Texture("Images/closeHand.png");
 	textures[1] = new Texture("Images/openHand.png");
 	textures[2] = new Texture("Images/container.jpg");
+	textObject = new Text("c:/windows/fonts/times.ttf", 64.0);
+
 
 	glfwGetCursorPos(window, &lastX, &lastY);
 
@@ -142,7 +147,7 @@ void init()
 	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
 	//models.push_back(new ObjModel("resources/scene.obj"));
 	//models.push_back(new ObjModel("resources/cube2.obj"));
-	
+
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
 }
 
@@ -196,6 +201,12 @@ void draw()
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//
+	//
+
+	//Drawing text
+
+
 
 	for (auto& o : objects) {
 		if (o == backgroundBox) {
@@ -219,13 +230,13 @@ void draw()
 			glDisable(GL_BLEND);
 		}
 		else {
-			
+
 			tigl::shader->enableColor(true);
 			tigl::shader->enableTexture(false);
 			o->draw();
 		}
 	}
-	
+
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
 
@@ -241,6 +252,10 @@ void draw()
 		}
 		models[i]->draw();
 	}
+
+	textObject->draw("Score:    Tijd:     Levens:    ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	//ctr++;
+
 
 	glDisable(GL_DEPTH_TEST);
 }
