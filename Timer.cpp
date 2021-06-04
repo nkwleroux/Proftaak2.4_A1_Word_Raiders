@@ -1,18 +1,20 @@
 #include "Timer.h"
 
-#include <iostream>
 #include <chrono>
 #include <ctime>
 #include <cmath>
 #include <iomanip>
-
+#include <iostream>
+#include <sstream>
 
 std::chrono::steady_clock::time_point startTime;
 double duration;
 bool isRunning;
 
+
 Timer::Timer(double durationInSeconds) {
     duration = durationInSeconds;
+    startTime = std::chrono::steady_clock::now();
 }
 
 Timer::~Timer()
@@ -41,7 +43,7 @@ double Timer::secondsToGo()
     }
     else
     {
-        return duration;
+        return 0;
     }
 }
 
@@ -56,7 +58,7 @@ std::string Timer::secondsToGoString()
 }
 
 bool Timer::hasFinished() {
-    if (secondsToGo() >= duration)
+    if (secondsToGo() <= 0)
     {
         stop();
         return true;

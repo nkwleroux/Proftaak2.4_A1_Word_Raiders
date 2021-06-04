@@ -179,6 +179,8 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
     <ClCompile Include="VisionCamera.cpp" />
+    <ClCompile Include="Word.cpp" />
+    <ClCompile Include="WordLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
@@ -187,6 +189,7 @@
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FpsCam.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="MoveToComponent.h" />
     <ClInclude Include="ObjModel.h" />
     <ClInclude Include="PlayerComponent.h" />
@@ -198,6 +201,8 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="VisionCamera.h" />
+    <ClInclude Include="Word.h" />
+    <ClInclude Include="WordLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closeHand.png" />
@@ -205,6 +210,9 @@
     <Image Include="Images\openHand.png" />
     <Image Include="Images\rainbow.jpg" />
     <Image Include="Images\shapes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="words.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

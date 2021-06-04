@@ -56,7 +56,7 @@ Point VisionCamera::getContours()
 
 			String objectType;
 
-			if (area > 1000)
+			if (area > 500)
 			{
 				float peri = arcLength(contours[i], true);
 				approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
@@ -86,20 +86,16 @@ void VisionCamera::findColor()
 		 myPoint = getContours();
 
 		if (myPoint.x != 0 && myPoint.y != 0) {
-			handDetected = true;
 			if (i == 0) {
-				openHand = true;
+				redDetected = false;
 				currentCrosshair = i;
 			}
 			else if (i == 1) {
-				openHand = false;
+				redDetected = true;
 				currentCrosshair = i;
 			}
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 			currentPoint = myPoint;
-		}
-		else {
-			handDetected = false;
 		}
 	}
 }
@@ -120,32 +116,6 @@ void VisionCamera::displayImage()
 
 	imshow("Image", img);
 	waitKey(1);
-}
-
-void VisionCamera::closedAction()
-{
-	while (appIsRunning)
-	{
-		if (handDetected && !openHand) {
-			cout << currentPoint.x << "," << currentPoint.y << endl;
-		}
-		std::this_thread::sleep_for(1000ms);
-	}
-	cout << "DONE CLOSED" << endl;
-}
-
-void VisionCamera::openAction()
-{
-	while (appIsRunning)
-	{
-		if (handDetected && openHand) {
-			//cout << "Open hand detected!" << endl;
-			cout << currentPoint.x << "," << currentPoint.y << endl;
-		}
-		std::this_thread::sleep_for(10ms);
-	}
-
-	cout << "DONE OPEN" << endl;
 }
 
 void VisionCamera::update() {
