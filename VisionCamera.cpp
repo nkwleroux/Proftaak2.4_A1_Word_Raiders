@@ -3,6 +3,7 @@
 VisionCamera::VisionCamera(VideoCapture vidCap)
 {
 	cap = vidCap;
+
 }
 
 
@@ -10,6 +11,7 @@ VisionCamera::~VisionCamera()
 {
 }
 
+Point myPoint;
 
 void VisionCamera::colorSettings()
 {
@@ -62,7 +64,6 @@ Point VisionCamera::getContours()
 				boundRect[i] = boundingRect(conPoly[i]);
 				myPoint.x = boundRect[i].x + boundRect[i].width / 2;
 				myPoint.y = boundRect[i].y + boundRect[i].height / 2;
-
 				drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
 				rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
 			}
@@ -82,7 +83,7 @@ void VisionCamera::findColor()
 		Scalar upper(myColors[i][3], myColors[i][4], myColors[i][5]);
 		inRange(imgHSV, lower, upper, mask);
 
-		Point myPoint = getContours();
+		 myPoint = getContours();
 
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			handDetected = true;
@@ -154,4 +155,9 @@ void VisionCamera::update() {
 
 	videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
 	videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
+}
+
+Point VisionCamera::getCrossHairCoords()
+{
+	return myPoint;
 }

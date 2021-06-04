@@ -56,6 +56,7 @@ int textureIndex;
 Timer * timer;
 
 void init();
+void rayCast(int xOrigin, int yOrigin);
 void update();
 void draw();
 
@@ -80,6 +81,7 @@ int main(void)
 		glfwTerminate();
 		throw "Could not initialize glwf";
 	}
+
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -137,6 +139,7 @@ void init()
 	crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
 	objects.push_back(crosshair);
+
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
 	for (int i = 1; i < 6; i++) {
@@ -159,6 +162,8 @@ void init()
 
 float rotation = 0;
 
+
+
 void update()
 {
 	/*cap.read(img);
@@ -173,6 +178,8 @@ void update()
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
+
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 
 	for (auto& o : objects) {
 		if (o != backgroundBox && o != crosshair) {
@@ -267,4 +274,22 @@ void draw()
 
 
 	glDisable(GL_DEPTH_TEST);
+}
+
+void rayCast(int xOrigin, int yOrigin)
+{
+	//RAY ray = { glm::vec3(xOrigin, yOrigin, 0), glm::vec3(250, 250, 300)};
+	// glm::vec3 position;
+	// glm::vec3 normal;
+	// glm::vec4 color;
+	// glm::vec2 texcoord;
+	//
+	//DRAWING LINES
+	glLineWidth(12.0);
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(xOrigin, yOrigin, 0);
+	glVertex3f(400, 400, 400);
+	glEnd();
+	//
 }

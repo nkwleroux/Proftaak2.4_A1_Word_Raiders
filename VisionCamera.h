@@ -50,5 +50,6 @@ public:
 	void closedAction();
 	void openAction();
 	void update();
+	Point getCrossHairCoords();
 };
 
