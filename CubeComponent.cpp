@@ -1,4 +1,5 @@
 #include "CubeComponent.h"
+#include <iostream>
 
 CubeComponent::CubeComponent(float size)
 {
@@ -47,12 +48,6 @@ CubeComponent::CubeComponent(float size)
 CubeComponent::~CubeComponent()
 {
 }
-
-//void CubeComponent::setTexture(Texture* t)
-//{
-//	texture = t;
-//	texture->bind();
-//}
 
 void CubeComponent::draw()
 {

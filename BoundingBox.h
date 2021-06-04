@@ -19,7 +19,6 @@ public:
 	//virtual void setTexture(Texture* t) override;
 	virtual void draw() override;
 
-
 	// Inherited via DrawComponent
 	virtual std::vector<glm::vec3> getVertices() override;
 

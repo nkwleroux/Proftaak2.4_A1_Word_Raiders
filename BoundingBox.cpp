@@ -1,6 +1,9 @@
 #include "BoundingBox.h"
 #include "ObjectModelComponent.h"
 #include "GameObject.h"
+#include "CubeComponent.h"
+#include "tigl.h"
+#include <iostream>
 
 BoundingBox::BoundingBox(GameObject* gameObject) {
 	min = glm::vec3(std::numeric_limits<float>::max());
@@ -31,20 +34,32 @@ bool BoundingBox::collide(GameObject* otherObject)
 	glm::vec4 realMin = gameObject->modelMatrix * glm::vec4(min, 1.0f);
 	glm::vec4 realMax = gameObject->modelMatrix * glm::vec4(max, 1.0f);
 
-
 	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
 	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
 
 	//Chech for collision
-	return (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x) && 
-		(realMin.y <= otherRealMax.y && realMax.y >= otherRealMin.y) && 
+	return (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x) &&
+		(realMin.y <= otherRealMax.y && realMax.y >= otherRealMin.y) &&
 		(realMin.z <= otherRealMax.z && realMax.z >= otherRealMin.z);
 
 }
 
 void BoundingBox::draw()
 {
+	tigl::shader->enableColor(true);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	std::vector<glm::vec3> vec3s = gameObject->getComponent<CubeComponent>()->getVertices();
+
+	std::vector<Vertex> verts;
+
+	for (const auto& vert : vec3s) {
+		verts.push_back(tigl::Vertex::PC(glm::vec3(vert.x + 1, vert.y + 1, vert.z + 1), glm::vec4(1,0,0,1)));
+	}
+
+	tigl::drawVertices(GL_QUADS, verts);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 std::vector<glm::vec3> BoundingBox::getVertices()
