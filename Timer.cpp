@@ -7,14 +7,10 @@
 #include <iostream>
 #include <sstream>
 
-std::chrono::steady_clock::time_point startTime;
-double duration;
-bool isRunning;
-
 
 Timer::Timer(double durationInSeconds) {
-    duration = durationInSeconds;
-    startTime = std::chrono::steady_clock::now();
+    this->duration = durationInSeconds;
+    this->startTime = std::chrono::steady_clock::now();
 }
 
 Timer::~Timer()
@@ -22,13 +18,13 @@ Timer::~Timer()
 
 void Timer::start()
 {
-    startTime = std::chrono::steady_clock::now();
-    isRunning = true;
+    this->startTime = std::chrono::steady_clock::now();
+    this->isRunning = true;
 }
 
 void Timer::stop()
 {
-    isRunning = false;
+    this->isRunning = false;
 }
 
 double Timer::secondsToGo()
@@ -39,7 +35,13 @@ double Timer::secondsToGo()
     {
         now = std::chrono::steady_clock::now();
         double timePassed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() / 1000.0;
-        return duration - timePassed;
+        
+        if (timePassed>duration)
+        {
+            stop();
+        }
+
+        return this->duration - timePassed;
     }
     else
     {
