@@ -22,6 +22,7 @@
 #include "CrosshairComponent.h"
 #include "LetterModelComponent.h"
 #include "ObjectModelComponent.h"
+#include "Timer.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -55,6 +56,9 @@ int windowHeight = 1080;
 int windowWidth = 1920;
 
 bool appIsRunning = true;
+
+//todo remove this
+Timer *timer;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
@@ -264,6 +268,11 @@ void init()
 	objects.push_back(crosshair);
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
+
+	// todo place this in game scene init
+	timer = new Timer(60);
+	timer->start();
+
 	for (int i = 1; i < 3; i++) {
 		GameObject* o = new GameObject(i);
 		o->position = glm::vec3(rand() % 5, 0, -1);
@@ -292,6 +301,9 @@ void update()
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
+
+	// Timer
+	std::cout << timer->secondsToGo()<<std::endl;
 
 	//Test collision detection
 

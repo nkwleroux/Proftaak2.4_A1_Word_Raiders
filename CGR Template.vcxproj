@@ -176,6 +176,7 @@
     <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +193,7 @@
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerJumper.h" />
   </ItemGroup>
   <ItemGroup>
