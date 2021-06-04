@@ -41,12 +41,12 @@ double Timer::secondsToGo()
     }
     else
     {
-        return duration;
+        return 0;
     }
 }
 
 bool Timer::hasFinished() {
-    if (secondsToGo() >= duration)
+    if (secondsToGo() <= 0)
     {
         stop();
         return true;

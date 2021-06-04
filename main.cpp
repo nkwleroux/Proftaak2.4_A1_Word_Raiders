@@ -59,15 +59,16 @@ Texture* textures[3];
 Texture* openCrosshair;
 Texture* closedCrosshair;
 
-bool openHand = true;
-bool handDetected = false;
 int windowHeight = 1080;
 int windowWidth = 1920;
+
+bool redDetected = false;
 
 bool appIsRunning = true;
 
 int currentWordLength = 5;
 DIFFICULTY currentDifficulty = easy;
+int currentWordIndex = 0;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
@@ -130,7 +131,7 @@ Point getContours()
 {
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
-	Point myPoint(0, 0);
+	Point myPoint;
 	if (!mask.empty())
 	{
 		findContours(mask, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
@@ -154,7 +155,7 @@ Point getContours()
 				myPoint.x = boundRect[i].x + boundRect[i].width / 2;
 				myPoint.y = boundRect[i].y + boundRect[i].height / 2;
 
-				drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
+				//drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
 				rectangle(img, boundRect[i].tl(), boundRect[i].br(), currentColor, 5);
 			}
 		}
@@ -177,27 +178,25 @@ void findColor()
 		Point myPoint = getContours();
 
 		if (myPoint.x != 0 && myPoint.y != 0) {
-			handDetected = true;
-			cout << "object detected: ";
+			//cout << "object detected: ";
 			if (i == 0) {
-				openHand = true;
-				currentColor = green;
+				//openHand = true;
+				redDetected = false;
 				currentCrosshair = i;
-				cout << "openhand" << endl;
+				//cout << "openhand" << endl;
 			}
 			else if (i == 1) {
-				openHand = false;
-				currentColor = red;
+				//openHand = false;
+				redDetected = true;
 				currentCrosshair = i;
-				cout << "closedhand" << endl;
+				//cout << "closedhand" << endl;
 			}
 			//currentCrosshair = 2;
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 			currentPoint = myPoint;
 		}
 		else {
-			handDetected = false;
-			cout << "No object detected!" << endl;
+			//cout << "No object detected!" << endl;
 		}
 	}
 }
@@ -238,9 +237,6 @@ int main(void)
 	tigl::init();
 
 	init();
-
-	//thread t1(openAction);
-	//thread t2(closedAction);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -323,9 +319,10 @@ void update()
 {
 	cap.read(img);
 	findColor();
+	duringGame();
 	imshow("Video", img);
 
-	duringGame();
+	
 	//Dont forget to remove camera update so the user cant move
 	camera->update(window, &lastX, &lastY, &textureIndex);
 
@@ -362,29 +359,9 @@ void update()
 	rotation += 0.01f;
 }
 
-int currentWordIndex = 0;
 
-void closedAction()
-{
-	while (appIsRunning)
-	{
-		if (handDetected && !openHand) {
-			
-		}
-		std::this_thread::sleep_for(1000ms);
 
-	}
-}
 
-void openAction()
-{
-	while (appIsRunning)
-	{
-		
-		//cout << "1 second passed!" << endl;
-		std::this_thread::sleep_for(500ms);
-	}
-}
 
 void draw()
 {
@@ -504,9 +481,11 @@ void checkWord() {
 }
 
 void duringGame() {
-	if (handDetected && openHand) {
+	//cout << greenDetected << endl;
+	if (redDetected) {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
+			redDetected = false;
 			if (chosenWordsAmount <= currentDifficulty) {
 				if (currentWordIndex < currentWordLength) {
 					shootedWord += currentWord->getWord()[currentWordIndex];
