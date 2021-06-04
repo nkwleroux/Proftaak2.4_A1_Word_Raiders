@@ -19,11 +19,11 @@ public:
 	GameObject(int id);
 	~GameObject();
 
+	int id = 0;
 	glm::mat4 modelMatrix;
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale = glm::vec3(1,1,1);
-	int id;
 
 	void addComponent(Component* component);
 	std::list<Component*> getComponents();

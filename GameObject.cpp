@@ -3,7 +3,7 @@
 #include "tigl.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(int id = 0)
+GameObject::GameObject(int id)
 {
 	id = id;
 }
@@ -28,7 +28,7 @@ std::list<Component*> GameObject::getComponents()
 }
 
 bool operator==(const GameObject object1, const GameObject object2) {
-
+	return true;
 }
 
 void GameObject::draw(const glm::mat4 &parentMatrix)

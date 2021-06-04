@@ -2,10 +2,9 @@
 #include "ObjectModelComponent.h"
 #include "GameObject.h"
 
-BoundingBox::BoundingBox() {
+BoundingBox::BoundingBox(GameObject* gameObject) {
 	min = glm::vec3(std::numeric_limits<float>::max());
 	max = glm::vec3(std::numeric_limits<float>::min());
-
 
 	DrawComponent* modelComponent = gameObject->getComponent<DrawComponent>();
 

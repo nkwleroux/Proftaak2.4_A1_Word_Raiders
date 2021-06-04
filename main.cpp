@@ -218,8 +218,8 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
-		update();
 		draw();
+		update();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -233,6 +233,9 @@ std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
 GameObject* crosshair;
+
+GameObject* square;
+GameObject* square2;
 
 void init()
 {
@@ -277,18 +280,22 @@ void init()
 	//	objects.push_back(o);
 	//}
 
-	GameObject* square = new GameObject(1);
-	square->position = glm::vec3(2, -3, 1);
+	square = new GameObject(1);
+	square->position = glm::vec3(-3, 1, 0);
 	square->addComponent(new MoveToComponent());
+	square->getComponent<MoveToComponent>()->target = glm::vec3(3, 0, 0);
 	square->addComponent(new CubeComponent(1.0f));
-	//square->addComponent(new BoundingBox());
+	square->addComponent(new BoundingBox(square));
+	square->addComponent(new SpinComponent(0.5));
 	objects.push_back(square);
 
-	GameObject* square2 = new GameObject(1);
-	square2->position = glm::vec3(3, 4, 5);
+	square2 = new GameObject(2);
+	square2->position = glm::vec3(3, 0, 0);
 	square2->addComponent(new MoveToComponent());
+	square2->getComponent<MoveToComponent>()->target = glm::vec3(-3, 0, 0);
 	square2->addComponent(new CubeComponent(1.0f));
-	//square2->addComponent(new BoundingBox());
+	square2->addComponent(new BoundingBox(square2));
+	//square2->addComponent(new SpinComponent(1));
 	objects.push_back(square2);
 
 	/*if (square->getComponent<BoundingBox>()->collide(square2))
@@ -304,7 +311,7 @@ void update()
 {
 	cap.read(img);
 	findColor();
-	imshow("Video", img);
+	//imshow("Video", img);
 
 	//Dont forget to remove camera update so the user cant move
 	camera->update(window, &lastX, &lastY, &textureIndex);
@@ -312,19 +319,34 @@ void update()
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;	
-
+	GameObject* curr = nullptr;
 	for (auto& o : objects) {
 
-		if(o.)
-		//o->getComponent<BoundingBox>()->collide(std::next(o));
+		//Skip first element so you can compare with the previous one
+		if (curr != nullptr) {
+			if (o->getComponent<BoundingBox>()->collide(curr)) {
+				cout << "Collision" << endl;
+				//Change direction of the block
+				/*glm::vec3 currTarget = curr->getComponent<MoveToComponent>()->target;
+				currTarget = glm::vec3(-currTarget.x, -currTarget.y, -currTarget.z);
+				glm::vec3 oTarget = o->getComponent<MoveToComponent>()->target;
+				oTarget = glm::vec3(-oTarget.x, -oTarget.y, -oTarget.z);*/
 
+				curr->getComponent<MoveToComponent>()->target = curr->position;
+				o->getComponent<MoveToComponent>()->target = o->position;
+				
+			}
+		}
 
 		if (o != backgroundBox && o != crosshair) {
 			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
 			o->getComponent<MoveToComponent>()->target = o->position;*/
 		}
+
 		o->update(deltaTime);
+		curr = o;
 	}
+
 	rotation += 0.01f;
 }
 
@@ -361,8 +383,8 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	float videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
 	float videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
