@@ -265,38 +265,39 @@ void init()
 
 	camera = new FpsCam(window);
 
-	/*backgroundBox = new GameObject(0);
+	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new CubeComponent(10));
-	objects.push_back(backgroundBox);*/
+	backgroundBox->addComponent(new CubeComponent(7));
+	backgroundBox->addComponent(new BoundingBox(backgroundBox));
+	//objects.push_back(backgroundBox);
 
 	/*crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
 	objects.push_back(crosshair);*/
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
-	for (int i = 1; i < 20; i++) {
-		GameObject* o = new GameObject(i);
-		o->position = RandomVec3(i);
-		//o->position = glm::vec3(rand() % 5, 0, -1);
-		//o->position = glm::vec3(i*3, 0, -1);
-		o->addComponent(new MoveToComponent());
-		o->addComponent(new CubeComponent(0.2f));
-		//o->addComponent(new LetterModelComponent('B'));
-		o->getComponent<MoveToComponent>()->target = RandomVec3(7);
-		o->addComponent(new BoundingBox(o));
-		//o->addComponent(new SpinComponent(1.0f));
-		objects.push_back(o);
-	}
+	//for (int i = 1; i < 20; i++) {
+	//	GameObject* o = new GameObject(i);
+	//	o->position = RandomVec3(i);
+	//	//o->position = glm::vec3(rand() % 5, 0, -1);
+	//	//o->position = glm::vec3(i*3, 0, -1);
+	//	o->addComponent(new MoveToComponent());
+	//	o->addComponent(new CubeComponent(0.2f));
+	//	//o->addComponent(new LetterModelComponent('B'));
+	//	o->getComponent<MoveToComponent>()->target = RandomVec3(7);
+	//	o->addComponent(new BoundingBox(o));
+	//	//o->addComponent(new SpinComponent(1.0f));
+	//	objects.push_back(o);
+	//}
 
-	//square = new GameObject(1);
-	//square->position = glm::vec3(-3, 1, 0);
-	//square->addComponent(new MoveToComponent());
-	//square->getComponent<MoveToComponent>()->target = glm::vec3(3, 0, 0);
-	//square->addComponent(new CubeComponent(1.0f));
-	//square->addComponent(new BoundingBox(square));
-	////square->addComponent(new SpinComponent(0.5));
-	//objects.push_back(square);
+	square = new GameObject(1);
+	square->position = glm::vec3(-3, 1, 0);
+	square->addComponent(new MoveToComponent());
+	square->getComponent<MoveToComponent>()->target = glm::vec3(-10, 0, 0);
+	square->addComponent(new CubeComponent(1.0f));
+	square->addComponent(new BoundingBox(square));
+	//square->addComponent(new SpinComponent(0.5));
+	objects.push_back(square);
 
 	//square2 = new GameObject(2);
 	//square2->position = glm::vec3(3, 0, 0);
@@ -328,14 +329,14 @@ void update()
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
+
 	for (auto& o : objects) {
 		for (auto& next : objects) {
-			
+
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
-				if (o->getComponent<BoundingBox>()->collide(next)) {
+				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
 					cout << "Collision" << endl;
-
 					//Change direction of the block
 					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target) + next->position;
 					cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
@@ -361,9 +362,14 @@ void update()
 				/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
 				o->getComponent<MoveToComponent>()->target = o->position;*/
 			}
-
-			o->update(deltaTime);
 		}
+		if (backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
+			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+			o->getComponent<MoveToComponent>()->target = oTarget;
+		}
+		o->update(deltaTime);
 	}
 
 	rotation += 0.01f;
@@ -424,16 +430,15 @@ void draw()
 	//for outlines only
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	textures[1]->bind();
+	tigl::shader->enableColor(false);
+	tigl::shader->enableTexture(true);
+	backgroundBox->draw();
+
 	for (auto& o : objects) {
 		tigl::shader->enableColor(true);
 		tigl::shader->enableTexture(false);
-		if (o == backgroundBox) {
-			textures[1]->bind();
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			o->draw();
-		}
-		else if (o == crosshair) {
+		if (o == crosshair) {
 			//glDisable(GL_DEPTH_TEST);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

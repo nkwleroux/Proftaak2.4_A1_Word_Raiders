@@ -29,7 +29,7 @@ void BoundingBox::addVector(glm::vec3 vector) {
 	max += vector;
 }
 
-bool BoundingBox::collide(GameObject* otherObject)
+bool BoundingBox::collideWithObject(GameObject* otherObject)
 {
 	glm::vec4 realMin = gameObject->modelMatrix * glm::vec4(min, 1.0f);
 	glm::vec4 realMax = gameObject->modelMatrix * glm::vec4(max, 1.0f);
@@ -37,11 +37,28 @@ bool BoundingBox::collide(GameObject* otherObject)
 	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
 	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
 
-	//Chech for collision
+	//Check for collision
 	return (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x) &&
 		(realMin.y <= otherRealMax.y && realMax.y >= otherRealMin.y) &&
 		(realMin.z <= otherRealMax.z && realMax.z >= otherRealMin.z);
 
+}
+
+bool BoundingBox::collideWithWall(GameObject* otherObject)
+{
+	glm::vec4 realMin = gameObject->modelMatrix * glm::vec4(min, 1.0f);
+	glm::vec4 realMax = gameObject->modelMatrix * glm::vec4(max, 1.0f);
+
+	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
+	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
+
+	//Check for collision
+	return !((realMin.x <= otherRealMin.x && realMax.x >= otherRealMax.x) &&
+		(realMin.y <= otherRealMin.y && realMax.y >= otherRealMax.y) &&
+		(realMin.z <= otherRealMin.z && realMax.z >= otherRealMax.z));
+	/*(otherRealMin.x <= realMin.x && otherRealMax.x >= realMin.x) &&
+		(otherRealMin.y <= realMin.y && otherRealMax.y >= realMin.y) &&
+		(otherRealMin.z <= realMin.z && otherRealMax.z >= realMin.z);*/
 }
 
 void BoundingBox::draw()

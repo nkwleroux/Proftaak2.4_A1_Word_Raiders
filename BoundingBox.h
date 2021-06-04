@@ -14,7 +14,8 @@ public:
 	~BoundingBox();
 	void addVector(glm::vec3 vector);
 
-	bool collide(GameObject* otherObject);
+	bool collideWithObject(GameObject* otherObject);
+	bool collideWithWall(GameObject* otherObject);
 
 	//virtual void setTexture(Texture* t) override;
 	virtual void draw() override;
