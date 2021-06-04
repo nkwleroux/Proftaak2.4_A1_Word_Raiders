@@ -176,6 +176,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Text\Text.cpp" />
     <ClCompile Include="tigl.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
     <ClCompile Include="VisionCamera.cpp" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="Text\stb_truetype.h" />
     <ClInclude Include="Text\Text.h" />
     <ClInclude Include="tigl.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="VisionCamera.h" />
   </ItemGroup>

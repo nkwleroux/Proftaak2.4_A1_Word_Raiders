@@ -11,6 +11,8 @@
 #include <iostream>
 #include <thread>
 #include <filesystem>
+#include <iomanip>
+
 #include "stb_image.h"
 #include "Texture.h"
 #include "FpsCam.h"
@@ -24,6 +26,8 @@
 #include "VisionCamera.h"
 #include <stdlib.h>
 
+
+#include "Timer.h"
 #include "Text/Text.h"
 
 using tigl::Vertex;
@@ -41,12 +45,15 @@ VisionCamera* VC;
 Text* textObject;
 Texture* textures[3];
 int ctr = 1;
-
+std::list<GameObject*> objects;
+double lastFrameTime = 0;
+GameObject* backgroundBox;
+GameObject* crosshair;
 int windowHeight = 1080;
 int windowWidth = 1920;
-
 double lastX, lastY;
 int textureIndex;
+Timer * timer;
 
 void init();
 void update();
@@ -99,10 +106,7 @@ int main(void)
 	return 0;
 }
 
-std::list<GameObject*> objects;
-double lastFrameTime = 0;
-GameObject* backgroundBox;
-GameObject* crosshair;
+
 
 void init()
 {
@@ -118,6 +122,8 @@ void init()
 	textures[2] = new Texture("Images/container.jpg");
 	textObject = new Text("c:/windows/fonts/times.ttf", 64.0);
 
+	timer = new Timer(90);
+	timer->start();
 
 	glfwGetCursorPos(window, &lastX, &lastY);
 
@@ -253,7 +259,10 @@ void draw()
 		models[i]->draw();
 	}
 
-	textObject->draw("Score:    Tijd:     Levens:    ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	//timer
+	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	//ctr++;
 
 
