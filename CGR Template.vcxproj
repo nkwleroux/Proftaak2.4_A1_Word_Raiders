@@ -175,6 +175,7 @@
     <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="tigl.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerJumper.cpp" />
     <ClCompile Include="Word.cpp" />
     <ClCompile Include="WordLoader.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tigl.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="Word.h" />
     <ClInclude Include="WordLoader.h" />

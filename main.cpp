@@ -25,6 +25,8 @@
 #include "Word.h"
 #include "WordLoader.h"
 #include <vector>
+#include <map>
+#include "Timer.h"
 
 
 using tigl::Vertex;
@@ -45,9 +47,12 @@ int hmax = 110, smax = 240, vmax = 255;
 
 VideoCapture cap(0);
 Point currentPoint;
-glm::vec4 currentColor;
-glm::vec4 red(1, 0, 0, 1);
-glm::vec4 green(0, 1, 0, 1);
+//glm::vec4 currentColor;
+//glm::vec4 red(1, 0, 0, 1);
+//glm::vec4 green(0, 1, 0, 1);
+Scalar currentColor;
+Scalar red(1, 0, 0, 1);
+Scalar green(0, 1, 0, 1);
 
 int currentCrosshair;
 Texture* textures[3];
@@ -61,23 +66,32 @@ int windowWidth = 1920;
 
 bool appIsRunning = true;
 
-int wordLength = 5;
+int currentWordLength = 5;
+DIFFICULTY currentDifficulty = easy;
 
 vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
-	//{0, 194, 75, 18, 246, 255} //red
-	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+	{0, 194, 75, 18, 246, 255} //red
+	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 };
 vector<Scalar> myColorValues{ {0, 255, 0} };
 
 double lastX, lastY;
 int textureIndex;
 
+std::vector<Word*> wordsToGuess;
+String shootedWord = "";
+std::vector<char> correctLetters(currentWordLength);
+Word* currentWord;
+int chosenWordsAmount = 0;
+
 void init();
 void update();
 void draw();
 void closedAction();
 void openAction();
+void checkWord();
+void duringGame();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -131,7 +145,7 @@ Point getContours()
 
 			String objectType;
 
-			if (area > 1000)
+			if (area > 500)
 			{
 				float peri = arcLength(contours[i], true);
 				approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
@@ -141,7 +155,7 @@ Point getContours()
 				myPoint.y = boundRect[i].y + boundRect[i].height / 2;
 
 				drawContours(img, conPoly, i, Scalar(255, 0, 255), 2);
-				rectangle(img, boundRect[i].tl(), boundRect[i].br(), Scalar(0, 255, 0), 5);
+				rectangle(img, boundRect[i].tl(), boundRect[i].br(), currentColor, 5);
 			}
 		}
 	}
@@ -164,15 +178,18 @@ void findColor()
 
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			handDetected = true;
+			cout << "object detected: ";
 			if (i == 0) {
 				openHand = true;
 				currentColor = green;
 				currentCrosshair = i;
+				cout << "openhand" << endl;
 			}
 			else if (i == 1) {
 				openHand = false;
 				currentColor = red;
 				currentCrosshair = i;
+				cout << "closedhand" << endl;
 			}
 			//currentCrosshair = 2;
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
@@ -180,6 +197,7 @@ void findColor()
 		}
 		else {
 			handDetected = false;
+			cout << "No object detected!" << endl;
 		}
 	}
 }
@@ -204,8 +222,7 @@ void display_image()
 
 int main(void)
 {
-	/*thread t1(openAction);
-	thread t2(closedAction);
+	
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
@@ -222,6 +239,9 @@ int main(void)
 
 	init();
 
+	//thread t1(openAction);
+	//thread t2(closedAction);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		update();
@@ -232,42 +252,15 @@ int main(void)
 
 	glfwTerminate();
 
-	return 0;*/
-
-	WordLoader* wordloader = new WordLoader();
-	//wordloader->loadWords("fiveletterwords", 20);
-	//wordloader->printWords(wordloader->loadWords(5, easy));
-	//wordloader->printWords(wordloader->loadWords(5, easy));
-	std::vector<Word*> wordsToGuess = wordloader->loadWords(7, hard);
-	int size = wordsToGuess.size();
-	char enteredKey;
-	string chosenWord;
-	while (size > 0) {
-		Word* currentWord = wordsToGuess.at(size-1);
-		chosenWord = currentWord->getFirstLetter();
-		currentWord->writeLetters();
-		for (int i = 0; i < hard-1; i ++) {
-			cout << chosenWord << endl;
-			cin >> enteredKey;
-			chosenWord += enteredKey;
-		}
-
-		if (chosenWord == currentWord->getWord()) {
-			cout << "Correct" << endl;
-			size--;
-			delete currentWord; currentWord = nullptr;
-			wordsToGuess.pop_back();
-		}
-		else {
-			cout << "Incorrect, try again!" << endl;
-		}
-	}
+	return 0;
 }
 
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
 GameObject* crosshair;
+WordLoader* wordLoader;
+Timer* oneSecondTimer;
 
 void init()
 {
@@ -288,7 +281,14 @@ void init()
 
 	glfwGetCursorPos(window, &lastX, &lastY);
 
+	wordLoader = new WordLoader();
+	wordsToGuess = wordLoader->loadWords(currentWordLength, currentDifficulty);
+	currentWord = wordsToGuess.at(chosenWordsAmount);
+
 	camera = new FpsCam(window);
+
+	oneSecondTimer = new Timer(1);
+	oneSecondTimer->start();
 
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
@@ -325,6 +325,7 @@ void update()
 	findColor();
 	imshow("Video", img);
 
+	duringGame();
 	//Dont forget to remove camera update so the user cant move
 	camera->update(window, &lastX, &lastY, &textureIndex);
 
@@ -361,14 +362,14 @@ void update()
 	rotation += 0.01f;
 }
 
-
+int currentWordIndex = 0;
 
 void closedAction()
 {
 	while (appIsRunning)
 	{
 		if (handDetected && !openHand) {
-			cout << currentPoint.x << "," << currentPoint.y << endl;
+			
 		}
 		std::this_thread::sleep_for(1000ms);
 
@@ -379,11 +380,9 @@ void openAction()
 {
 	while (appIsRunning)
 	{
-		if (handDetected && openHand) {
-			//cout << "Open hand detected!" << endl;
-			cout << currentPoint.x << "," << currentPoint.y << endl;
-		}
-		std::this_thread::sleep_for(10ms);
+		
+		//cout << "1 second passed!" << endl;
+		std::this_thread::sleep_for(500ms);
 	}
 }
 
@@ -457,4 +456,70 @@ void draw()
 	}
 
 	glDisable(GL_DEPTH_TEST);
+}
+
+
+
+void clearVector() {
+	for (int i = 0; i < correctLetters.size(); i++) {
+		correctLetters.at(i) = '.';
+	}
+}
+
+void showWord() {
+	cout << "Founded letters: ";
+	for (int i = 0; i < correctLetters.size(); i++) {
+		cout << correctLetters.at(i);
+	}
+	cout << endl;
+}
+
+void checkWord() {
+	int correctLettersAmount = 0;
+	for (int i = 0; i < currentWordLength; i++) {
+		if (currentWord->getWord()[i] == shootedWord[i]) {
+			//Ct << currentWord->getWord()[i];
+			correctLetters.at(i) = currentWord->getWord()[i];
+			correctLettersAmount++;
+		}
+		else {
+			if (!(correctLetters.at(i) >= 65 && correctLetters.at(i <= 90))) {
+				correctLetters.at(i) = '.';
+			}
+		}
+	}
+
+	if (correctLettersAmount == currentWordLength) {
+		chosenWordsAmount++;
+		if (chosenWordsAmount < currentDifficulty) {
+			currentWord = wordsToGuess.at(chosenWordsAmount);
+			currentWordIndex = 0;
+			shootedWord = "";
+			clearVector();
+		}
+	}
+	else {
+		showWord();
+	}
+}
+
+void duringGame() {
+	if (handDetected && openHand) {
+		if (oneSecondTimer->hasFinished()) {
+			oneSecondTimer->start();
+			if (chosenWordsAmount <= currentDifficulty) {
+				if (currentWordIndex < currentWordLength) {
+					shootedWord += currentWord->getWord()[currentWordIndex];
+					currentWordIndex++;
+					cout << shootedWord << endl;
+				}
+				else {
+					checkWord();
+				}
+			}
+			else {
+				cout << "No words left!" << endl;
+			}
+		}
+	}
 }
