@@ -29,6 +29,7 @@ public:
 	std::list<Component*> getComponents();
 	void update(float elapsedTime);
 	void draw(const glm::mat4& = glm::mat4(1.0f));
+	friend bool operator==(const GameObject object1, const GameObject object2);
 
 	template<class T>
 	T* getComponent()

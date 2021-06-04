@@ -3,6 +3,7 @@
 #include "Component.h"
 #include <list>
 #include <glm/glm.hpp>
+#include <vector>
 
 class DrawComponent : public Component
 {

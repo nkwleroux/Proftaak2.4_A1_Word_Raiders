@@ -281,23 +281,20 @@ void init()
 	square->position = glm::vec3(2, -3, 1);
 	square->addComponent(new MoveToComponent());
 	square->addComponent(new CubeComponent(1.0f));
-	square->addComponent(new BoundingBox());
+	//square->addComponent(new BoundingBox());
 	objects.push_back(square);
 
 	GameObject* square2 = new GameObject(1);
 	square2->position = glm::vec3(3, 4, 5);
 	square2->addComponent(new MoveToComponent());
 	square2->addComponent(new CubeComponent(1.0f));
-	square2->addComponent(new BoundingBox());
+	//square2->addComponent(new BoundingBox());
 	objects.push_back(square2);
 
-
-	glm::unProject();
-
-	if (square->getComponent<BoundingBox>()->collide(square2))
+	/*if (square->getComponent<BoundingBox>()->collide(square2))
 	{
 		std::cout << "Collision!" << std::endl;
-	}
+	}*/
 
 }
 
@@ -318,7 +315,8 @@ void update()
 
 	for (auto& o : objects) {
 
-		o->getComponent<BoundingBox>()->collide(std::next(o));
+		if(o.)
+		//o->getComponent<BoundingBox>()->collide(std::next(o));
 
 
 		if (o != backgroundBox && o != crosshair) {
@@ -353,11 +351,6 @@ void openAction()
 		std::this_thread::sleep_for(10ms);
 	}
 }
-
-bool isOverlap(BoundingBox a, BoundingBox b) {
-	return (a.minX <= b.maxX && a.maxX >= b.minX) && (a.minY <= b.maxY && a.maxY >= b.minY) && (a.minZ <= b.maxZ && a.maxZ >= b.minZ);
-}
-
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);

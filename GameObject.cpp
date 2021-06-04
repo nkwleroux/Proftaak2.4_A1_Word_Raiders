@@ -27,6 +27,10 @@ std::list<Component*> GameObject::getComponents()
 	return components;
 }
 
+bool operator==(const GameObject object1, const GameObject object2) {
+
+}
+
 void GameObject::draw(const glm::mat4 &parentMatrix)
 {
 	if (!drawComponent)
