@@ -136,12 +136,14 @@ void init()
 	wordLoader = new WordLoader();
 	wordsToGuess = wordLoader->loadWords(currentWordLength, currentDifficulty);
 	currentWord = wordsToGuess.at(chosenWordsAmount);
+	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
-	oneSecondTimer = new Timer(1);
-	oneSecondTimer->start();
 
 	timer = new Timer(90);
 	timer->start();
+
+	oneSecondTimer = new Timer(1);
+	oneSecondTimer->start();
 
 	glfwGetCursorPos(window, &lastX, &lastY);
 
@@ -287,7 +289,7 @@ void draw()
 	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	//ctr++;
-
+	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
 	glDisable(GL_DEPTH_TEST);
 }
@@ -354,6 +356,7 @@ void checkWord() {
 }
 
 void duringGame() {
+	
 	if (VC->redDetected) {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
@@ -363,6 +366,7 @@ void duringGame() {
 					shootedWord += currentWord->getWord()[currentWordIndex];
 					currentWordIndex++;
 					cout << shootedWord << endl;
+					
 				}
 				else {
 					checkWord();
