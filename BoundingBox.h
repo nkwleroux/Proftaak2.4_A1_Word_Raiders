@@ -4,7 +4,7 @@
 #include "DrawComponent.h"
 
 #include <vector>
-class BoundingBox : public Component
+class BoundingBox : public DrawComponent
 {
 
 public:
@@ -15,5 +15,12 @@ public:
 	void addVector(glm::vec3 vector);
 
 	bool collide(GameObject* otherObject);
+
+	//virtual void setTexture(Texture* t) override;
+	virtual void draw() override;
+
+
+	// Inherited via DrawComponent
+	virtual std::vector<glm::vec3> getVertices() override;
 
 };

@@ -41,3 +41,13 @@ bool BoundingBox::collide(GameObject* otherObject)
 		(realMin.z <= otherRealMax.z && realMax.z >= otherRealMin.z);
 
 }
+
+void BoundingBox::draw()
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+std::vector<glm::vec3> BoundingBox::getVertices()
+{
+	return std::vector<glm::vec3>();
+}
