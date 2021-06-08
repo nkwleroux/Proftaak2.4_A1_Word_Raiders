@@ -19,8 +19,8 @@ private:
 
 	vector<vector<int>> myColors{
 	{44, 52, 75, 66, 118, 255}, //green
-	//{0, 194, 75, 18, 246, 255} //red
-	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+	{0, 194, 75, 18, 246, 255} //red
+	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 	};
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -28,16 +28,15 @@ private:
 	glm::vec4 red(1, 0, 0, 1);
 	glm::vec4 green(0, 1, 0, 1);*/
 
-	bool openHand = true;
-	bool handDetected = false;
+	
 
 public:
-
 	Point currentPoint;
 	bool appIsRunning = true;
 	int currentCrosshair = 0;
 	float videoHeight;
 	float videoWidth;
+	bool redDetected = false;
 
 	VisionCamera(VideoCapture vidCap);
 
@@ -47,8 +46,7 @@ public:
 	Point getContours();
 	void findColor();
 	void displayImage(); //delete maybe - not used
-	void closedAction();
-	void openAction();
 	void update();
+	Point getCrossHairCoords();
 };
 

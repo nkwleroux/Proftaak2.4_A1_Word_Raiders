@@ -11,6 +11,8 @@
 #include <iostream>
 #include <thread>
 #include <filesystem>
+#include <iomanip>
+
 #include "stb_image.h"
 #include "Texture.h"
 #include "FpsCam.h"
@@ -24,6 +26,12 @@
 #include "VisionCamera.h"
 #include <stdlib.h>
 
+
+#include "Timer.h"
+#include "Text/Text.h"
+#include "Word.h"
+#include "WordLoader.h"
+
 using tigl::Vertex;
 using namespace std;
 using namespace cv;
@@ -36,18 +44,36 @@ GLFWwindow* window;
 FpsCam* camera;
 std::vector<ObjModel*> models;
 VisionCamera* VC;
-
+Text* textObject;
 Texture* textures[3];
-
+int ctr = 1;
+std::list<GameObject*> objects;
+double lastFrameTime = 0;
+GameObject* backgroundBox;
+GameObject* crosshair;
 int windowHeight = 1080;
 int windowWidth = 1920;
-
 double lastX, lastY;
 int textureIndex;
+Timer * timer;
+Timer* oneSecondTimer;
+WordLoader* wordLoader;
+
+int currentWordLength = 5;
+DIFFICULTY currentDifficulty = easy;
+int currentWordIndex = 0;
+int chosenWordsAmount = 0;
+std::vector<Word*> wordsToGuess;
+std::vector<char> correctLetters(currentWordLength);
+Word* currentWord;
+String shootedWord = "";
 
 void init();
+void rayCast(int xOrigin, int yOrigin);
 void update();
 void draw();
+void checkWord();
+void duringGame();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -58,9 +84,6 @@ int main(void)
 {
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
-	
-	thread t1(&VisionCamera::openAction,VC);
-	thread t2(&VisionCamera::closedAction,VC);
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
@@ -70,6 +93,7 @@ int main(void)
 		glfwTerminate();
 		throw "Could not initialize glwf";
 	}
+
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -87,19 +111,13 @@ int main(void)
 
 	VC->appIsRunning = false;
 
-	t1.join();
-	t2.join();
-
-	glfwTerminate();	
+	glfwTerminate();
 	destroyAllWindows();
 
 	return 0;
 }
 
-std::list<GameObject*> objects;
-double lastFrameTime = 0;
-GameObject* backgroundBox;
-GameObject* crosshair;
+
 
 void init()
 {
@@ -113,6 +131,19 @@ void init()
 	textures[0] = new Texture("Images/closeHand.png");
 	textures[1] = new Texture("Images/openHand.png");
 	textures[2] = new Texture("Images/container.jpg");
+	textObject = new Text("c:/windows/fonts/times.ttf", 64.0);
+
+	wordLoader = new WordLoader();
+	wordsToGuess = wordLoader->loadWords(currentWordLength, currentDifficulty);
+	currentWord = wordsToGuess.at(chosenWordsAmount);
+	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+
+
+	timer = new Timer(90);
+	timer->start();
+
+	oneSecondTimer = new Timer(1);
+	oneSecondTimer->start();
 
 	glfwGetCursorPos(window, &lastX, &lastY);
 
@@ -126,6 +157,7 @@ void init()
 	crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
 	objects.push_back(crosshair);
+
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
 	for (int i = 1; i < 6; i++) {
@@ -142,11 +174,13 @@ void init()
 	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
 	//models.push_back(new ObjModel("resources/scene.obj"));
 	//models.push_back(new ObjModel("resources/cube2.obj"));
-	
+
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
 }
 
 float rotation = 0;
+
+
 
 void update()
 {
@@ -155,13 +189,15 @@ void update()
 	imshow("Video", img);*/
 
 	VC->update();
-
+	duringGame();
 	//Dont forget to remove camera update so the user cant move
 	camera->update(window, &lastX, &lastY, &textureIndex);
 
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
+
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 
 	for (auto& o : objects) {
 		if (o != backgroundBox && o != crosshair) {
@@ -196,6 +232,12 @@ void draw()
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//
+	//
+
+	//Drawing text
+
+
 
 	for (auto& o : objects) {
 		if (o == backgroundBox) {
@@ -219,13 +261,13 @@ void draw()
 			glDisable(GL_BLEND);
 		}
 		else {
-			
+
 			tigl::shader->enableColor(true);
 			tigl::shader->enableTexture(false);
 			o->draw();
 		}
 	}
-	
+
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
 
@@ -242,5 +284,97 @@ void draw()
 		models[i]->draw();
 	}
 
+	//timer
+	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	//ctr++;
+	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+
 	glDisable(GL_DEPTH_TEST);
+}
+
+void rayCast(int xOrigin, int yOrigin)
+{
+	//RAY ray = { glm::vec3(xOrigin, yOrigin, 0), glm::vec3(250, 250, 300)};
+	// glm::vec3 position;
+	// glm::vec3 normal;
+	// glm::vec4 color;
+	// glm::vec2 texcoord;
+	//
+	//DRAWING LINES
+	glLineWidth(12.0);
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(xOrigin, yOrigin, 0);
+	glVertex3f(400, 400, 400);
+	glEnd();
+	//
+}
+
+void clearVector() {
+	for (int i = 0; i < correctLetters.size(); i++) {
+		correctLetters.at(i) = '.';
+	}
+}
+
+void showWord() {
+	cout << "Founded letters: ";
+	for (int i = 0; i < correctLetters.size(); i++) {
+		cout << correctLetters.at(i);
+	}
+	cout << endl;
+}
+
+void checkWord() {
+	int correctLettersAmount = 0;
+	for (int i = 0; i < currentWordLength; i++) {
+		if (currentWord->getWord()[i] == shootedWord[i]) {
+			//Ct << currentWord->getWord()[i];
+			correctLetters.at(i) = currentWord->getWord()[i];
+			correctLettersAmount++;
+		}
+		else {
+			if (!(correctLetters.at(i) >= 65 && correctLetters.at(i <= 90))) {
+				correctLetters.at(i) = '.';
+			}
+		}
+	}
+
+	if (correctLettersAmount == currentWordLength) {
+		chosenWordsAmount++;
+		if (chosenWordsAmount < currentDifficulty) {
+			currentWord = wordsToGuess.at(chosenWordsAmount);
+			currentWordIndex = 0;
+			shootedWord = "";
+			clearVector();
+		}
+	}
+	else {
+		showWord();
+	}
+}
+
+void duringGame() {
+	
+	if (VC->redDetected) {
+		if (oneSecondTimer->hasFinished()) {
+			oneSecondTimer->start();
+			VC->redDetected = false;
+			if (chosenWordsAmount <= currentDifficulty) {
+				if (currentWordIndex < currentWordLength) {
+					shootedWord += currentWord->getWord()[currentWordIndex];
+					currentWordIndex++;
+					cout << shootedWord << endl;
+					
+				}
+				else {
+					checkWord();
+				}
+			}
+			else {
+				cout << "No words left!" << endl;
+			}
+		}
+	}
 }
