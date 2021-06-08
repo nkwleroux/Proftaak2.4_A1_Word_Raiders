@@ -136,13 +136,6 @@ int main(void)
 GameObject* square;
 GameObject* square2;
 
-glm::vec3 RandomVec3(float max) {
-	float x = (float(rand()) / float((RAND_MAX)) * max);
-	float y = (float(rand()) / float((RAND_MAX)) * max);
-	float z = (float(rand()) / float((RAND_MAX)) * max);
-	return glm::vec3(x, y, 0);
-}
-
 void init()
 {
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -230,13 +223,20 @@ void init()
 	initSkybox();
 }
 
-float rotation = 0;
-
-
+glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
+	float x = 0, y = 0, z = 0;
+	if (xCollide)
+		x = (float(rand()) / float((RAND_MAX)) * max);
+	if (yCollide)
+		y = (float(rand()) / float((RAND_MAX)) * max);
+	if (zCollide)
+		z = (float(rand()) / float((RAND_MAX)) * max);
+	return glm::vec3(x, y, 0);
+}
 
 void update()
 {
-	VC->update();
+	//VC->update();
 	duringGame();
 	//Dont forget to remove camera update so the user cant move
 	camera->update(window, &lastX, &lastY, &textureIndex);
@@ -254,29 +254,55 @@ void update()
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
 				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
-					cout << "Box Collision" << endl;
-					//Change direction of the block
-					//glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target);
-					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
-					//currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
-					//currTarget = RandomVec3(2);
+
+					//BoundingBox* nextBox = next->getComponent<BoundingBox>();
+					BoundingBox* oBox = o->getComponent<BoundingBox>();
+
+					//glm::vec3 differenceVec = glm::vec3(next->position.x - o->position.x, next->position.y - o->position.y, next->position.z - o->position.z);
+					//cout << "difference: " << differenceVec.x << "\t" << differenceVec.y << "\t" << differenceVec.z << "\n";
+					//glm::vec3 dimensions = (oBox->max - oBox->min);
+					//dimensions = glm::vec3(dimensions.x / 2.0f, dimensions.y / 2.0f, dimensions.z / 2.0f);
+					//cout << "dimensions: " << dimensions.x << "\t" << dimensions.y << "\t" << dimensions.z << "\n";
+					// 
+					//cout <<"dimensions" << dimensions.x << "\t" << dimensions.y << "\t" << dimensions.z << "\n";
+					//o->position -= differenceVec - dimensions;
+					//cout << "pos: " << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
+					//o->position -= differenceVec;
+
+
+
+					//cout << next->id << " collide with " << o->id << "\n";
+
+					glm::vec3 temp = glm::vec3(0);
+
+					if (oBox->collisionX) {
+						temp += glm::vec3(next->position.x - o->position.x, 0, 0);
+					}
+					if (oBox->collisionY) {
+
+						temp += glm::vec3(0, next->position.y - o->position.y, 0);
+					}
+					if (oBox->collisionX) {
+						temp += glm::vec3(0, 0, next->position.z - o->position.z);
+					}
+
+					//cout << "pos before: " << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
+
+					o->position -= temp / 8.0f;
+
+					//cout << "pos after: " << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
 
 					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-					//oTarget = RandomVec3(3);
+					oTarget -= RandomVec3(10, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
 
 					//next->getComponent<MoveToComponent>()->target = currTarget;
-					//o->getComponent<MoveToComponent>()->target = oTarget;
+					o->getComponent<MoveToComponent>()->target = oTarget;
 
-					BoundingBox* nextBox = next->getComponent<BoundingBox>();
-					BoundingBox* oBox = o->getComponent<BoundingBox>();
-					//cout << o->position.x << " " << o->position.y <<  " " << o->position.z << endl;
-					//cout << next->position.x <<  " " << next->position.y << " " << next->position.z << endl;
-				
-					glm::vec3 differenceVec = glm::vec3(next->position.x - o->position.x, next->position.y - o->position.y, next->position.z - o->position.z);
-
-					o->position -= differenceVec;
+					oBox->collisionX = false;
+					oBox->collisionZ = false;
+					oBox->collisionY = false;
 					break;
 
 				}
@@ -289,10 +315,11 @@ void update()
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 			o->getComponent<MoveToComponent>()->target = oTarget;
 		}
+		if (o->getComponent<MoveToComponent>()->target == o->position) {
+			o->getComponent<MoveToComponent>()->target = RandomVec3(25,true, true, false);
+		}
 		o->update(deltaTime);
 	}
-
-	rotation += 0.01f;
 }
 
 void draw()
@@ -363,7 +390,7 @@ void draw()
 	tigl::shader->enableColor(false);
 	glEnable(GL_TEXTURE_2D);
 
-	skybox(textureSkybox);
+	//skybox(textureSkybox);
 
 	/*for each (WallComponent var in collection_to_loop)
 	{
@@ -501,15 +528,15 @@ void createLetterCubes()
 {
 	objects.clear();
 	for (int i = 0; i < currentWord->getLetters().size(); i++) {
-		GameObject* o = new GameObject(0);
-		
+		GameObject* o = new GameObject(i);
+
 		o->addComponent(new LetterModelComponent(currentWord->getLetters().at(i)));
 		o->addComponent(new BoundingBox(o));
 		o->addComponent(new MoveToComponent());
 		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
 		glm::vec3 pos = glm::vec3(0, 0, 0);
 		o->position = pos;
-		o->scale = glm::vec3(0.5, 0.5, 0.5);
+		o->scale = glm::vec3(1.0f);
 		o->getComponent<MoveToComponent>()->target = pos;
 		o->draw();
 
@@ -527,7 +554,7 @@ void createLetterCubes()
 					//next->update(0);
 				}
 			}
-		}	
+		}
 		objects.push_back(o);
 	}
 }

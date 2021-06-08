@@ -38,10 +38,11 @@ bool BoundingBox::collideWithObject(GameObject* otherObject)
 	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
 
 	//Check for collision
-	return (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x) &&
-		(realMin.y <= otherRealMax.y && realMax.y >= otherRealMin.y) &&
-		(realMin.z <= otherRealMax.z && realMax.z >= otherRealMin.z);
 
+	collisionX = (realMin.x <= otherRealMax.x && realMax.x >= otherRealMin.x);
+	collisionY = (realMin.y <= otherRealMax.y && realMax.y >= otherRealMin.y); 
+	collisionZ = (realMin.z <= otherRealMax.z && realMax.z >= otherRealMin.z);
+	 return collisionX && collisionY && collisionZ;
 }
 
 bool BoundingBox::collideWithWall(GameObject* otherObject)
