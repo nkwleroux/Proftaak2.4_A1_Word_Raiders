@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Crosshair.cpp" />
     <ClCompile Include="CrosshairComponent.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Crosshair.h" />
     <ClInclude Include="CrosshairComponent.h" />
     <ClInclude Include="CubeComponent.h" />
     <ClInclude Include="DrawComponent.h" />

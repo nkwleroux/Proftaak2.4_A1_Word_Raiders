@@ -31,6 +31,7 @@
 #include "Text/Text.h"
 #include "Word.h"
 #include "WordLoader.h"
+#include "Crosshair.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -50,7 +51,7 @@ int ctr = 1;
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
-GameObject* crosshair;
+Crosshair* crosshair;
 Texture* textureSkybox[6];
 GameObject* skyBoxWalls[6];
 
@@ -147,8 +148,6 @@ void init()
 			}
 		});
 
-	textures[0] = new Texture("Images/closeHand.png");
-	textures[1] = new Texture("Images/openHand.png");
 	textures[2] = new Texture("Images/container.jpg");
 	textObject = new Text("c:/windows/fonts/times.ttf", 64.0);
 
@@ -158,12 +157,10 @@ void init()
 	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
 	timer = new Timer(90);
-	timer->start();
-
 	oneSecondTimer = new Timer(1);
-	oneSecondTimer->start();
 
 	glfwGetCursorPos(window, &lastX, &lastY);
+	crosshair->update(lastX, lastY);
 
 	camera = new FpsCam(window);
 
@@ -173,11 +170,7 @@ void init()
 	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
 	backgroundBox->addComponent(new BoundingBox(backgroundBox));
 
-	/*crosshair = new GameObject(10);
-	crosshair->addComponent(new CrosshairComponent(0.5));
-	objects.push_back(crosshair);*/
-	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
-
+	
 	//for (int i = 1; i < 20; i++) {
 	//	GameObject* o = new GameObject(i);
 	//	o->position = RandomVec3(i);
@@ -215,6 +208,8 @@ void init()
 	//objects.push_back(square2);
 
 	initSkybox();
+
+	crosshair = new Crosshair();
 }
 
 void update()
@@ -265,6 +260,8 @@ void update()
 		}
 		o->update(deltaTime);
 	}
+
+	crosshair->update(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 }
 
 void draw()
@@ -294,50 +291,12 @@ void draw()
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableColor(false);
 	glEnable(GL_TEXTURE_2D);
-	backgroundBox->draw();
+	//backgroundBox->draw();
 	glDisable(GL_TEXTURE_2D);
 
 	for (auto& o : objects) {
-		tigl::shader->enableColor(true);
-		tigl::shader->enableTexture(false);
-		if (o == crosshair) {
-			//glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			//		/*tigl::shader->enableColor(true);
-			//		tigl::shader->enableTexture(false);*/
-
-			//		tigl::shader->enableColor(false);
-			//		tigl::shader->enableTexture(true);
-			//		textures[VC->currentCrosshair]->bind();
-			//		o->draw(modelMatrix);
-
-			glDisable(GL_BLEND);
-		}
-		else {
-
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-			o->draw();
-		}
+			//o->draw();
 	}
-
-	//glLoadIdentity();
-	//tigl::shader->enableTexture(true);
-	//tigl::shader->enableColor(false);
-	//glEnable(GL_TEXTURE_2D);
-	//skybox(textureSkybox);
-
-	/*for (int i = 0; i < 6; i++)
-	{
-		GameObject* currentWall = skyBoxWalls[i];
-		currentWall->getComponent<WallComponent>
-		skyBoxWalls[i]->texture = textureSkybox[i];
-
-	}*/
-		
-	
 
 	//timer
 	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
@@ -347,6 +306,8 @@ void draw()
 	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
 	glDisable(GL_DEPTH_TEST);
+
+	crosshair->draw();
 }
 
 void rayCast(int xOrigin, int yOrigin)

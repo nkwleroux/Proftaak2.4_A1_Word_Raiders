@@ -10,7 +10,7 @@
 
 Timer::Timer(double durationInSeconds) {
     this->duration = durationInSeconds;
-    this->startTime = std::chrono::steady_clock::now();
+    start();
 }
 
 Timer::~Timer()
