@@ -1,4 +1,5 @@
 #include "SceneSettings.h"
+#include "WordLoader.h"
 
 #include "Texture.h"
 #include "tigl.h"
@@ -13,8 +14,8 @@ extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 Text* wordAmountText;
-int wordAmount = 5;
-int wordLength = 5;
+extern int currentWordLength;
+extern int currentWordAmount;
 
 SceneSettings::SceneSettings()
 {
@@ -30,28 +31,28 @@ SceneSettings::SceneSettings()
 				currentScene = scenes[Scenes::STARTUP];
 			}
 			else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-				wordAmount--;
-				if (wordAmount < 1) {
-					wordAmount = 9;
-				}
-				
+				currentWordLength--;
+				if (currentWordLength < 5) {
+					currentWordLength = 7;
+				}	
 			}
 			else if (key == GLFW_KEY_G && action == GLFW_PRESS) {
-				wordAmount++;
-				if (wordAmount > 9) {
-					wordAmount = 1;
+				currentWordLength++;
+				if (currentWordLength > 7) {
+					currentWordLength = 5;
 				}
 			}
 			else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-				wordLength--;
-				if (wordLength < 5) {
-					wordLength = 7;
+				
+				currentWordAmount--;
+				if (currentWordAmount < 1) {
+					currentWordAmount = 9;
 				}
 			}
 			else if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-				wordLength++;
-				if (wordLength > 7) {
-					wordLength = 5;
+				currentWordAmount++;
+				if (currentWordAmount > 9) {
+					currentWordAmount = 1;
 				}
 			}
 		});
@@ -78,8 +79,8 @@ void SceneSettings::draw()
 	tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, -1, 0), glm::vec2(0, 0)));
 	tigl::end();
 
-	wordAmountText->draw(intToString(wordAmount), 1920 / 2 + 210, 1080 / 2 - 125, glm::vec4(0.0f, 0.0f, 0.0f, 0));
-	wordAmountText->draw(intToString(wordLength), 1920 / 2 + 210, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	wordAmountText->draw(intToString(currentWordLength), 1920 / 2 + 210, 1080 / 2 - 125, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	wordAmountText->draw(intToString(currentWordAmount), 1920 / 2 + 210, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 }
 
 void SceneSettings::update()
