@@ -7,5 +7,6 @@ class LetterModelComponent :
 public:
     LetterModelComponent(char letter);
     ~LetterModelComponent();
+
 };
 
