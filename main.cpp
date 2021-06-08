@@ -11,7 +11,6 @@
 #include <thread>
 #include <filesystem>
 #include <iomanip>
-
 #include "stb_image.h"
 #include "Texture.h"
 #include "FpsCam.h"
@@ -27,9 +26,7 @@
 #include "LetterModelComponent.h"
 #include "ObjectModelComponent.h"
 #include "BoundingBox.h"
-#include "WallComponent.h"
-
-
+#include "SkyboxComponent.h"
 #include "Timer.h"
 #include "Text/Text.h"
 #include "Word.h"
@@ -55,13 +52,13 @@ double lastFrameTime = 0;
 GameObject* backgroundBox;
 GameObject* crosshair;
 Texture* textureSkybox[6];
-//WallComponent* skybox[6];
+GameObject* skyBoxWalls[6];
 
 int windowHeight = 1080;
 int windowWidth = 1920;
 double lastX, lastY;
 int textureIndex;
-Timer * timer;
+Timer* timer;
 Timer* oneSecondTimer;
 WordLoader* wordLoader;
 
@@ -131,7 +128,6 @@ int main(void)
 	return 0;
 }
 
-
 GameObject* square;
 GameObject* square2;
 
@@ -161,7 +157,6 @@ void init()
 	currentWord = wordsToGuess.at(chosenWordsAmount);
 	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
-
 	timer = new Timer(90);
 	timer->start();
 
@@ -174,9 +169,9 @@ void init()
 
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new CubeComponent(7));
+	//backgroundBox->addComponent(new CubeComponent(10));
+	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
 	backgroundBox->addComponent(new BoundingBox(backgroundBox));
-	//objects.push_back(backgroundBox);
 
 	/*crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
@@ -202,36 +197,25 @@ void init()
 	//models.push_back(new ObjModel("resources/cube2.obj"));
 
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
+
 	square = new GameObject(1);
 	square->position = glm::vec3(-3, 1, 0);
 	square->addComponent(new MoveToComponent());
-	square->getComponent<MoveToComponent>()->target = glm::vec3(-10, 0, 0);
+	square->getComponent<MoveToComponent>()->target = glm::vec3(-25, 0, 0);
 	square->addComponent(new CubeComponent(1.0f));
 	square->addComponent(new BoundingBox(square));
-	//square->addComponent(new SpinComponent(0.5));
 	objects.push_back(square);
 
 	//square2 = new GameObject(2);
-	//square2->position = glm::vec3(3, 0, 0);
+	//square2->position = glm::vec3(-3, 1, 0);
 	//square2->addComponent(new MoveToComponent());
-	//square2->getComponent<MoveToComponent>()->target = glm::vec3(-3, 0, 0);
+	//square2->getComponent<MoveToComponent>()->target = glm::vec3(-10, 0, 0);
 	//square2->addComponent(new CubeComponent(1.0f));
 	//square2->addComponent(new BoundingBox(square2));
-	////square2->addComponent(new SpinComponent(1));
 	//objects.push_back(square2);
-
-	/*if (square->getComponent<BoundingBox>()->collide(square2))
-	{
-		std::cout << "Collision!" << std::endl;
-	}*/
-
 
 	initSkybox();
 }
-
-float rotation = 0;
-
-
 
 void update()
 {
@@ -253,13 +237,13 @@ void update()
 				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
 					cout << "Collision" << endl;
 					//Change direction of the block
-					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target) + next->position;
+					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target);
 					cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
 					currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
 					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n\n";
 					//currTarget = RandomVec3(2);
 
-					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target) + o->position;
+					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 					cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n\n";
@@ -272,13 +256,8 @@ void update()
 
 				}
 			}
-
-			if (o != backgroundBox && o != crosshair) {
-				/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-				o->getComponent<MoveToComponent>()->target = o->position;*/
-			}
 		}
-		if (backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
@@ -286,8 +265,6 @@ void update()
 		}
 		o->update(deltaTime);
 	}
-
-	rotation += 0.01f;
 }
 
 void draw()
@@ -302,30 +279,23 @@ void draw()
 	tigl::shader->setProjectionMatrix(projection);
 	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
 	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	tigl::shader->setModelMatrix(glm::mat4(1.0f));
+	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	//glm::mat4 modelMatrix(1.0f);
 	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
 	//tigl::shader->setModelMatrix(modelMatrix);
 
-	/*tigl::shader->setLightCount(1);
-	tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
-	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
-	tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
-	tigl::shader->setLightDirectional(0, true);
-	tigl::shader->enableLighting(true);*/
-
-
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//
-	//
 
-	textures[1]->bind();
-	tigl::shader->enableColor(false);
+
+	glLoadIdentity();
 	tigl::shader->enableTexture(true);
+	tigl::shader->enableColor(false);
+	glEnable(GL_TEXTURE_2D);
 	backgroundBox->draw();
+	glDisable(GL_TEXTURE_2D);
 
 	for (auto& o : objects) {
 		tigl::shader->enableColor(true);
@@ -335,13 +305,13 @@ void draw()
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//		/*tigl::shader->enableColor(true);
-	//		tigl::shader->enableTexture(false);*/
+			//		/*tigl::shader->enableColor(true);
+			//		tigl::shader->enableTexture(false);*/
 
-	//		tigl::shader->enableColor(false);
-	//		tigl::shader->enableTexture(true);
-	//		textures[VC->currentCrosshair]->bind();
-	//		o->draw(modelMatrix);
+			//		tigl::shader->enableColor(false);
+			//		tigl::shader->enableTexture(true);
+			//		textures[VC->currentCrosshair]->bind();
+			//		o->draw(modelMatrix);
 
 			glDisable(GL_BLEND);
 		}
@@ -353,25 +323,28 @@ void draw()
 		}
 	}
 
-	glLoadIdentity();
-	tigl::shader->enableTexture(true);
-	tigl::shader->enableColor(false);
-	glEnable(GL_TEXTURE_2D);
+	//glLoadIdentity();
+	//tigl::shader->enableTexture(true);
+	//tigl::shader->enableColor(false);
+	//glEnable(GL_TEXTURE_2D);
+	//skybox(textureSkybox);
 
-	skybox(textureSkybox);
-
-	/*for each (WallComponent var in collection_to_loop)
+	/*for (int i = 0; i < 6; i++)
 	{
+		GameObject* currentWall = skyBoxWalls[i];
+		currentWall->getComponent<WallComponent>
+		skyBoxWalls[i]->texture = textureSkybox[i];
 
-	}
-	skybox[0]->draw*/
+	}*/
+		
+	
 
 	//timer
 	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	//ctr++;
-	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
 	glDisable(GL_DEPTH_TEST);
 }
@@ -438,7 +411,7 @@ void checkWord() {
 }
 
 void duringGame() {
-	
+
 	if (VC->redDetected) {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
@@ -448,7 +421,7 @@ void duringGame() {
 					shootedWord += currentWord->getWord()[currentWordIndex];
 					currentWordIndex++;
 					cout << shootedWord << endl;
-					
+
 				}
 				else {
 					checkWord();
@@ -493,12 +466,10 @@ void initSkybox() {
 }
 
 void skybox(Texture** texture) {
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	float width = 50;
-	float height = 50;
-	float length = 50;
+	float x, y, z;
+	x = y = z = 0;
+	float width, height, length, size = 50;
+	width = height = length = size;
 
 	// Center the skybox
 	x = x - width / 2;
@@ -510,37 +481,37 @@ void skybox(Texture** texture) {
 	//middle
 	texture[0]->bind();
 	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z),				glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z),	glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z),			glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z),						glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
 	tigl::end();
 
 	//right
 	texture[1]->bind();
 	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z),						glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length),			glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length),	glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z),			glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
 	tigl::end();
 
 	//left
 	texture[2]->bind();
 	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z),			glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length),	glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length),			glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z),						glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
 	tigl::end();
 
 	//back
 	texture[3]->bind();
 	tigl::begin(GL_QUADS);
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length),					glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length),			glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length),	glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length),			glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	tigl::addVertex(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
 	tigl::end();
 
 	//bottom

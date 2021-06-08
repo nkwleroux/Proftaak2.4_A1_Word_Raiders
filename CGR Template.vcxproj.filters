@@ -78,7 +78,7 @@
     <ClCompile Include="VisionCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WallComponent.cpp">
+    <ClCompile Include="SkyboxComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Text\Text.cpp">
@@ -143,7 +143,7 @@
     <ClInclude Include="VisionCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WallComponent.h">
+    <ClInclude Include="SkyboxComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Text\Text.h">
