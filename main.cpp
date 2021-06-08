@@ -21,6 +21,9 @@
 #include "TimerJumper.h"
 #include "CrosshairComponent.h"
 #include "LetterModelComponent.h"
+#include "ClockModelComponent.h"
+#include "BombModelComponent.h"
+#include "DiamondModelComponent.h"
 #include "ObjectModelComponent.h"
 
 using tigl::Vertex;
@@ -264,13 +267,14 @@ void init()
 	objects.push_back(crosshair);
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
-	for (int i = 1; i < 3; i++) {
+	for (int i = 1; i < 2; i++) {
 		GameObject* o = new GameObject(i);
-		o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i*3, 0, -1);
+		//o->position = glm::vec3(rand() % 5, 0, -1);
+		o->position = glm::vec3(0, 0, 0);
+		o->rotation = glm::vec3(0, -90, 0);
 		o->addComponent(new MoveToComponent());
 		//o->addComponent(new CubeComponent(1.0f));
-		o->addComponent(new LetterModelComponent('B'));
+		o->addComponent(new DiamondModelComponent());
 		o->getComponent<MoveToComponent>()->target = o->position;
 		//o->addComponent(new SpinComponent(1.0f));
 		objects.push_back(o);

@@ -162,9 +162,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BombModelComponent.cpp" />
+    <ClCompile Include="ClockModelComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="CrosshairComponent.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
+    <ClCompile Include="DiamondModelComponent.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FpsCam.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -179,9 +182,12 @@
     <ClCompile Include="TimerJumper.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BombModelComponent.h" />
+    <ClInclude Include="ClockModelComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="CrosshairComponent.h" />
     <ClInclude Include="CubeComponent.h" />
+    <ClInclude Include="DiamondModelComponent.h" />
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FpsCam.h" />
     <ClInclude Include="GameObject.h" />
