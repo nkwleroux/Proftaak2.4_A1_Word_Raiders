@@ -55,6 +55,7 @@ double lastFrameTime = 0;
 GameObject* backgroundBox;
 GameObject* crosshair;
 Texture* textureSkybox[6];
+glm::vec4 pos;
 //WallComponent* skybox[6];
 
 int windowHeight = 1080;
@@ -75,13 +76,14 @@ Word* currentWord;
 String shootedWord = "";
 
 void init();
-void rayCast(int xOrigin, int yOrigin);
+glm::vec4 rayCast(glm::vec2 mousePosition, glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 void update();
 void draw();
 void checkWord();
 void duringGame();
 void skybox(Texture** textures);
 void initSkybox();
+glm::mat4 getProjectionMatrix();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -243,30 +245,32 @@ void update()
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
+	glm::vec2 mousePos(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
+	glm::vec4 position = rayCast(mousePos, camera->getMatrix(), getProjectionMatrix());
+	
+	pos = position;
 
-	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 	for (auto& o : objects) {
 		for (auto& next : objects) {
 
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
 				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
-					cout << "Collision" << endl;
-					//Change direction of the block
-					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target) + next->position;
-					cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
-					currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
+					//cout << "Collision" << endl;
+					////Change direction of the block
+					//glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target) + next->position;
+					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
+					//currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
 					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n\n";
 					//currTarget = RandomVec3(2);
 
-					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target) + o->position;
-					cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
-					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n\n";
-					//oTarget = RandomVec3(3);
+					///*glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target) + o->position;
+					//oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+					////cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n\n";
+					////oTarget = RandomVec3(3);*/
 
-					next->getComponent<MoveToComponent>()->target = currTarget;
-					o->getComponent<MoveToComponent>()->target = oTarget;
+					//next->getComponent<MoveToComponent>()->target = currTarget;
+					//o->getComponent<MoveToComponent>()->target = oTarget;
 
 					//break;
 
@@ -294,12 +298,8 @@ void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	int viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
-
-	tigl::shader->setProjectionMatrix(projection);
+	
+	tigl::shader->setProjectionMatrix(getProjectionMatrix());
 	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
 	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
@@ -374,24 +374,21 @@ void draw()
 	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
 	glDisable(GL_DEPTH_TEST);
+
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+
 }
 
-void rayCast(int xOrigin, int yOrigin)
+glm::vec4 rayCast(glm::vec2 mousePosition, glm::mat4 viewMatrix,glm::mat4 projectionMatrix)
 {
-	//RAY ray = { glm::vec3(xOrigin, yOrigin, 0), glm::vec3(250, 250, 300)};
-	// glm::vec3 position;
-	// glm::vec3 normal;
-	// glm::vec4 color;
-	// glm::vec2 texcoord;
-	//
-	//DRAWING LINES
-	glLineWidth(12.0);
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(xOrigin, yOrigin, 0);
-	glVertex3f(400, 400, 400);
-	glEnd();
-	//
+	int Viewport[4];
+	glGetIntegerv(GL_VIEWPORT, Viewport);
+	mousePosition.y = Viewport[3] - mousePosition.y;
+	float winZ;
+	glReadPixels((int)mousePosition.x, (int)mousePosition.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+	glm::vec4 mouse3d = glm::vec4(glm::unProject(glm::vec3(mousePosition, winZ), viewMatrix, projectionMatrix, glm::vec4(Viewport[0], Viewport[1], Viewport[2], Viewport[3])), winZ);
+	return mouse3d;
 }
 
 void clearVector() {
@@ -560,4 +557,11 @@ void skybox(Texture** texture) {
 	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
 	tigl::addVertex(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
 	tigl::end();
+}
+
+
+glm::mat4 getProjectionMatrix() {
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	return glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 }
