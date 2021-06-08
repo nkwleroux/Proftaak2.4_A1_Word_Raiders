@@ -1,11 +1,8 @@
 #include "VisionCamera.h"
 
-VisionCamera::VisionCamera(VideoCapture vidCap)
+VisionCamera::VisionCamera(VideoCapture vidCap) : cap(vidCap)
 {
-	cap = vidCap;
-
 }
-
 
 VisionCamera::~VisionCamera()
 {
@@ -13,6 +10,7 @@ VisionCamera::~VisionCamera()
 
 Point myPoint;
 
+//not used
 void VisionCamera::colorSettings()
 {
 	namedWindow("Trackbars", (640, 200));
@@ -100,7 +98,7 @@ void VisionCamera::findColor()
 	}
 }
 
-//delete after
+//not used
 void VisionCamera::displayImage()
 {
 	//Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
@@ -118,12 +116,16 @@ void VisionCamera::displayImage()
 }
 
 void VisionCamera::update() {
-	cap.read(img);
-	findColor();
-	imshow("Video", img);
+	while (appIsRunning)
+	{
+		cap.read(img);
+		findColor();
+		imshow("Video", img);
 
-	videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
-	videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
+		videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
+		videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
+	}
+	//cout << "DONE UPDATE" << endl;
 }
 
 Point VisionCamera::getCrossHairCoords()
@@ -131,28 +133,3 @@ Point VisionCamera::getCrossHairCoords()
 	return myPoint;
 }
 
-void VisionCamera::closedAction()
-{
-	while (appIsRunning)
-	{
-		if (handDetected && !openHand) {
-			cout << currentPoint.x << "," << currentPoint.y << endl;
-		}
-		std::this_thread::sleep_for(1000ms);
-	}
-	cout << "DONE CLOSED" << endl;
-}
-
-void VisionCamera::openAction()
-{
-	while (appIsRunning)
-	{
-		if (handDetected && openHand) {
-			//cout << "Open hand detected!" << endl;
-			cout << currentPoint.x << "," << currentPoint.y << endl;
-		}
-		std::this_thread::sleep_for(10ms);
-	}
-
-	cout << "DONE OPEN" << endl;
-}

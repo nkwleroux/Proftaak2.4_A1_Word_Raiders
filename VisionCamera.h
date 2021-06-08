@@ -31,8 +31,8 @@ public:
 	Point currentPoint;
 	bool appIsRunning = true;
 	int currentCrosshair = 0;
-	float videoHeight;
-	float videoWidth;
+	float videoHeight = 0;
+	float videoWidth = 0;
 	bool redDetected = false;
 
 	VisionCamera(VideoCapture vidCap);
