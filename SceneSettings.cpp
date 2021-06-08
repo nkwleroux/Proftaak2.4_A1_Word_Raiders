@@ -20,6 +20,41 @@ SceneSettings::SceneSettings()
 {
 	settingsTexture = new Texture("Images/settings.png");
 	wordAmountText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
+
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE || cv::waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
+				glfwSetWindowShouldClose(window, true);
+			}
+			else if (key == GLFW_KEY_BACKSPACE || cv::waitKey(100) == 1) {
+				currentScene = scenes[Scenes::STARTUP];
+			}
+			else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+				wordAmount--;
+				if (wordAmount < 1) {
+					wordAmount = 9;
+				}
+				
+			}
+			else if (key == GLFW_KEY_G && action == GLFW_PRESS) {
+				wordAmount++;
+				if (wordAmount > 9) {
+					wordAmount = 1;
+				}
+			}
+			else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+				wordLength--;
+				if (wordLength < 5) {
+					wordLength = 7;
+				}
+			}
+			else if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+				wordLength++;
+				if (wordLength > 7) {
+					wordLength = 5;
+				}
+			}
+		});
 }
 
 std::string SceneSettings::intToString(int number) {
@@ -49,37 +84,6 @@ void SceneSettings::draw()
 
 void SceneSettings::update()
 {
-	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS)
-	{
-		currentScene = scenes[Scenes::STARTUP];
-	}
-	else if (glfwGetKey(window, GLFW_KEY_D))
-	{
-		wordAmount--;
-		if (wordAmount < 1) {
-			wordAmount = 9;
-		}
-	}
-	else if (glfwGetKey(window, GLFW_KEY_G))
-	{
-		wordAmount++;
-		if (wordAmount > 9) {
-			wordAmount = 1;
-		}
-	}
-	else if (glfwGetKey(window, GLFW_KEY_C))
-	{
-		wordLength--;
-		if (wordLength < 5) {
-			wordLength = 7;
-		}
-	}
-	else if (glfwGetKey(window, GLFW_KEY_B))
-	{
-		wordLength++;
-		if (wordLength > 7) {
-			wordLength = 5;
-		}
-	}
+	
 }
 
