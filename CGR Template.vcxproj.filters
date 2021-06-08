@@ -146,9 +146,6 @@
     <ClInclude Include="WallComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Text\stb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Text\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>

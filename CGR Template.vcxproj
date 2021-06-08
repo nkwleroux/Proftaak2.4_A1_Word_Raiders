@@ -200,7 +200,6 @@
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="Text\stb_truetype.h" />
     <ClInclude Include="Text\Text.h" />
     <ClInclude Include="tigl.h" />
     <ClInclude Include="Timer.h" />

@@ -130,3 +130,29 @@ Point VisionCamera::getCrossHairCoords()
 {
 	return myPoint;
 }
+
+void VisionCamera::closedAction()
+{
+	while (appIsRunning)
+	{
+		if (handDetected && !openHand) {
+			cout << currentPoint.x << "," << currentPoint.y << endl;
+		}
+		std::this_thread::sleep_for(1000ms);
+	}
+	cout << "DONE CLOSED" << endl;
+}
+
+void VisionCamera::openAction()
+{
+	while (appIsRunning)
+	{
+		if (handDetected && openHand) {
+			//cout << "Open hand detected!" << endl;
+			cout << currentPoint.x << "," << currentPoint.y << endl;
+		}
+		std::this_thread::sleep_for(10ms);
+	}
+
+	cout << "DONE OPEN" << endl;
+}

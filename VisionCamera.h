@@ -45,5 +45,9 @@ public:
 	void displayImage(); //delete maybe - not used
 	void update();
 	Point getCrossHairCoords();
+
+	//thread methods
+	void closedAction();
+	void openAction();
 };
 

@@ -45,7 +45,7 @@ using namespace cv;
 
 GLFWwindow* window;
 FpsCam* camera;
-std::vector<ObjModel*> models;
+//std::vector<ObjModel*> models;
 VisionCamera* VC;
 Text* textObject;
 Texture* textures[3];
