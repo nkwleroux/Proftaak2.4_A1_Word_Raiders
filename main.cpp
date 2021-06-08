@@ -256,25 +256,27 @@ void update()
 				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
 					cout << "Box Collision" << endl;
 					//Change direction of the block
-					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target);
+					//glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target);
 					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
-					currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
+					//currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
 					//currTarget = RandomVec3(2);
 
-					//glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
-					//oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 					//oTarget = RandomVec3(3);
 
-					next->getComponent<MoveToComponent>()->target = currTarget;
+					//next->getComponent<MoveToComponent>()->target = currTarget;
 					//o->getComponent<MoveToComponent>()->target = oTarget;
 
 					BoundingBox* nextBox = next->getComponent<BoundingBox>();
 					BoundingBox* oBox = o->getComponent<BoundingBox>();
-					cout << o->position.x << " " << o->position.y <<  " " << o->position.z << endl;
-					cout << next->position.x <<  " " << next->position.y << " " << next->position.z << endl;
+					//cout << o->position.x << " " << o->position.y <<  " " << o->position.z << endl;
+					//cout << next->position.x <<  " " << next->position.y << " " << next->position.z << endl;
+				
 					glm::vec3 differenceVec = glm::vec3(next->position.x - o->position.x, next->position.y - o->position.y, next->position.z - o->position.z);
-					next->position += differenceVec;
+
+					o->position -= differenceVec;
 					break;
 
 				}
