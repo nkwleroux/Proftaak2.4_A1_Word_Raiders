@@ -4,15 +4,15 @@
 
 class Texture;
 
-class SceneIngame :
+class SceneCredits :
     public Scene
 {
 
 private:
-    Texture* inGameTexture;
+    Texture* creditsTexture;
 
 public:
-    SceneIngame();
+    SceneCredits();
     virtual void draw() override;
     virtual void update() override;
 };

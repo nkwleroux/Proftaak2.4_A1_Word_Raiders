@@ -4,15 +4,15 @@
 
 class Texture;
 
-class SceneIngame :
+class ScenePause :
     public Scene
 {
 
 private:
-    Texture* inGameTexture;
+    Texture* pauseTexture;
 
 public:
-    SceneIngame();
+    ScenePause();
     virtual void draw() override;
     virtual void update() override;
 };

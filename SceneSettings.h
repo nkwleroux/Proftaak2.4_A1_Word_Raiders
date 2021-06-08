@@ -1,19 +1,20 @@
 #pragma once
 #include "Scene.h"
 #include "tigl.h"
+#include <sstream>
 
 class Texture;
 
-class SceneIngame :
+class SceneSettings :
     public Scene
 {
 
 private:
-    Texture* inGameTexture;
+    Texture* settingsTexture;
+    std::string intToString(int number);
 
 public:
-    SceneIngame();
+    SceneSettings();
     virtual void draw() override;
     virtual void update() override;
 };
-

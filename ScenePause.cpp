@@ -1,4 +1,4 @@
-#include "SceneIngame.h"
+#include "ScenePause.h"
 
 #include "Texture.h"
 #include "tigl.h"
@@ -11,18 +11,18 @@ extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
-SceneIngame::SceneIngame()
+ScenePause::ScenePause()
 {
-	inGameTexture = new Texture("Images/shapes.png");
+	pauseTexture = new Texture("Images/pause.png");
 }
 
-void SceneIngame::draw()
+void ScenePause::draw()
 {
 	tigl::shader->setProjectionMatrix(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 100.0f));
 	tigl::shader->setViewMatrix(glm::mat4(1.0f));
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 	tigl::shader->enableTexture(true);
-	inGameTexture->bind();
+	pauseTexture->bind();
 	tigl::begin(GL_QUADS);
 	tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, 1, 0), glm::vec2(0, 1)));
 	tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, 1, 0), glm::vec2(1, 1)));
@@ -31,10 +31,14 @@ void SceneIngame::draw()
 	tigl::end();
 }
 
-void SceneIngame::update()
+void ScenePause::update()
 {
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		currentScene = scenes[Scenes::PAUSE];
+		currentScene = scenes[Scenes::INGAME];
+	}
+	else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		currentScene = scenes[Scenes::STARTUP];
 	}
 }

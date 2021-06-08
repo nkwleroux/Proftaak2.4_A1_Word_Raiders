@@ -1,4 +1,4 @@
-#include "SceneIngame.h"
+#include "SceneCredits.h"
 
 #include "Texture.h"
 #include "tigl.h"
@@ -11,18 +11,18 @@ extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
-SceneIngame::SceneIngame()
+SceneCredits::SceneCredits()
 {
-	inGameTexture = new Texture("Images/shapes.png");
+	creditsTexture = new Texture("Images/credits.png");
 }
 
-void SceneIngame::draw()
+void SceneCredits::draw()
 {
 	tigl::shader->setProjectionMatrix(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 100.0f));
 	tigl::shader->setViewMatrix(glm::mat4(1.0f));
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 	tigl::shader->enableTexture(true);
-	inGameTexture->bind();
+	creditsTexture->bind();
 	tigl::begin(GL_QUADS);
 	tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, 1, 0), glm::vec2(0, 1)));
 	tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, 1, 0), glm::vec2(1, 1)));
@@ -31,10 +31,10 @@ void SceneIngame::draw()
 	tigl::end();
 }
 
-void SceneIngame::update()
+void SceneCredits::update()
 {
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS)
 	{
-		currentScene = scenes[Scenes::PAUSE];
+		currentScene = scenes[Scenes::STARTUP];
 	}
 }

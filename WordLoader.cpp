@@ -7,9 +7,9 @@ using json = nlohmann::json;
 WordLoader::WordLoader() {
 }
 
-std::vector<Word*> WordLoader::loadWords(int wordType, const DIFFICULTY diff) {
+std::vector<Word*> WordLoader::loadWords(int wordType, const int wordAmount) {
 	std::vector<Word*> words;
-	int* numberArr = new int[diff];
+	int* numberArr = new int[wordAmount];
 	json j;
 	std::ifstream loader("words.json");
 	loader >> j;
@@ -24,9 +24,9 @@ std::vector<Word*> WordLoader::loadWords(int wordType, const DIFFICULTY diff) {
 	}
 	int i = 0;
 	srand(time(0));
-	while (i < diff) {
+	while (i < wordAmount) {
 		int rng = rand() % wordlist.size();
-		if (checkIfNumberExists(numberArr, rng, diff))
+		if (checkIfNumberExists(numberArr, rng, wordAmount))
 		{
 			numberArr[i] = rng;
 			std::string word = wordlist[rng];

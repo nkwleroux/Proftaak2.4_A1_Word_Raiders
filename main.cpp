@@ -25,12 +25,17 @@
 #include "CrosshairComponent.h"
 #include "VisionCamera.h"
 #include <stdlib.h>
-
+#include "Scene.h"
 
 #include "Timer.h"
 #include "Text/Text.h"
 #include "Word.h"
 #include "WordLoader.h"
+#include "SceneStartup.h"
+#include "SceneIngame.h"
+#include "ScenePause.h"
+#include "SceneCredits.h"
+#include "SceneSettings.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -60,7 +65,7 @@ Timer* oneSecondTimer;
 WordLoader* wordLoader;
 
 int currentWordLength = 5;
-DIFFICULTY currentDifficulty = easy;
+int currentWordAMount = 5;
 int currentWordIndex = 0;
 int chosenWordsAmount = 0;
 std::vector<Word*> wordsToGuess;
@@ -117,7 +122,8 @@ int main(void)
 	return 0;
 }
 
-
+std::map<Scenes, Scene*> scenes;
+Scene* currentScene = nullptr;
 
 void init()
 {
@@ -134,7 +140,7 @@ void init()
 	textObject = new Text("c:/windows/fonts/times.ttf", 64.0);
 
 	wordLoader = new WordLoader();
-	wordsToGuess = wordLoader->loadWords(currentWordLength, currentDifficulty);
+	wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAMount);
 	currentWord = wordsToGuess.at(chosenWordsAmount);
 	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
@@ -176,6 +182,13 @@ void init()
 	//models.push_back(new ObjModel("resources/cube2.obj"));
 
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
+
+	scenes[Scenes::STARTUP] = new SceneStartup();
+	scenes[Scenes::INGAME] = new SceneIngame();
+	scenes[Scenes::PAUSE] = new ScenePause();
+	scenes[Scenes::SETTINGS] = new SceneSettings();
+	scenes[Scenes::CREDITS] = new SceneCredits();
+	currentScene = scenes[Scenes::STARTUP];
 }
 
 float rotation = 0;
@@ -208,6 +221,7 @@ void update()
 	}
 
 	rotation += 0.01f;
+	currentScene->update();
 }
 
 void draw()
@@ -215,83 +229,85 @@ void draw()
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
+	currentScene->draw();
 
-	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
+	//int viewport[4];
+	//glGetIntegerv(GL_VIEWPORT, viewport);
+	//glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
-	glm::mat4 modelMatrix(1.0f);
-	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
-	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
-	tigl::shader->setModelMatrix(modelMatrix);
+	//tigl::shader->setProjectionMatrix(projection);
+	////tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	////tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
-	glEnable(GL_DEPTH_TEST);
-	//for outlines only
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//
-	//
+	//glm::mat4 modelMatrix(1.0f);
+	////modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
+	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
+	//tigl::shader->setModelMatrix(modelMatrix);
 
-	//Drawing text
+	//glEnable(GL_DEPTH_TEST);
+	////for outlines only
+	////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	////
+	////
+
+	////Drawing text
 
 
 
-	for (auto& o : objects) {
-		if (o == backgroundBox) {
-			textures[2]->bind();
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			o->draw();
-		}
-		else if (o == crosshair) {
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//for (auto& o : objects) {
+	//	if (o == backgroundBox) {
+	//		textures[2]->bind();
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//		o->draw();
+	//	}
+	//	else if (o == crosshair) {
+	//		glEnable(GL_BLEND);
+	//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			/*tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);*/
+	//		/*tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);*/
 
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			textures[VC->currentCrosshair]->bind();
-			o->draw(modelMatrix);
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//		textures[VC->currentCrosshair]->bind();
+	//		o->draw(modelMatrix);
 
-			glDisable(GL_BLEND);
-		}
-		else {
+	//		glDisable(GL_BLEND);
+	//	}
+	//	else {
 
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-			o->draw();
-		}
-	}
+	//		tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);
+	//		o->draw();
+	//	}
+	//}
 
-	tigl::shader->enableTexture(true);
-	tigl::shader->enableLighting(false);
+	//tigl::shader->enableTexture(true);
+	//tigl::shader->enableLighting(false);
 
-	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->materialIndex != -1)
-		{
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-		}
-		else {
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-		}
-		models[i]->draw();
-	}
+	//for (int i = 0; i < models.size(); i++) {
+	//	if (models[i]->materialIndex != -1)
+	//	{
+	//		tigl::shader->enableColor(false);
+	//		tigl::shader->enableTexture(true);
+	//	}
+	//	else {
+	//		tigl::shader->enableColor(true);
+	//		tigl::shader->enableTexture(false);
+	//	}
+	//	models[i]->draw();
+	//}
 
-	//timer
-	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	//ctr++;
-	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	////timer
+	//textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	//textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	//textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	////ctr++;
+	//textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 }
 
 void rayCast(int xOrigin, int yOrigin)
@@ -343,7 +359,7 @@ void checkWord() {
 
 	if (correctLettersAmount == currentWordLength) {
 		chosenWordsAmount++;
-		if (chosenWordsAmount < currentDifficulty) {
+		if (chosenWordsAmount < currentWordAMount) {
 			currentWord = wordsToGuess.at(chosenWordsAmount);
 			currentWordIndex = 0;
 			shootedWord = "";
@@ -361,7 +377,7 @@ void duringGame() {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
 			VC->redDetected = false;
-			if (chosenWordsAmount <= currentDifficulty) {
+			if (chosenWordsAmount <= currentWordAMount) {
 				if (currentWordIndex < currentWordLength) {
 					shootedWord += currentWord->getWord()[currentWordIndex];
 					currentWordIndex++;
