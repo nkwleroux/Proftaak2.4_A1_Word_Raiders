@@ -17,11 +17,6 @@ CrosshairComponent::~CrosshairComponent()
 {
 }
 
-//void CrosshairComponent::setTexture(Texture* t)
-//{
-//	texture = t;
-//	texture->bind();
-//}
 
 void CrosshairComponent::draw()
 {

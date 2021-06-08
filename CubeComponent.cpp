@@ -1,4 +1,5 @@
 #include "CubeComponent.h"
+#include <iostream>
 
 CubeComponent::CubeComponent(float size)
 {
@@ -48,13 +49,16 @@ CubeComponent::~CubeComponent()
 {
 }
 
-//void CubeComponent::setTexture(Texture* t)
-//{
-//	texture = t;
-//	texture->bind();
-//}
-
 void CubeComponent::draw()
 {
 	tigl::drawVertices(GL_QUADS, verts);
+}
+
+std::vector<glm::vec3> CubeComponent::getVertices()
+{
+	std::vector<glm::vec3> list;
+	for (const auto &vert : verts) {
+		list.push_back(vert.position);
+	}
+	return list;
 }

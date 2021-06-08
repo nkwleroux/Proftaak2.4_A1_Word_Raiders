@@ -2,7 +2,6 @@
 #include <Gl/GLU.h>
 #include <GLFW/glfw3.h>
 #include "tigl.h"
-#include "ObjModel.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
@@ -25,6 +24,9 @@
 #include "CrosshairComponent.h"
 #include "VisionCamera.h"
 #include <stdlib.h>
+#include "LetterModelComponent.h"
+#include "ObjectModelComponent.h"
+#include "BoundingBox.h"
 
 
 #include "Timer.h"
@@ -103,8 +105,8 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
-		update();
 		draw();
+		update();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -118,6 +120,15 @@ int main(void)
 }
 
 
+GameObject* square;
+GameObject* square2;
+
+glm::vec3 RandomVec3(float max) {
+	float x = (float(rand()) / float((RAND_MAX)) * max);
+	float y = (float(rand()) / float((RAND_MAX)) * max);
+	float z = (float(rand()) / float((RAND_MAX)) * max);
+	return glm::vec3(x, y, 0);
+}
 
 void init()
 {
@@ -151,31 +162,57 @@ void init()
 
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new CubeComponent(10));
-	objects.push_back(backgroundBox);
+	backgroundBox->addComponent(new CubeComponent(7));
+	backgroundBox->addComponent(new BoundingBox(backgroundBox));
+	//objects.push_back(backgroundBox);
 
-	crosshair = new GameObject(10);
+	/*crosshair = new GameObject(10);
 	crosshair->addComponent(new CrosshairComponent(0.5));
-	objects.push_back(crosshair);
-
+	objects.push_back(crosshair);*/
 	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
 
-	for (int i = 1; i < 6; i++) {
-		GameObject* o = new GameObject(i);
-		o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i, 0, -1);
-		o->addComponent(new CubeComponent(0.2));
-		o->addComponent(new MoveToComponent());
-		o->getComponent<MoveToComponent>()->target = o->position;
-		//o->addComponent(new SpinComponent(1.0f));
-		objects.push_back(o);
-	}
+	//for (int i = 1; i < 20; i++) {
+	//	GameObject* o = new GameObject(i);
+	//	o->position = RandomVec3(i);
+	//	//o->position = glm::vec3(rand() % 5, 0, -1);
+	//	//o->position = glm::vec3(i*3, 0, -1);
+	//	o->addComponent(new MoveToComponent());
+	//	o->addComponent(new CubeComponent(0.2f));
+	//	//o->addComponent(new LetterModelComponent('B'));
+	//	o->getComponent<MoveToComponent>()->target = RandomVec3(7);
+	//	o->addComponent(new BoundingBox(o));
+	//	//o->addComponent(new SpinComponent(1.0f));
+	//	objects.push_back(o);
+	//}
 
 	//models.push_back(new ObjModel("resources/Diamond_Word_Raiders.obj"));
 	//models.push_back(new ObjModel("resources/scene.obj"));
 	//models.push_back(new ObjModel("resources/cube2.obj"));
 
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
+	square = new GameObject(1);
+	square->position = glm::vec3(-3, 1, 0);
+	square->addComponent(new MoveToComponent());
+	square->getComponent<MoveToComponent>()->target = glm::vec3(-10, 0, 0);
+	square->addComponent(new CubeComponent(1.0f));
+	square->addComponent(new BoundingBox(square));
+	//square->addComponent(new SpinComponent(0.5));
+	objects.push_back(square);
+
+	//square2 = new GameObject(2);
+	//square2->position = glm::vec3(3, 0, 0);
+	//square2->addComponent(new MoveToComponent());
+	//square2->getComponent<MoveToComponent>()->target = glm::vec3(-3, 0, 0);
+	//square2->addComponent(new CubeComponent(1.0f));
+	//square2->addComponent(new BoundingBox(square2));
+	////square2->addComponent(new SpinComponent(1));
+	//objects.push_back(square2);
+
+	/*if (square->getComponent<BoundingBox>()->collide(square2))
+	{
+		std::cout << "Collision!" << std::endl;
+	}*/
+
 }
 
 float rotation = 0;
@@ -198,11 +235,44 @@ void update()
 	lastFrameTime = currentFrameTime;
 
 	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
-
 	for (auto& o : objects) {
-		if (o != backgroundBox && o != crosshair) {
-			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-			o->getComponent<MoveToComponent>()->target = o->position;*/
+		for (auto& next : objects) {
+
+			//Skip first element so you can compare with the previous one
+			if (next != o) {
+				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
+					cout << "Collision" << endl;
+					//Change direction of the block
+					glm::vec3 currTarget = (next->getComponent<MoveToComponent>()->target) + next->position;
+					cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n";
+					currTarget = glm::vec3(-1 * currTarget.x, -1 * currTarget.y, -1 * currTarget.z);
+					//cout << currTarget.x << ", " << currTarget.y << ", " << currTarget.z << "\n\n";
+					//currTarget = RandomVec3(2);
+
+					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target) + o->position;
+					cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
+					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n\n";
+					//oTarget = RandomVec3(3);
+
+					next->getComponent<MoveToComponent>()->target = currTarget;
+					o->getComponent<MoveToComponent>()->target = oTarget;
+
+					//break;
+
+				}
+			}
+
+			if (o != backgroundBox && o != crosshair) {
+				/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
+				o->getComponent<MoveToComponent>()->target = o->position;*/
+			}
+		}
+		if (backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
+			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+			o->getComponent<MoveToComponent>()->target = oTarget;
 		}
 		o->update(deltaTime);
 	}
@@ -220,14 +290,21 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
+	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	glm::mat4 modelMatrix(1.0f);
 	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / videoWidth) * currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / videoHeight) * currentPoint.y / -125.0f + 4.0)), 0.0f));
 	modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelMatrix);
+
+	/*tigl::shader->setLightCount(1);
+	tigl::shader->setLightAmbient(0, glm::vec3(0.5f));
+	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f));
+	tigl::shader->setLightPosition(0, glm::vec3(0, 1, 1));
+	tigl::shader->setLightDirectional(0, true);
+	tigl::shader->enableLighting(true);*/
+
 
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
@@ -235,18 +312,16 @@ void draw()
 	//
 	//
 
-	//Drawing text
-
-
+	textures[1]->bind();
+	tigl::shader->enableColor(false);
+	tigl::shader->enableTexture(true);
+	backgroundBox->draw();
 
 	for (auto& o : objects) {
-		if (o == backgroundBox) {
-			textures[2]->bind();
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			o->draw();
-		}
-		else if (o == crosshair) {
+		tigl::shader->enableColor(true);
+		tigl::shader->enableTexture(false);
+		if (o == crosshair) {
+			//glDisable(GL_DEPTH_TEST);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

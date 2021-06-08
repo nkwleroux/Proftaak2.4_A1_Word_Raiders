@@ -1,0 +1,4 @@
+﻿  main.cpp
+D:\Avans Hogeschool\Jaar 2\Periode 4\Proftaak\Proftaak2.4_A1_Word_Raiders\main.cpp(6,10): fatal error C1083: Cannot open include file: 'opencv2/imgcodecs.hpp': No such file or directory
+  Texture.cpp
+D:\Avans Hogeschool\Jaar 2\Periode 4\Proftaak\Proftaak2.4_A1_Word_Raiders\Texture.cpp(4,10): fatal error C1083: Cannot open include file: 'stb_image.h': No such file or directory
