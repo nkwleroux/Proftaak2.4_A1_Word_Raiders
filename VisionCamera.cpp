@@ -103,7 +103,6 @@ void VisionCamera::findColor()
 //delete after
 void VisionCamera::displayImage()
 {
-
 	//Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
 	Mat img(512, 512, CV_8UC3, Scalar(255, 255, 255));
 

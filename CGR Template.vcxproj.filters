@@ -78,6 +78,9 @@
     <ClCompile Include="VisionCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WallComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Text\Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -140,6 +143,9 @@
     <ClInclude Include="VisionCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WallComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Text\stb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -173,6 +179,27 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Images\shapes.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_bottom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_galaxy_original.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_middle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_right2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\skybox_top.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

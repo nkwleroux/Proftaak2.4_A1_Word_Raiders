@@ -13,7 +13,7 @@ class VisionCamera
 
 private:
 	VideoCapture cap;
-	Mat img, imgHSV, mask, imgColor;
+	Mat img, imgHSV, mask;
 	int hmin = 45, smin = 110, vmin = 75;
 	int hmax = 110, smax = 240, vmax = 255;
 
@@ -24,11 +24,8 @@ private:
 	};
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 
-	/*glm::vec4 currentColor;
-	glm::vec4 red(1, 0, 0, 1);
-	glm::vec4 green(0, 1, 0, 1);*/
-
-	
+	bool openHand = true;
+	bool handDetected = false;
 
 public:
 	Point currentPoint;

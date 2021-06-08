@@ -183,6 +183,7 @@
     <ClCompile Include="VisionCamera.cpp" />
     <ClCompile Include="Word.cpp" />
     <ClCompile Include="WordLoader.cpp" />
+    <ClCompile Include="WallComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="VisionCamera.h" />
+    <ClInclude Include="WallComponent.h" />
     <ClInclude Include="Word.h" />
     <ClInclude Include="WordLoader.h" />
   </ItemGroup>
@@ -214,6 +216,13 @@
     <Image Include="Images\openHand.png" />
     <Image Include="Images\rainbow.jpg" />
     <Image Include="Images\shapes.png" />
+    <Image Include="Images\skybox_bottom.png" />
+    <Image Include="Images\skybox_galaxy_original.png" />
+    <Image Include="Images\skybox_left.png" />
+    <Image Include="Images\skybox_middle.png" />
+    <Image Include="Images\skybox_right.png" />
+    <Image Include="Images\skybox_right2.png" />
+    <Image Include="Images\skybox_top.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="words.json" />
