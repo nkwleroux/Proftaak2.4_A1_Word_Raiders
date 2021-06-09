@@ -1,4 +1,7 @@
 #include "VisionCamera.h"
+#include <GL\glew.h>
+#include "tigl.h"
+#include <glm\ext\matrix_clip_space.hpp>
 
 VisionCamera::VisionCamera(VideoCapture vidCap) : cap(vidCap)
 {
@@ -126,8 +129,17 @@ void VisionCamera::update() {
 
 }
 
-Point VisionCamera::getCrossHairCoords()
+glm::vec2 VisionCamera::getCrossHairCoords()
 {
-	return myPoint;
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	
+	float percentageX = myPoint.x / 640.0f;
+	float percentageY = myPoint.y / 480.0f;
+
+	float xCoordinate = (float)viewport[2] * percentageX;
+	float yCoordinate = (float)viewport[3] * percentageY;
+
+	return glm::vec2(xCoordinate, yCoordinate);
 }
 

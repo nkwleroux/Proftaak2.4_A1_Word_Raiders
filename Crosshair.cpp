@@ -31,7 +31,7 @@ Crosshair::Crosshair() {
 /// </summary>
 void Crosshair::draw() {
 	// Crosshair doesn't need to be drawn when uninitialised
-	if (x == 0.0f && y == 0.0f)
+	if (crosshairCoordinate.x == 0.0f && crosshairCoordinate.y == 0.0f)
 	{
 		return;
 	}
@@ -47,10 +47,7 @@ void Crosshair::draw() {
 	// Set the position of the crosshair
 	glm::mat4 modelMatrix(1.0f);
 
-	float xCoordinate = (float)viewport[2] * x;
-	float yCoordinate = (float)viewport[3] * y;
-
-	modelMatrix = glm::translate(modelMatrix, glm::vec3(xCoordinate, yCoordinate, 0));
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(crosshairCoordinate, 0));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(100, 100, 1));
 	tigl::shader->setModelMatrix(modelMatrix);
 
@@ -90,9 +87,6 @@ void Crosshair::setHandStyle(bool isOpen) {
 /// <summary>
 /// Method to set the position of the crosshair
 /// </summary>
-/// <param name="crosshairX">pecentage how far on the x axis</param>
-/// <param name="crosshairY">pecentage how far on the y axis</param>
-void Crosshair::update(float crosshairX, float crosshairY) {
-	x = crosshairX;
-	y = crosshairY;
+void Crosshair::update(glm::vec2 coordinate) {
+	crosshairCoordinate = coordinate;
 }

@@ -112,6 +112,10 @@ SceneIngame::SceneIngame()
 
 	crosshair = new Crosshair();
 	createLetterCubes();
+
+	debugCube = new GameObject(1337);
+	debugCube->addComponent(new CubeComponent(1.0f));
+	
 }
 
 void SceneIngame::draw()
@@ -122,7 +126,8 @@ void SceneIngame::draw()
 
 	tigl::shader->setProjectionMatrix(projection);
 	//tigl::shader->setviewmatrix(camera->getmatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	glm::mat4 viewmatrix = glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	tigl::shader->setViewMatrix(viewmatrix);
 
 	glm::mat4 modelmatrix(1.0f);
 	//modelmatrix = glm::translate(modelmatrix, glm::vec3((float)((windowwidth / videowidth) * currentpoint.x / 120.0f - 8.0), (float)(((windowheight / videoheight) * currentpoint.y / -125.0f + 4.0)), 0.0f));
@@ -133,15 +138,18 @@ void SceneIngame::draw()
 	//for outlines only
 	//glpolygonmode(gl_front_and_back, gl_line);
 
-	backgroundBox->draw();
-
-
 	//drawing text
 	for (auto& o : objects) {
 		tigl::shader->enableColor(true);
 		tigl::shader->enableTexture(false);
 		o->draw();
 	}
+
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+
+	debugCube->draw();
+	backgroundBox->draw();
+
 
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
@@ -207,10 +215,9 @@ void SceneIngame::update() {
 	lastFrameTime = currentFrameTime;
 
 
-	float percentageX = VC->getCrossHairCoords().x / 640.0f;
-	float percentageY = VC->getCrossHairCoords().y / 480.0f;
-	crosshair->update(percentageX,percentageY);
-	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
+	crosshair->update(VC->getCrossHairCoords());
+
+	debugCube->position = mouse3d;
 
 	int* axis;
 	for (auto& o : objects) {
@@ -218,7 +225,7 @@ void SceneIngame::update() {
 
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
-				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
+				if (o->getComponent<BoundingBox>() && next->getComponent<BoundingBox>() &&o->getComponent<BoundingBox>()->collideWithObject(next)) {
 
 					BoundingBox* oBox = o->getComponent<BoundingBox>();
 
@@ -251,36 +258,35 @@ void SceneIngame::update() {
 				}
 			}
 		}
-		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+		/*if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 			o->getComponent<MoveToComponent>()->target = oTarget;
-		}
+		}*/
 		//TODO
-		if (o->getComponent<MoveToComponent>()->target == o->position) {
+		/*if (o->getComponent<MoveToComponent>()->target == o->position) {
 			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false) + glm::vec3(-1 * o->position.x, -1 * o->position.y, -1 * o->position.z);;
-		}
+		}*/
 		o->update(deltaTime);
 	}
 }
 
 
-void SceneIngame::rayCast(int xOrigin, int yOrigin)
+void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
-	//RAY ray = { glm::vec3(xOrigin, yOrigin, 0), glm::vec3(250, 250, 300)};
-	// glm::vec3 position;
-	// glm::vec3 normal;
-	// glm::vec4 color;
-	// glm::vec2 texcoord;
-	//
-	//DRAWING LINES
-	glLineWidth(12.0);
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(xOrigin, yOrigin, 0);
-	glVertex3f(400, 400, 400);
-	glEnd();
+	if (xOrigin == 0&&yOrigin == 0)
+	{
+		return;
+	}
+
+	int Viewport[4];
+	glGetIntegerv(GL_VIEWPORT, Viewport);
+	yOrigin = Viewport[3] - yOrigin;
+
+	float winZ;
+	glReadPixels(xOrigin, yOrigin, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+	mouse3d = glm::vec4(glm::unProject(glm::vec3(xOrigin,yOrigin, winZ), viewMatrix, projectionMatrix, glm::vec4(Viewport[0], Viewport[1], Viewport[2], Viewport[3])), winZ);
 }
 
 void SceneIngame::clearVector() {

@@ -1,5 +1,6 @@
 #pragma once
 #include "Texture.h"
+#include "glm/glm.hpp"
 
 class Crosshair
 {
@@ -7,12 +8,12 @@ private:
 	bool handIsOpen;
 	Texture* openHand;
 	Texture* closedHand;
-	float x, y;
+	glm::vec2 crosshairCoordinate;
 
 public:
 	Crosshair();
 	void draw();
 	void setHandStyle(bool isOpen);
-	void update(float x, float y);
+	void update(glm::vec2 coordinate);
 };
 

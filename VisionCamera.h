@@ -4,6 +4,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#include "glm/glm.hpp"
 
 using namespace std;
 using namespace cv;
@@ -43,6 +44,6 @@ public:
 	void findColor();
 	void displayImage(); //delete maybe - not used
 	void update();
-	Point getCrossHairCoords();
+	glm::vec2 getCrossHairCoords();
 };
 
