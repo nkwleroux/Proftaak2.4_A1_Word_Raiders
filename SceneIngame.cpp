@@ -61,7 +61,6 @@ extern FpsCam* camera;
 VisionCamera* VC;
 Text* textObject;
 Text* wordText;
-int ctr = 1;
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
@@ -125,12 +124,10 @@ void SceneIngame::draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setviewmatrix(camera->getmatrix()); //camera
 	glm::mat4 viewmatrix = glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	tigl::shader->setViewMatrix(viewmatrix);
 
 	glm::mat4 modelmatrix(1.0f);
-	//modelmatrix = glm::translate(modelmatrix, glm::vec3((float)((windowwidth / videowidth) * currentpoint.x / 120.0f - 8.0), (float)(((windowheight / videoheight) * currentpoint.y / -125.0f + 4.0)), 0.0f));
 	modelmatrix = glm::translate(modelmatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelmatrix);
 
@@ -150,14 +147,14 @@ void SceneIngame::draw()
 	debugCube->draw();
 	backgroundBox->draw();
 
-
+	// 2D objects drawing
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
 
 	//timer
-	textObject->draw("score: 200 stars  ", 50.0 + ctr, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("levens: ******", 50.0 + ctr, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
 	if (currentWordIndex == 0) {
 
@@ -207,13 +204,10 @@ void SceneIngame::update() {
 
 	VC->update();
 	duringGame();
-	//Dont forget to remove camera update so the user cant move
-	//camera->update(window, &lastX, &lastY, &textureIndex);
 
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
-
 
 	crosshair->update(VC->getCrossHairCoords());
 
@@ -258,16 +252,14 @@ void SceneIngame::update() {
 				}
 			}
 		}
-		/*if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
-			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 			o->getComponent<MoveToComponent>()->target = oTarget;
-		}*/
-		//TODO
-		/*if (o->getComponent<MoveToComponent>()->target == o->position) {
+		}
+		if (o->getComponent<MoveToComponent>()->target == o->position) {
 			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false) + glm::vec3(-1 * o->position.x, -1 * o->position.y, -1 * o->position.z);;
-		}*/
+		}
 		o->update(deltaTime);
 	}
 }
@@ -275,6 +267,7 @@ void SceneIngame::update() {
 
 void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
+	// If no mouseposition is given we don't cast a ray
 	if (xOrigin == 0&&yOrigin == 0)
 	{
 		return;
