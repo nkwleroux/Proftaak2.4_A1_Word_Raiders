@@ -68,15 +68,16 @@ Timer* timer;
 Timer* oneSecondTimer;
 WordLoader* wordLoader;
 
-int currentWordIndex = 0;
+int currentWordIndex = -1;
 int chosenWordsAmount = 0;
 bool gameStarted = false;
 float rotation = 0;
 std::vector<Word*> wordsToGuess;
 std::vector<char> correctLetters(currentWordLength);
 Word* currentWord;
-String shootedWord = "";
-std::vector<char> shootedLetters(currentWordLength);
+String shotWord = "";
+String correctWord = "";
+std::vector<char> shotLetters(currentWordLength);
 
 SceneIngame::SceneIngame()
 {
@@ -210,15 +211,9 @@ void SceneIngame::draw()
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0 + ctr, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("levens: ******", 50.0 + ctr, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-
-	if (currentWordIndex == 0) {
-
-	}
-	else {
-		textObject->draw(shootedWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	}
-	
+	textObject->draw("levens: ******", 50.0 + ctr, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
+	textObject->draw(shotWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(correctWord, windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
 	glDisable(GL_DEPTH_TEST);
 }
@@ -229,6 +224,7 @@ void SceneIngame::update(){
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		currentWord = wordsToGuess.at(chosenWordsAmount);
 		correctLetters.resize(currentWordLength);
+		shotLetters.resize(currentWordLength);
 	}
 
 	//check if it is the start of the game
@@ -252,7 +248,8 @@ void SceneIngame::update(){
 	//imshow("Video", img);
 
 	VC->update();
-	duringGame();
+	gameLogic();
+	drawShootedWords();
 	//Dont forget to remove camera update so the user cant move
 	//camera->update(window, &lastX, &lastY, &textureIndex);
 
@@ -289,82 +286,105 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin)
 	glVertex3f(xOrigin, yOrigin, 0);
 	glVertex3f(400, 400, 400);
 	glEnd();
-	//
 }
 
-void SceneIngame::clearVector() {
-	for (int i = 0; i < correctLetters.size(); i++) {
-		correctLetters.at(i) = '.';
+void SceneIngame::clearVector(std::vector<char> *vector) {
+	for (int i = 0; i < vector->size(); i++) {
+		vector->at(i) = '_';
 	}
 }
 
-void SceneIngame::showWord() {
-	for (int i = 0; i < correctLetters.size(); i++) {
-		cout << correctLetters.at(i);
+/*
+* This function draws the shot word and the correct letters
+*/
+void SceneIngame::drawShootedWords() {
+	shotWord = ""; //clear the shotWord string
+	for (int i = 0; i < shotLetters.size(); i++) {
+		shotWord += shotLetters.at(i); //fill the string with the letters of the vector
 	}
-	cout << endl;
+
+	correctWord = ""; //clear the correctWord string
+	for (int i = 0; i < correctLetters.size(); i++) {
+		correctWord += correctLetters.at(i); //fill the string with the letters of the vector
+	}
 }
 
-void SceneIngame::checkWord() {
-	int correctLettersAmount = 0;
-	for (int i = 0; i < currentWordLength; i++) {
-		if (currentWord->getWord()[i] == shootedWord[i]) {
-			//Ct << currentWord->getWord()[i];
-			correctLetters.at(i) = currentWord->getWord()[i];
-			correctLettersAmount++;
+/*
+* This function fills 2 vectors with letters or an _
+*/
+void SceneIngame::fillVector() {
+	for (int i = 0; i < correctLetters.size(); i++) {
+		shotLetters.at(i) = '_'; //fill the shotLetter vector with _
+		if (i == 0) {
+			correctLetters.at(i) = currentWord->getFirstLetter(); //fill the vector with the first letter of the current word
 		}
 		else {
-			if (!(correctLetters.at(i) >= 65 && correctLetters.at(i <= 90))) {
-				correctLetters.at(i) = '.';
-			}
+			correctLetters.at(i) = '_'; //fill the other indexes with an _
+		}
+	}
+	drawShootedWords(); //draw both words
+}
+
+bool SceneIngame::checkWord() {
+	int correctLettersAmount = 0;
+	for (int i = 0; i < currentWordLength; i++) {
+		if (currentWord->getWord()[i] == shotLetters.at(i)) { 
+			correctLetters.at(i) = currentWord->getWord()[i];
+			correctLettersAmount++;
 		}
 	}
 
 	if (correctLettersAmount == currentWordLength) {
-		chosenWordsAmount++;
-		if (chosenWordsAmount < currentWordAmount) {
-			currentWord = wordsToGuess.at(chosenWordsAmount);
-			currentWordIndex = 0;
-		}
-		shootedWord = "";
-		clearVector();
+		clearVector(&correctLetters);
+		currentWordIndex = -1;
+		return true;
 	}
 	else {
-		//show correct letters
-		showWord();
+		return false;
 	}
-	cout << "End of checking!";
 }
 
-void SceneIngame::duringGame() {
-	//First check the amount of hearts. <-- TODO
-	//Second check the amount of time. <-- TODO
-	//third check the amount of words to guess <-- DONE
+void SceneIngame::gameLogic() {
+	char letter;
+	if (currentWordIndex == -1) {
+		fillVector();
+		currentWordIndex = 0;
+		cout << currentWord->getWord();
+		return;
+	}
 
-	if (VC->redDetected) {
-		if (oneSecondTimer->hasFinished()) {
-			oneSecondTimer->start();
-			VC->redDetected = false;
-			if (chosenWordsAmount < currentWordAmount) {
-				if (currentWordIndex < currentWordLength) {
-					//testcode --> CHANGE LATER
-					shootedWord += currentWord->getWord()[currentWordIndex];
-					currentWordIndex++;
-					cout << shootedWord << endl;
-				}
-				else { //All letters shooted, so check the word
-					checkWord();
+	//TODO --> check for lives
+	//TODO --> check for timer
+	//TODO --> check for color detection
+
+	if (chosenWordsAmount < currentWordAmount) {
+
+		if (currentWordIndex < currentWordLength) {
+			//tESTCODE
+			cin >> letter;
+			shotWord += letter;
+			shotLetters.at(currentWordIndex) = letter;
+			currentWordIndex++;
+		}
+		else {
+			if (checkWord()) {
+				chosenWordsAmount++;
+				if (chosenWordsAmount < currentWordAmount) {
+					currentWord = wordsToGuess.at(chosenWordsAmount);
 				}
 			}
-			else { //Guessed all the words
-				chosenWordsAmount = 0;
+			else {
 				currentWordIndex = 0;
-				gameStarted = false;
-				timer->stop();
-				oneSecondTimer->stop();
-				destroyAllWindows();
-				currentScene = scenes[Scenes::STARTUP];
+				shotWord = "";
+				clearVector(&shotLetters);
 			}
 		}
+	}
+	else {
+		chosenWordsAmount = 0;
+		currentWordIndex = -1;
+		gameStarted = false;
+		destroyAllWindows();
+		currentScene = scenes[Scenes::STARTUP];
 	}
 }
