@@ -30,6 +30,12 @@ Crosshair::Crosshair() {
 /// Mathod to draw the crosshair
 /// </summary>
 void Crosshair::draw() {
+	// Crosshair doesn't need to be drawn when uninitialised
+	if (x == 0.0f && y == 0.0f)
+	{
+		return;
+	}
+
 	// Set the projection matrix to be on the drawing plane
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);

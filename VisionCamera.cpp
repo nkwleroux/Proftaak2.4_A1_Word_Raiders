@@ -128,7 +128,7 @@ void VisionCamera::update() {
 
 Point VisionCamera::getCrossHairCoords()
 {
-	return myPoint;
+	return currentPoint;
 }
 
 void VisionCamera::closedAction()
