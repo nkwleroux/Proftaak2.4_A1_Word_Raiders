@@ -10,6 +10,8 @@ class BoundingBox : public DrawComponent
 public:
 	glm::vec3 min, max;
 
+	bool collisionX = false, collisionY = false, collisionZ = false;
+
 	BoundingBox(GameObject* gameObject);
 	~BoundingBox();
 	void addVector(glm::vec3 vector);

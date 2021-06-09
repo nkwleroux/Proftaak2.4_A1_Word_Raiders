@@ -3,9 +3,8 @@
 #include "tigl.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(int id)
+GameObject::GameObject(int id) : id(id)
 {
-	id = id;
 }
 
 
