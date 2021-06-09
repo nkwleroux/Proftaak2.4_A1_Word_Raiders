@@ -1,6 +1,8 @@
 #include "FpsCam.h"
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
+using namespace std;
 
 FpsCam::FpsCam(GLFWwindow* window)
 {
@@ -24,30 +26,44 @@ void FpsCam::move(float angle, float fac)
 	position.z += (float)sin(rotation.y + glm::radians(angle)) * fac;
 }
 
-void FpsCam::update(GLFWwindow* window, double* lastX, double* lastY, int* index)
+void FpsCam::update(GLFWwindow* window)
 {
-    double x, y;
-    glfwGetCursorPos(window, &x, &y);
+    while (appIsRunning) {
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
 
-    rotation.x -= (float)(*lastY - y) / 100.0f;
-    rotation.y -= (float)(*lastX - x) / 100.0f;
+        rotation.x -= (float)(lastY - y) / 100.0f;
+        rotation.y -= (float)(lastX - x) / 100.0f;
 
-    *lastX = x;
-    *lastY = y;
+        lastX = x;
+        lastY = y;
 
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        move(0, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        move(180, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        move(90, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        move(-90, 0.05f);
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {};
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {};
+        cout << x << y << endl;
 
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        *index = 1;
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        *index = 0;
+        //glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        //    {
+        //        if (key == GLFW_KEY_ESCAPE) { //todo make it so that if esc is pressed on either screens that app closes
+        //            glfwSetWindowShouldClose(window, true);
+        //        }
+        //    });
+
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            move(0, 0.005f);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            move(180, 0.005f);
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            move(90, 0.005f);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            move(-90, 0.005f);
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {};
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {};
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
+        };
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
+        };
+    }
+    cout << "fps done" << endl;
 }

@@ -123,11 +123,16 @@ SkyboxComponent::~SkyboxComponent()
 
 void SkyboxComponent::draw()
 {
+	glLoadIdentity();
+	tigl::shader->enableTexture(true);
+	tigl::shader->enableColor(false);
+	glEnable(GL_TEXTURE_2D);
 	for (int i = 0; i < 6; i++)
 	{
 		textures[i]->bind();
 		tigl::drawVertices(GL_QUADS, verts[i]);
 	}
+	glDisable(GL_TEXTURE_2D);
 }
 
 std::vector<glm::vec3> SkyboxComponent::getVertices()
