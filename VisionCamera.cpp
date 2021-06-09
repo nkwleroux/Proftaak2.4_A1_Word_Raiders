@@ -81,7 +81,7 @@ void VisionCamera::findColor()
 		Scalar upper(myColors[i][3], myColors[i][4], myColors[i][5]);
 		inRange(imgHSV, lower, upper, mask);
 
-		 myPoint = getContours();
+		myPoint = getContours();
 
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			if (i == 0) {
@@ -116,16 +116,14 @@ void VisionCamera::displayImage()
 }
 
 void VisionCamera::update() {
-	//while (appIsRunning)
-	//{
-		cap.read(img);
-		findColor();
-		imshow("Video", img);
 
-		videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
-		videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
-	//}
-	//cout << "DONE UPDATE" << endl;
+	cap.read(img);
+	findColor();
+	imshow("Video", img);
+
+	videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
+	videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
+
 }
 
 Point VisionCamera::getCrossHairCoords()
