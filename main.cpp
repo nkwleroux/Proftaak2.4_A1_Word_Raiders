@@ -90,7 +90,7 @@ int main(void)
 
 	if (!glfwInit())
 		throw "Could not initialize glwf";
-	window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "Word Raiders", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -280,7 +280,7 @@ void update()
 					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 					//cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
 					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-					oTarget -= RandomVec3(10, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
+					oTarget += RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
 
 					//next->getComponent<MoveToComponent>()->target = currTarget;
 					o->getComponent<MoveToComponent>()->target = oTarget;
@@ -358,7 +358,7 @@ void draw()
 	//timer
 	textObject->draw("Score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	textObject->draw("Lives: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw("Levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 	//ctr++;
 	textObject->draw(wordShot, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
 
@@ -480,7 +480,9 @@ void createLetterCubes()
 				while (o->getComponent<BoundingBox>()->collideWithObject(next)) {
 					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
 					o->position = pos;
-					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
+					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 30, rand() % 30, 0);
+					//o->getComponent<MoveToComponent>()->target = glm::vec3(30, 30, 0);
+					//o->getComponent<MoveToComponent>()->target = glm::vec3(-1*(next->getComponent<MoveToComponent>()->target.x), -1 * (next->getComponent<MoveToComponent>()->target.y), 0);
 					o->draw();
 					//o->update(0);
 					//next->draw();
