@@ -316,9 +316,8 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	//glm::mat4 modelMatrix(1.0f);
 	//modelMatrix = glm::translate(modelMatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
