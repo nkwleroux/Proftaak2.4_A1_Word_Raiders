@@ -155,7 +155,7 @@ void SceneIngame::draw()
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("levens: ******", 50.0 + ctr, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
+	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(shotWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(correctWord, windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
@@ -274,6 +274,7 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix,
 
 	int Viewport[4];
 	glGetIntegerv(GL_VIEWPORT, Viewport);
+	
 	yOrigin = Viewport[3] - yOrigin;
 
 	float winZ;
@@ -349,37 +350,45 @@ void SceneIngame::gameLogic() {
 	//TODO --> check for lives
 	//TODO --> check for timer
 	//TODO --> check for color detection
+	if (VC->redDetected) {
+		if (oneSecondTimer->hasFinished()) {
+			oneSecondTimer->start();
+			VC->redDetected = false;
 
-	if (chosenWordsAmount < currentWordAmount) {
+			if (chosenWordsAmount < currentWordAmount) {
 
-		if (currentWordIndex < currentWordLength) {
-			//tESTCODE
-			cin >> letter;
-			shotWord += letter;
-			shotLetters.at(currentWordIndex) = letter;
-			currentWordIndex++;
-		}
-		else {
-			if (checkWord()) {
-				chosenWordsAmount++;
-				if (chosenWordsAmount < currentWordAmount) {
-					currentWord = wordsToGuess.at(chosenWordsAmount);
+				if (currentWordIndex < currentWordLength) {
+					//tESTCODE
+					//cin >> letter;
+					letter = currentWord->getWord()[currentWordIndex];
+					shotWord += letter;
+					shotLetters.at(currentWordIndex) = letter;
+					currentWordIndex++;
+				}
+				else {
+					if (checkWord()) {
+						chosenWordsAmount++;
+						if (chosenWordsAmount < currentWordAmount) {
+							currentWord = wordsToGuess.at(chosenWordsAmount);
+						}
+					}
+					else {
+						currentWordIndex = 0;
+						shotWord = "";
+						clearVector(&shotLetters);
+					}
 				}
 			}
 			else {
-				currentWordIndex = 0;
-				shotWord = "";
-				clearVector(&shotLetters);
+				chosenWordsAmount = 0;
+				currentWordIndex = -1;
+				gameStarted = false;
+				destroyAllWindows();
+				currentScene = scenes[Scenes::STARTUP];
 			}
 		}
 	}
-	else {
-		chosenWordsAmount = 0;
-		currentWordIndex = -1;
-		gameStarted = false;
-		destroyAllWindows();
-		currentScene = scenes[Scenes::STARTUP];
-	}
+
 }
 
 void SceneIngame::initSkyboxTextures() {

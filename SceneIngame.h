@@ -9,15 +9,14 @@ class Texture;
 class SceneIngame : public Scene {
 
 private:
-    void duringGame();
     bool checkWord();
-    void showWord();
     void clearVector(std::vector<char> *vector);
-    void rayCast(int xOrigin, int yOrigin);
-    void addShootedLetter(char letter, int index);
+    void rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
     void drawShootedWords();
     void fillVector();
     void gameLogic();
+    void initSkyboxTextures();
+    void createLetterCubes();
 
 	glm::vec4 mouse3d;
 	GameObject* debugCube;

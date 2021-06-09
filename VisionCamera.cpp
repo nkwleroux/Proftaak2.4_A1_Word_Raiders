@@ -140,6 +140,7 @@ glm::vec2 VisionCamera::getCrossHairCoords()
 	float xCoordinate = (float)viewport[2] * percentageX;
 	float yCoordinate = (float)viewport[3] * percentageY;
 
+	//xCoordinate = (float)viewport[2] - xCoordinate; //Alleen voor Nicholas (inverted camera)
 	return glm::vec2(xCoordinate, yCoordinate);
 }
 
