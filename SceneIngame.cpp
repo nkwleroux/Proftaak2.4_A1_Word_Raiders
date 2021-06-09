@@ -5,7 +5,6 @@
 #include "tigl.h"
 #include "stb_image.h"
 #include "tigl.h"
-#include "ObjModel.h"
 #include "Text/Text.h"
 #include "GameObject.h"
 #include "PlayerComponent.h"
@@ -17,6 +16,10 @@
 #include "Timer.h"
 #include "Word.h"
 #include "WordLoader.h"
+#include "BoundingBox.h"
+#include "SkyboxComponent.h"
+#include "LetterModelComponent.h"
+#include "FpsCam.h"
 
 #include <GL/glew.h>
 #include <Gl/GLU.h>
@@ -49,10 +52,11 @@ extern GLFWwindow* window;
 extern int currentWordLength;
 extern int currentWordAmount;
 
-Texture* textures[3];
-std::vector<ObjModel*> models;
+Texture* textureSkybox[6];
+Texture* textureCrosshair[2];
 extern int windowHeight;
 extern int windowWidth;
+extern FpsCam* camera;
 VisionCamera* VC;
 Text* textObject;
 Text* wordText;
@@ -62,7 +66,6 @@ double lastFrameTime = 0;
 GameObject* backgroundBox;
 GameObject* crosshair;
 
-double lastX, lastY;
 int textureIndex;
 Timer* timer;
 Timer* oneSecondTimer;
@@ -83,11 +86,7 @@ SceneIngame::SceneIngame()
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
 
-	inGameTexture = new Texture("Images/shapes.png");
-	
-	textures[0] = new Texture("Images/openHand.png");
-	textures[1] = new Texture("Images/closedHand.png");
-	textures[2] = new Texture("Images/container.jpg");
+	initSkyboxTextures();
 
 	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0f);
 	wordText = new Text("c:/windows/fonts/Verdana.ttf", 128.0f);
@@ -99,57 +98,33 @@ SceneIngame::SceneIngame()
 	timer = new Timer(90);
 	oneSecondTimer = new Timer(1);
 
-	glfwGetCursorPos(window, &lastX, &lastY);
-
-	//camera = new FpsCam(window);
+	camera = new FpsCam(window);
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	camera->lastX = x;
+	camera->lastY = y;
 
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new CubeComponent(10));
-	objects.push_back(backgroundBox);
+	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
+	backgroundBox->addComponent(new BoundingBox(backgroundBox));
 
 	crosshair = new GameObject(10);
-	crosshair->addComponent(new CrosshairComponent(0.5));
-	objects.push_back(crosshair);
+	crosshair->position = glm::vec3(0, 0, 20);
+	crosshair->addComponent(new CrosshairComponent(10));
 
-	VC->appIsRunning = false;
-
-	//o->getComponent<CrosshairComponent>()->setTexture(textures[2]); //todo
-
-	for (int i = 1; i < 6; i++) {
-		GameObject* o = new GameObject(i);
-		o->position = glm::vec3(rand() % 5, 0, -1);
-		o->position = glm::vec3(i, 0, -1);
-		o->addComponent(new CubeComponent(0.2));
-		o->addComponent(new MoveToComponent());
-		o->getComponent<MoveToComponent>()->target = o->position;
-		//o->addComponent(new SpinComponent(1.0f));
-		objects.push_back(o);
-	}
+	createLetterCubes();
 }
 
 void SceneIngame::draw()
 {
-	tigl::shader->setProjectionMatrix(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 100.0f));
-	tigl::shader->setViewMatrix(glm::mat4(1.0f));
-	tigl::shader->setModelMatrix(glm::mat4(1.0f));
-	tigl::shader->enableTexture(true);
-	inGameTexture->bind();
-	tigl::begin(GL_QUADS);
-	tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, 1, 0), glm::vec2(0, 1)));
-	tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, 1, 0), glm::vec2(1, 1)));
-	tigl::addVertex(tigl::Vertex::PT(glm::vec3(1, -1, 0), glm::vec2(1, 0)));
-	tigl::addVertex(tigl::Vertex::PT(glm::vec3(-1, -1, 0), glm::vec2(0, 0)));
-	tigl::end();
-
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
 	//tigl::shader->setviewmatrix(camera->getmatrix()); //camera
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
-	//tigl::shader->setmodelmatrix(glm::mat4(1.0f));
+	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	glm::mat4 modelmatrix(1.0f);
 	//modelmatrix = glm::translate(modelmatrix, glm::vec3((float)((windowwidth / videowidth) * currentpoint.x / 120.0f - 8.0), (float)(((windowheight / videoheight) * currentpoint.y / -125.0f + 4.0)), 0.0f));
@@ -159,54 +134,22 @@ void SceneIngame::draw()
 	glEnable(GL_DEPTH_TEST);
 	//for outlines only
 	//glpolygonmode(gl_front_and_back, gl_line);
-	//
-	//
+
+	backgroundBox->draw();
+
+	crosshair->getComponent<CrosshairComponent>()->currentCrosshair = VC->currentCrosshair;
+	crosshair->draw(modelmatrix);
 
 	//drawing text
 	for (auto& o : objects) {
-		if (o == backgroundBox) {
-			textures[2]->bind();
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			o->draw();
-		}
-		else if (o == crosshair) {
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			/*tigl::shader->enablecolor(true);
-			tigl::shader->enabletexture(false);*/
-
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-			textures[VC->currentCrosshair]->bind();
-			o->draw(modelmatrix);
-
-			glDisable(GL_BLEND);
-		}
-		else {
-
-			tigl::shader->enableColor(true);
-			tigl::shader->enableTexture(false);
-			o->draw();
-		}
+		tigl::shader->enableColor(true);
+		tigl::shader->enableTexture(false);
+		o->draw();
 	}
 
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableLighting(false);
 
-	for (int i = 0; i < models.size(); i++) {
-		if (models[i]->materialIndex != -1)
-		{
-			tigl::shader->enableColor(false);
-			tigl::shader->enableTexture(true);
-		}
-		else {
-			tigl::shader->enableTexture(false);
-		}
-		models[i]->draw();
-	}
-	
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0 + ctr, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
@@ -218,12 +161,23 @@ void SceneIngame::draw()
 	else {
 		textObject->draw(shootedWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	}
-	
+
 
 	glDisable(GL_DEPTH_TEST);
 }
 
-void SceneIngame::update(){
+glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
+	float x = 0, y = 0, z = 0;
+	if (xCollide)
+		x = (float(rand()) / float((RAND_MAX)) * max);
+	if (yCollide)
+		y = (float(rand()) / float((RAND_MAX)) * max);
+	if (zCollide)
+		z = (float(rand()) / float((RAND_MAX)) * max);
+	return glm::vec3(x, y, 0);
+}
+
+void SceneIngame::update() {
 	//check if wordlength has changed
 	if (currentWord->getWordLength() != currentWordLength) {
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
@@ -232,7 +186,7 @@ void SceneIngame::update(){
 	}
 
 	//check if it is the start of the game
-	if (!gameStarted){
+	if (!gameStarted) {
 		gameStarted = true;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		currentWord = wordsToGuess.at(chosenWordsAmount);
@@ -240,16 +194,11 @@ void SceneIngame::update(){
 		oneSecondTimer->start();
 	}
 
-	
-
+	//Maybe make into callback function. Now is dependent on update (timing).
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
 	{
 		currentScene = scenes[Scenes::PAUSE];
 	}
-
-		//cap.read(img);
-	//findColor();
-	//imshow("Video", img);
 
 	VC->update();
 	duringGame();
@@ -262,15 +211,57 @@ void SceneIngame::update(){
 
 	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 
+	int* axis;
 	for (auto& o : objects) {
-		if (o != backgroundBox && o != crosshair) {
-			/*o->position = glm::vec3(o->position.x+deltaTime, o->position.y, o->position.z);
-			o->getComponent<MoveToComponent>()->target = o->position;*/
+		for (auto& next : objects) {
+
+			//Skip first element so you can compare with the previous one
+			if (next != o) {
+				if (o->getComponent<BoundingBox>()->collideWithObject(next)) {
+
+					BoundingBox* oBox = o->getComponent<BoundingBox>();
+
+					glm::vec3 temp = glm::vec3(0);
+
+					if (oBox->collisionX) {
+						temp += glm::vec3(next->position.x - o->position.x, 0, 0);
+					}
+					if (oBox->collisionY) {
+
+						temp += glm::vec3(0, next->position.y - o->position.y, 0);
+					}
+					if (oBox->collisionX) {
+						temp += glm::vec3(0, 0, next->position.z - o->position.z);
+					}
+
+					o->position -= temp / 8.0f;
+
+					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+					oTarget += RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
+
+					o->getComponent<MoveToComponent>()->target = oTarget;
+
+					oBox->collisionX = false;
+					oBox->collisionZ = false;
+					oBox->collisionY = false;
+					break;
+
+				}
+			}
+		}
+		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+			cout << oTarget.x << ", " << oTarget.y << ", " << oTarget.z << "\n";
+			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+			o->getComponent<MoveToComponent>()->target = oTarget;
+		}
+		//TODO
+		if (o->getComponent<MoveToComponent>()->target == o->position) {
+			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false) + glm::vec3(-1 * o->position.x, -1 * o->position.y, -1 * o->position.z);;
 		}
 		o->update(deltaTime);
 	}
-
-	//rotation += 0.01f;
 }
 
 
@@ -289,7 +280,6 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin)
 	glVertex3f(xOrigin, yOrigin, 0);
 	glVertex3f(400, 400, 400);
 	glEnd();
-	//
 }
 
 void SceneIngame::clearVector() {
@@ -366,5 +356,50 @@ void SceneIngame::duringGame() {
 				currentScene = scenes[Scenes::STARTUP];
 			}
 		}
+	}
+}
+
+void SceneIngame::initSkyboxTextures() {
+	textureSkybox[0] = new Texture("Images/skybox_middle.png"); //middle
+	textureSkybox[1] = new Texture("Images/skybox_right.png"); //right
+	textureSkybox[2] = new Texture("Images/skybox_left.png"); //left
+	textureSkybox[3] = new Texture("Images/skybox_right2.png"); //back
+	textureSkybox[4] = new Texture("Images/skybox_bottom.png"); // bottom
+	textureSkybox[5] = new Texture("Images/skybox_top.png"); // top
+}
+
+void SceneIngame::createLetterCubes()
+{
+	objects.clear();
+	for (int i = 0; i < currentWord->getLetters().size(); i++) {
+		GameObject* o = new GameObject(i);
+
+		o->addComponent(new LetterModelComponent(currentWord->getLetters().at(i)));
+		o->addComponent(new BoundingBox(o));
+		o->addComponent(new MoveToComponent());
+		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
+		glm::vec3 pos = glm::vec3(0, 0, 0);
+		o->position = pos;
+		o->scale = glm::vec3(1.0f);
+		o->getComponent<MoveToComponent>()->target = pos;
+		o->draw();
+
+		for (auto& next : objects) {
+			if (next != o) {
+				cout << o->getComponent<BoundingBox>()->collideWithObject(next) << endl;
+				while (o->getComponent<BoundingBox>()->collideWithObject(next)) {
+					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
+					o->position = pos;
+					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 30, rand() % 30, 0);
+					//o->getComponent<MoveToComponent>()->target = glm::vec3(30, 30, 0);
+					//o->getComponent<MoveToComponent>()->target = glm::vec3(-1*(next->getComponent<MoveToComponent>()->target.x), -1 * (next->getComponent<MoveToComponent>()->target.y), 0);
+					o->draw();
+					//o->update(0);
+					//next->draw();
+					//next->update(0);
+				}
+			}
+		}
+		objects.push_back(o);
 	}
 }

@@ -3,6 +3,7 @@
 #include "DrawComponent.h"
 #include "tigl.h"
 #include "Texture.h"
+
 using tigl::Vertex;
 
 #include <vector>
@@ -10,13 +11,20 @@ using tigl::Vertex;
 class CrosshairComponent : public DrawComponent
 {
 	std::vector<Vertex> verts;
-	Texture* texture;
+private:
+	Texture* textureCrosshair[2];
+	
+	void initTextures();
+
 public:
+	int currentCrosshair = 0;
+
 	CrosshairComponent(float size);
 	~CrosshairComponent();
 
-	//virtual void setTexture(Texture* t) override;
 	virtual void draw() override;
 
+	// Inherited via DrawComponent
+	virtual std::vector<glm::vec3> getVertices() override;
 };
 

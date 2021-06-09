@@ -19,8 +19,8 @@ private:
 
 	vector<vector<int>> myColors{
 	{55, 52, 7, 93, 106, 172}, //green
-	{0, 194, 75, 18, 246, 255} //red
-	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+	//{0, 194, 75, 18, 246, 255} //red
+	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 	};
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 
@@ -29,7 +29,6 @@ private:
 
 public:
 	Point currentPoint;
-	bool appIsRunning = true;
 	int currentCrosshair = 0;
 	float videoHeight = 0;
 	float videoWidth = 0;

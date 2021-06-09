@@ -7,16 +7,16 @@ class Texture;
 class SceneIngame : public Scene {
 
 private:
-    Texture* inGameTexture;
-    void duringGame();
-    void checkWord();
-    void showWord();
-    void clearVector();
-    void rayCast(int xOrigin, int yOrigin);
-
+	void duringGame();
+	void checkWord();
+	void showWord();
+	void clearVector();
+	void rayCast(int xOrigin, int yOrigin);
+	void initSkyboxTextures();
+	void createLetterCubes();
 public:
-    SceneIngame();
-    virtual void draw() override;
-    virtual void update() override;
+	SceneIngame();
+	virtual void draw() override;
+	virtual void update() override;
 };
 
