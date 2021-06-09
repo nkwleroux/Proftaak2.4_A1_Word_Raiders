@@ -7,11 +7,12 @@ private:
 	bool handIsOpen;
 	Texture* openHand;
 	Texture* closedHand;
+	float x, y;
 
 public:
 	Crosshair();
 	void draw();
 	void setHandStyle(bool isOpen);
-	void update(double crosshairX, double crosshairY);
+	void update(float x, float y);
 };
 

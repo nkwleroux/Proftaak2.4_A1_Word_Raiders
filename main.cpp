@@ -160,7 +160,7 @@ void init()
 	oneSecondTimer = new Timer(1);
 
 	glfwGetCursorPos(window, &lastX, &lastY);
-	crosshair->update(lastX, lastY);
+	
 
 	camera = new FpsCam(window);
 
@@ -261,7 +261,10 @@ void update()
 		o->update(deltaTime);
 	}
 
-	crosshair->update(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
+	float percentageX = VC->getCrossHairCoords().x/640.0f;
+	float percentageY = VC->getCrossHairCoords().y/480.0f;
+
+	crosshair->update(percentageX, percentageY);
 }
 
 void draw()

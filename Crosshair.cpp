@@ -5,7 +5,6 @@
 #include <glm\ext\matrix_clip_space.hpp>
 
 tigl::VBO* vbo;
-glm::vec2 position;
 
 /// <summary>
 /// Constructor for the crosshair
@@ -41,7 +40,11 @@ void Crosshair::draw() {
 
 	// Set the position of the crosshair
 	glm::mat4 modelMatrix(1.0f);
-	modelMatrix = glm::translate(modelMatrix,glm::vec3(position.x,position.y,0));
+
+	float xCoordinate = (float)viewport[2] * x;
+	float yCoordinate = (float)viewport[3] * y;
+
+	modelMatrix = glm::translate(modelMatrix,glm::vec3(xCoordinate,yCoordinate,0));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(50, 50, 1));
 	tigl::shader->setModelMatrix(modelMatrix);
 
@@ -81,9 +84,9 @@ void Crosshair::setHandStyle(bool isOpen) {
 /// <summary>
 /// Method to set the position of the crosshair
 /// </summary>
-/// <param name="crosshairX">Value of the x axis</param>
-/// <param name="crosshairY">Value of the y axis</param>
-void Crosshair::update(double crosshairX, double crosshairY) {
-	position.x = crosshairX;
-	position.y = crosshairY;
+/// <param name="crosshairX">pecentage how far on the x axis</param>
+/// <param name="crosshairY">pecentage how far on the y axis</param>
+void Crosshair::update(float crosshairX, float crosshairY) {
+	x = crosshairX;
+	y = crosshairY;
 }
