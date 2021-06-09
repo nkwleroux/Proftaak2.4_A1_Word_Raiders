@@ -1,8 +1,18 @@
 #pragma once
 #include "Scene.h"
-class SceneIngame :
-    public Scene
-{
+#include "tigl.h"
+
+class Texture;
+
+class SceneIngame : public Scene {
+
+private:
+    Texture* inGameTexture;
+    void duringGame();
+    void checkWord();
+    void showWord();
+    void clearVector();
+    void rayCast(int xOrigin, int yOrigin);
 
 public:
     SceneIngame();

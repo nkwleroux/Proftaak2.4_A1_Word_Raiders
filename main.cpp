@@ -21,16 +21,23 @@
 #include "SpinComponent.h"
 #include "TimerJumper.h"
 #include "CrosshairComponent.h"
-#include "VisionCamera.h"
 #include <stdlib.h>
 #include "LetterModelComponent.h"
 #include "ObjectModelComponent.h"
 #include "BoundingBox.h"
 #include "SkyboxComponent.h"
+#include <map>
+
+//Scene inclusions
+#include "Scene.h"
+#include "SceneStartup.h"
+#include "SceneIngame.h"
+#include "ScenePause.h"
+#include "SceneCredits.h"
+#include "SceneSettings.h"
+
 #include "Timer.h"
 #include "Text/Text.h"
-#include "Word.h"
-#include "WordLoader.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -42,6 +49,8 @@ using namespace cv;
 
 GLFWwindow* window;
 FpsCam* camera;
+
+//DO NOT MOVE
 //std::vector<ObjModel*> models;
 VisionCamera* VC;
 Text* textObject;
@@ -61,6 +70,7 @@ Timer* oneSecondTimer;
 WordLoader* wordLoader;
 
 int currentWordLength = 5;
+int currentWordAmount = 1;
 DIFFICULTY currentDifficulty = easy;
 int currentWordIndex = 0;
 int chosenWordsAmount = 0;
@@ -69,14 +79,18 @@ std::vector<char> correctLetters(currentWordLength);
 Word* currentWord;
 String wordShot = "";
 
+std::map<Scenes, Scene*> scenes;
+Scene* currentScene = nullptr;
+//DO NOT MOVE
+
 void init();
-void rayCast(int xOrigin, int yOrigin);
 void update();
 void draw();
 void checkWord();
 void duringGame();
 void initSkyboxTextures();
 void createLetterCubes();
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -85,9 +99,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main(void)
 {
-	VideoCapture cap(0);
-	VC = new VisionCamera(cap);
-
 	if (!glfwInit())
 		throw "Could not initialize glwf";
 	window = glfwCreateWindow(windowWidth, windowHeight, "Word Raiders", NULL, NULL);
@@ -135,6 +146,7 @@ void init()
 				glfwSetWindowShouldClose(window, true);
 			}
 		});
+	
 
 	textureCrosshair[0] = new Texture("Images/closeHand.png");
 	textureCrosshair[1] = new Texture("Images/openHand.png");
@@ -189,6 +201,16 @@ void init()
 
 	//models.push_back(new ObjModel("resources/Cube_Word_Raiders.obj")); //this one
 
+	scenes[Scenes::STARTUP] = new SceneStartup();
+	scenes[Scenes::INGAME] = new SceneIngame();
+	scenes[Scenes::PAUSE] = new ScenePause();
+	scenes[Scenes::SETTINGS] = new SceneSettings();
+	scenes[Scenes::CREDITS] = new SceneCredits();
+	currentScene = scenes[Scenes::STARTUP];
+
+
+
+
 	/*square = new GameObject(1);
 	square->position = glm::vec3(-3, 1, 0);
 	square->addComponent(new MoveToComponent());
@@ -204,7 +226,6 @@ void init()
 	//square2->getComponent<MoveToComponent>()->target = glm::vec3(-10, 0, 0);
 	//square2->addComponent(new CubeComponent(1.0f));
 	//square2->addComponent(new BoundingBox(square2));
-	//objects.push_back(square2);
 
 	initSkyboxTextures();
 	createLetterCubes();
@@ -223,6 +244,7 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 
 void update()
 {
+	currentScene->update();
 	VC->update();
 	duringGame();
 	//Dont forget to remove camera update so the user cant move
@@ -311,6 +333,7 @@ void draw()
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	currentScene->draw();
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);

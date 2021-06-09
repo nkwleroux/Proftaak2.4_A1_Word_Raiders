@@ -174,6 +174,12 @@
     <ClCompile Include="MoveToComponent.cpp" />
     <ClCompile Include="ObjectModelComponent.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneCredits.cpp" />
+    <ClCompile Include="SceneIngame.cpp" />
+    <ClCompile Include="ScenePause.cpp" />
+    <ClCompile Include="SceneSettings.cpp" />
+    <ClCompile Include="SceneStartup.cpp" />
     <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Text\Text.cpp" />
@@ -198,6 +204,12 @@
     <ClInclude Include="MoveToComponent.h" />
     <ClInclude Include="ObjectModelComponent.h" />
     <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneCredits.h" />
+    <ClInclude Include="SceneIngame.h" />
+    <ClInclude Include="ScenePause.h" />
+    <ClInclude Include="SceneSettings.h" />
+    <ClInclude Include="SceneStartup.h" />
     <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Text\Text.h" />
@@ -210,10 +222,14 @@
     <ClInclude Include="WordLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Images\closedHand.png" />
     <Image Include="Images\closeHand.png" />
     <Image Include="Images\container.jpg" />
+    <Image Include="Images\credits.png" />
     <Image Include="Images\openHand.png" />
+    <Image Include="Images\pause.png" />
     <Image Include="Images\rainbow.jpg" />
+    <Image Include="Images\settings.png" />
     <Image Include="Images\shapes.png" />
     <Image Include="Images\skybox_bottom.png" />
     <Image Include="Images\skybox_galaxy_original.png" />
@@ -222,6 +238,7 @@
     <Image Include="Images\skybox_right.png" />
     <Image Include="Images\skybox_right2.png" />
     <Image Include="Images\skybox_top.png" />
+    <Image Include="Images\startup.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="words.json" />

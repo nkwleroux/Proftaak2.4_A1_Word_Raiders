@@ -3,19 +3,13 @@
 #include "tigl.h"
 class Texture;
 
-class StartupScene : public Scene
+class SceneStartup : public Scene
 {
 private:
 	Texture* startupTexture;
-	tigl::VBO* kubusVbo;
-
-	float time;
-
-	int menuIndex;
 
 public:
-	StartupScene();
-
+	SceneStartup();
 
 	virtual void draw() override;
 	virtual void update() override;

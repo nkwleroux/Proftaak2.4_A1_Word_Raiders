@@ -93,6 +93,24 @@
     <ClCompile Include="WordLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneIngame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneStartup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenePause.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneCredits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -161,6 +179,24 @@
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneIngame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneStartup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenePause.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneCredits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closeHand.png">
@@ -176,6 +212,21 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Images\shapes.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\startup.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\credits.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\pause.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\settings.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\closedHand.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Images\skybox_bottom.png">

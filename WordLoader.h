@@ -7,8 +7,6 @@
 #include "json.hpp"
 #include "Word.h"
 
-typedef const enum DIFFICULTY { easy = 3, medium = 5, hard = 7 };
-
 class WordLoader
 {
 
@@ -16,7 +14,7 @@ public:
 	WordLoader();
 	~WordLoader() = default;
 
-	std::vector<Word*> loadWords(int wordType, DIFFICULTY diff);
+	std::vector<Word*> loadWords(int wordType, int wordAmount);
 	void printWords(std::vector<Word*> words);
 
 private:
