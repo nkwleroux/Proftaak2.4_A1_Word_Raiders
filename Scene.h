@@ -16,6 +16,5 @@ enum class Scenes
 	SETTINGS,
 	CREDITS,
 	PAUSE,
-	GAMEWON,
-	GAMEOVER
+	GAMEEND,
 };

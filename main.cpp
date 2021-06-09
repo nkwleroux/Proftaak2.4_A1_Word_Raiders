@@ -33,6 +33,7 @@
 #include "ScenePause.h"
 #include "SceneCredits.h"
 #include "SceneSettings.h"
+#include "SceneEnding.h"
 
 #include "Timer.h"
 #include "Text/Text.h"
@@ -53,6 +54,9 @@ int windowHeight = 1080;
 int windowWidth = 1920;
 int currentWordLength = 5;
 int currentWordAmount = 1;
+float timeSpent = 1;
+int achievedScore = 1;
+bool wonGame = false;
 
 std::map<Scenes, Scene*> scenes;
 Scene* currentScene = nullptr;
@@ -121,7 +125,8 @@ void init()
 	scenes[Scenes::PAUSE] = new ScenePause();
 	scenes[Scenes::SETTINGS] = new SceneSettings();
 	scenes[Scenes::CREDITS] = new SceneCredits();
-	currentScene = scenes[Scenes::STARTUP];
+	scenes[Scenes::GAMEEND] = new SceneEnding();
+	currentScene = scenes[Scenes::GAMEEND];
 }
 
 void update()
