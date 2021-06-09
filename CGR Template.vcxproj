@@ -177,6 +177,7 @@
     <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneCredits.cpp" />
+    <ClCompile Include="SceneEnding.cpp" />
     <ClCompile Include="SceneIngame.cpp" />
     <ClCompile Include="ScenePause.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneCredits.h" />
+    <ClInclude Include="SceneEnding.h" />
     <ClInclude Include="SceneIngame.h" />
     <ClInclude Include="ScenePause.h" />
     <ClInclude Include="SceneSettings.h" />
@@ -228,6 +230,7 @@
     <Image Include="Images\closeHand.png" />
     <Image Include="Images\container.jpg" />
     <Image Include="Images\credits.png" />
+    <Image Include="Images\ending.png" />
     <Image Include="Images\openHand.png" />
     <Image Include="Images\pause.png" />
     <Image Include="Images\rainbow.jpg" />
