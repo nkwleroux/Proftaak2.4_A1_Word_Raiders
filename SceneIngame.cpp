@@ -55,6 +55,7 @@ extern int windowHeight;
 extern int windowWidth;
 VisionCamera* VC;
 Text* textObject;
+Text* wordText;
 int ctr = 1;
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
@@ -75,6 +76,7 @@ std::vector<Word*> wordsToGuess;
 std::vector<char> correctLetters(currentWordLength);
 Word* currentWord;
 String shootedWord = "";
+std::vector<char> shootedLetters(currentWordLength);
 
 SceneIngame::SceneIngame()
 {
@@ -82,17 +84,17 @@ SceneIngame::SceneIngame()
 	VC = new VisionCamera(cap);
 
 	inGameTexture = new Texture("Images/shapes.png");
-	textures[0] = new Texture("Images/closeHand.png");
-	textures[1] = new Texture("Images/openHand.png");
+	
+	textures[0] = new Texture("Images/openHand.png");
+	textures[1] = new Texture("Images/closedHand.png");
 	textures[2] = new Texture("Images/container.jpg");
 
-	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
+	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0f);
+	wordText = new Text("c:/windows/fonts/Verdana.ttf", 128.0f);
 
 	wordLoader = new WordLoader();
 	wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 	currentWord = wordsToGuess.at(chosenWordsAmount);
-	textObject->draw(shootedWord, windowWidth / 2 - 100 + ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-
 
 	timer = new Timer(90);
 	oneSecondTimer = new Timer(1);
@@ -161,7 +163,6 @@ void SceneIngame::draw()
 	//
 
 	//drawing text
-
 	for (auto& o : objects) {
 		if (o == backgroundBox) {
 			textures[2]->bind();
@@ -205,32 +206,41 @@ void SceneIngame::draw()
 		}
 		models[i]->draw();
 	}
-
+	
 	//timer
-	textObject->draw("score: 200 stars  ", 50.0 + ctr, 50.0 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	textObject->draw(timer->secondsToGoString(), 50.0 + ctr, 100 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	textObject->draw("levens: ******", 50.0 + ctr, 150 + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
-	//ctr++;
-	textObject->draw(shootedWord, windowWidth/2 - 100+ ctr, 50.0f + ctr, glm::vec4(0.1f, 0.8f, 0.1f, 0));
+	textObject->draw("score: 200 stars  ", 50.0 + ctr, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("levens: ******", 50.0 + ctr, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+
+	if (currentWordIndex == 0) {
+
+	}
+	else {
+		textObject->draw(shootedWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	}
+	
 
 	glDisable(GL_DEPTH_TEST);
 }
 
 void SceneIngame::update(){
+	//check if wordlength has changed
+	if (currentWord->getWordLength() != currentWordLength) {
+		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
+		currentWord = wordsToGuess.at(chosenWordsAmount);
+		correctLetters.resize(currentWordLength);
+	}
 
-	if (chosenWordsAmount == 0 && !gameStarted){
+	//check if it is the start of the game
+	if (!gameStarted){
 		gameStarted = true;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		currentWord = wordsToGuess.at(chosenWordsAmount);
 		timer->start();
 		oneSecondTimer->start();
 	}
-	if (currentWord->getWordLength() != currentWordLength) {
-		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
-		currentWord = wordsToGuess.at(chosenWordsAmount);
-		correctLetters.resize(currentWordLength);
-		cout << "Incorrect";
-	}
+
+	
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
 	{
@@ -289,7 +299,6 @@ void SceneIngame::clearVector() {
 }
 
 void SceneIngame::showWord() {
-	cout << "Founded letters: ";
 	for (int i = 0; i < correctLetters.size(); i++) {
 		cout << correctLetters.at(i);
 	}
@@ -316,37 +325,40 @@ void SceneIngame::checkWord() {
 		if (chosenWordsAmount < currentWordAmount) {
 			currentWord = wordsToGuess.at(chosenWordsAmount);
 			currentWordIndex = 0;
-			shootedWord = "";
-			clearVector();
 		}
+		shootedWord = "";
+		clearVector();
 	}
 	else {
+		//show correct letters
 		showWord();
 	}
 	cout << "End of checking!";
 }
 
 void SceneIngame::duringGame() {
-	
+	//First check the amount of hearts. <-- TODO
+	//Second check the amount of time. <-- TODO
+	//third check the amount of words to guess <-- DONE
+
 	if (VC->redDetected) {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
 			VC->redDetected = false;
-			if (chosenWordsAmount <= currentWordAmount) {
+			if (chosenWordsAmount < currentWordAmount) {
 				if (currentWordIndex < currentWordLength) {
+					//testcode --> CHANGE LATER
 					shootedWord += currentWord->getWord()[currentWordIndex];
 					currentWordIndex++;
 					cout << shootedWord << endl;
-					
 				}
-				else {
+				else { //All letters shooted, so check the word
 					checkWord();
 				}
 			}
-			else {
-				cout << "No words left!" << endl;
-				clearVector();
+			else { //Guessed all the words
 				chosenWordsAmount = 0;
+				currentWordIndex = 0;
 				gameStarted = false;
 				timer->stop();
 				oneSecondTimer->stop();

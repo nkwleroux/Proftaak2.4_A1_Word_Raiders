@@ -72,7 +72,7 @@ int main(void)
 {
 	if (!glfwInit())
 		throw "Could not initialize glwf";
-		window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
+		window = glfwCreateWindow(windowWidth, windowHeight, "Word Raiders", NULL, NULL);
 	if (!window){
 		glfwTerminate();
 		throw "Could not initialize glwf";

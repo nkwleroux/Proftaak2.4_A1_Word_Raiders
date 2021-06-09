@@ -18,7 +18,7 @@ private:
 	int hmax = 110, smax = 240, vmax = 255;
 
 	vector<vector<int>> myColors{
-	{44, 52, 75, 66, 118, 255}, //green
+	{55, 52, 7, 93, 106, 172}, //green
 	{0, 194, 75, 18, 246, 255} //red
 	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 	};

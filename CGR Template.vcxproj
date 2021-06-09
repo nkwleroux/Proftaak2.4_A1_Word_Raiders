@@ -217,6 +217,7 @@
     <ClInclude Include="WordLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Images\closedHand.png" />
     <Image Include="Images\closeHand.png" />
     <Image Include="Images\container.jpg" />
     <Image Include="Images\credits.png" />
