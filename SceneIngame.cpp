@@ -36,6 +36,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include <map>
+#include "Crosshair.h"
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -64,7 +65,7 @@ int ctr = 1;
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
-GameObject* crosshair;
+Crosshair* crosshair;
 
 int textureIndex;
 Timer* timer;
@@ -109,10 +110,7 @@ SceneIngame::SceneIngame()
 	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
 	backgroundBox->addComponent(new BoundingBox(backgroundBox));
 
-	crosshair = new GameObject(10);
-	crosshair->position = glm::vec3(0, 0, 20);
-	crosshair->addComponent(new CrosshairComponent(10));
-
+	crosshair = new Crosshair();
 	createLetterCubes();
 }
 
@@ -137,8 +135,6 @@ void SceneIngame::draw()
 
 	backgroundBox->draw();
 
-	crosshair->getComponent<CrosshairComponent>()->currentCrosshair = VC->currentCrosshair;
-	crosshair->draw(modelmatrix);
 
 	//drawing text
 	for (auto& o : objects) {
@@ -162,6 +158,7 @@ void SceneIngame::draw()
 		textObject->draw(shootedWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	}
 
+	crosshair->draw();
 
 	glDisable(GL_DEPTH_TEST);
 }
@@ -209,6 +206,10 @@ void SceneIngame::update() {
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
 
+
+	float percentageX = VC->getCrossHairCoords().x / 640.0f;
+	float percentageY = VC->getCrossHairCoords().y / 480.0f;
+	crosshair->update(percentageX,percentageY);
 	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y);
 
 	int* axis;
