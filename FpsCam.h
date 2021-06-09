@@ -12,7 +12,7 @@ public:
 	void update(GLFWwindow* window, double* lastX, double* lastY, int* index);
 
 private:
-	glm::vec3 position = glm::vec3(0, 0, -5);
+	glm::vec3 position = glm::vec3(0, 0, -20);
 	glm::vec2 rotation = glm::vec2(0, 0);
 
 	void move(float angle, float fac);
