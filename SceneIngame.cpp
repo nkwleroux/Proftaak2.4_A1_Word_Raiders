@@ -325,6 +325,9 @@ void SceneIngame::fillVector() {
 	drawShootedWords(); //draw both words
 }
 
+/*
+* This function
+*/
 bool SceneIngame::checkWord() {
 	int correctLettersAmount = 0;
 	for (int i = 0; i < currentWordLength; i++) {
@@ -356,35 +359,43 @@ void SceneIngame::gameLogic() {
 	//TODO --> check for lives
 	//TODO --> check for timer
 	//TODO --> check for color detection
+	if (VC->redDetected) {
+		if (oneSecondTimer->hasFinished()) {
+			oneSecondTimer->start();
+			VC->redDetected = false;
 
-	if (chosenWordsAmount < currentWordAmount) {
+			if (chosenWordsAmount < currentWordAmount) {
 
-		if (currentWordIndex < currentWordLength) {
-			//tESTCODE
-			cin >> letter;
-			shotWord += letter;
-			shotLetters.at(currentWordIndex) = letter;
-			currentWordIndex++;
-		}
-		else {
-			if (checkWord()) {
-				chosenWordsAmount++;
-				if (chosenWordsAmount < currentWordAmount) {
-					currentWord = wordsToGuess.at(chosenWordsAmount);
+				if (currentWordIndex < currentWordLength) {
+					//tESTCODE
+					//cin >> letter;
+					letter = currentWord->getWord()[currentWordIndex];
+					shotWord += letter;
+					shotLetters.at(currentWordIndex) = letter;
+					currentWordIndex++;
+				}
+				else {
+					if (checkWord()) {
+						chosenWordsAmount++;
+						if (chosenWordsAmount < currentWordAmount) {
+							currentWord = wordsToGuess.at(chosenWordsAmount);
+						}
+					}
+					else {
+						currentWordIndex = 0;
+						shotWord = "";
+						clearVector(&shotLetters);
+					}
 				}
 			}
 			else {
-				currentWordIndex = 0;
-				shotWord = "";
-				clearVector(&shotLetters);
+				chosenWordsAmount = 0;
+				currentWordIndex = -1;
+				gameStarted = false;
+				destroyAllWindows();
+				currentScene = scenes[Scenes::STARTUP];
 			}
 		}
 	}
-	else {
-		chosenWordsAmount = 0;
-		currentWordIndex = -1;
-		gameStarted = false;
-		destroyAllWindows();
-		currentScene = scenes[Scenes::STARTUP];
-	}
+	
 }
