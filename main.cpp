@@ -103,7 +103,7 @@ int main(void)
 	tigl::init();
 
 	init();
-	thread t2(&VisionCamera::update, VC);
+	//thread t2(&VisionCamera::update, VC);
 	thread t3(&FpsCam::update, camera, window);
 
 	while (!glfwWindowShouldClose(window))
@@ -223,7 +223,7 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 
 void update()
 {
-	/*VC->update();*/
+	VC->update();
 	duringGame();
 	//Dont forget to remove camera update so the user cant move
 	//camera->update(window);
@@ -255,8 +255,6 @@ void update()
 					//o->position -= differenceVec - dimensions;
 					//cout << "pos: " << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
 					//o->position -= differenceVec;
-
-
 
 					//cout << next->id << " collide with " << o->id << "\n";
 
@@ -302,7 +300,7 @@ void update()
 			o->getComponent<MoveToComponent>()->target = oTarget;
 		}
 		if (o->getComponent<MoveToComponent>()->target == o->position) {
-			o->getComponent<MoveToComponent>()->target = RandomVec3(25,true, true, false);
+			o->getComponent<MoveToComponent>()->target = RandomVec3(25,true, true, false) + glm::vec3(-1 * o->position.x, -1 * o->position.y, -1 * o->position.z);;
 		}
 		o->update(deltaTime);
 	}
@@ -318,8 +316,8 @@ void draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
-	tigl::shader->setViewMatrix(camera->getMatrix()); //camera
-	//tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	//tigl::shader->setViewMatrix(camera->getMatrix()); //camera
+	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 	//tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	//glm::mat4 modelMatrix(1.0f);
@@ -477,14 +475,13 @@ void createLetterCubes()
 		o->getComponent<MoveToComponent>()->target = pos;
 		o->draw();
 
-
 		for (auto& next : objects) {
 			if (next != o) {
 				cout << o->getComponent<BoundingBox>()->collideWithObject(next) << endl;
 				while (o->getComponent<BoundingBox>()->collideWithObject(next)) {
-					glm::vec3 pos = glm::vec3(rand() % 10, rand() % 10, 0);
+					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
 					o->position = pos;
-					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 10, rand() % 10, 0);
+					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
 					o->draw();
 					//o->update(0);
 					//next->draw();

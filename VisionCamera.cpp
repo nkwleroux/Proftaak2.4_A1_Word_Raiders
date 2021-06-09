@@ -116,15 +116,15 @@ void VisionCamera::displayImage()
 }
 
 void VisionCamera::update() {
-	while (appIsRunning)
-	{
+	//while (appIsRunning)
+	//{
 		cap.read(img);
 		findColor();
 		imshow("Video", img);
 
 		videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
 		videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
-	}
+	//}
 	//cout << "DONE UPDATE" << endl;
 }
 
