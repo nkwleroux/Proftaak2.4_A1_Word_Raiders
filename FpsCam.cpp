@@ -38,8 +38,6 @@ void FpsCam::update(GLFWwindow* window)
         lastX = x;
         lastY = y;
 
-        cout << x << y << endl;
-
         //glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         //    {
         //        if (key == GLFW_KEY_ESCAPE) { //todo make it so that if esc is pressed on either screens that app closes
@@ -65,5 +63,4 @@ void FpsCam::update(GLFWwindow* window)
         {
         };
     }
-    cout << "fps done" << endl;
 }

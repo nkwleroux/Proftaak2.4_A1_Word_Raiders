@@ -192,6 +192,7 @@
     <ClCompile Include="Word.cpp" />
     <ClCompile Include="WordLoader.cpp" />
     <ClCompile Include="SkyboxComponent.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBox.h" />
@@ -224,6 +225,7 @@
     <ClInclude Include="SkyboxComponent.h" />
     <ClInclude Include="Word.h" />
     <ClInclude Include="WordLoader.h" />
+    <ClInclude Include="GameLogic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closedHand.png" />

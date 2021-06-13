@@ -6,7 +6,6 @@
 #include <thread>
 #include <filesystem>
 #include <iomanip>
-#include "FpsCam.h"
 #include <stdlib.h>
 #include <map>
 
@@ -39,7 +38,6 @@ bool wonGame = false;
 std::map<Scenes, Scene*> scenes;
 Scene* currentScene = nullptr;
 GLFWwindow* window;
-FpsCam* camera;
 
 void init();
 void update();
@@ -68,9 +66,6 @@ int main(void)
 
 	init();
 
-	//FPS camera
-	thread t3(&FpsCam::update, camera, window);
-
 	while (!glfwWindowShouldClose(window))
 	{
 		draw();
@@ -78,10 +73,6 @@ int main(void)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	//FPS camera
-	camera->appIsRunning = false;
-	t3.join();
 
 	glfwTerminate();
 	destroyAllWindows();

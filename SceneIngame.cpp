@@ -19,7 +19,6 @@
 #include "BoundingBox.h"
 #include "SkyboxComponent.h"
 #include "LetterModelComponent.h"
-#include "FpsCam.h"
 
 #include <GL/glew.h>
 #include <Gl/GLU.h>
@@ -37,6 +36,7 @@
 #include <GLFW/glfw3.h>
 #include <map>
 #include "Crosshair.h"
+#include "GameLogic.h"
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -50,14 +50,10 @@ extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
-extern int currentWordLength;
-extern int currentWordAmount;
-
 Texture* textureSkybox[6];
 Texture* textureCrosshair[2];
 extern int windowHeight;
 extern int windowWidth;
-extern FpsCam* camera;
 VisionCamera* VC;
 Text* textObject;
 Text* wordText;
@@ -65,45 +61,21 @@ std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
 Crosshair* crosshair;
+GameLogic* gameLogic;
 
 int textureIndex;
-Timer* timer;
-Timer* oneSecondTimer;
-WordLoader* wordLoader;
-
-int currentWordIndex = -1;
-int chosenWordsAmount = 0;
-bool gameStarted = false;
 float rotation = 0;
-std::vector<Word*> wordsToGuess;
-std::vector<char> correctLetters(currentWordLength);
-Word* currentWord;
-String shotWord = "";
-String correctWord = "";
-std::vector<char> shotLetters(currentWordLength);
 
 SceneIngame::SceneIngame()
 {
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
+	gameLogic = new GameLogic();
 
 	initSkyboxTextures();
 
 	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0f);
 	wordText = new Text("c:/windows/fonts/Verdana.ttf", 128.0f);
-
-	wordLoader = new WordLoader();
-	wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
-	currentWord = wordsToGuess.at(chosenWordsAmount);
-
-	timer = new Timer(90);
-	oneSecondTimer = new Timer(1);
-
-	camera = new FpsCam(window);
-	double x, y;
-	glfwGetCursorPos(window, &x, &y);
-	camera->lastX = x;
-	camera->lastY = y;
 
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
@@ -112,10 +84,6 @@ SceneIngame::SceneIngame()
 
 	crosshair = new Crosshair();
 	createLetterCubes();
-
-	debugCube = new GameObject(1337);
-	debugCube->addComponent(new CubeComponent(1.0f));
-	
 }
 
 void SceneIngame::draw()
@@ -136,28 +104,38 @@ void SceneIngame::draw()
 	//for outlines only
 	//glpolygonmode(gl_front_and_back, gl_line);
 
-	//drawing text
+	// drawing objects
 	for (auto& o : objects) {
-		tigl::shader->enableColor(true);
-		tigl::shader->enableTexture(false);
 		o->draw();
 	}
 
-	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	// Calculate where the crosshair would hit
+	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	
+	// Debug use mouse as pointer
+	{
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		if (state == GLFW_PRESS)
+		{
+			VC->redDetected = true;
+		}
+		rayCast(xpos, ypos, viewmatrix, projection);
+	}
 
-	debugCube->draw();
+	tigl::shader->enableLighting(false);
+
 	backgroundBox->draw();
 
 	// 2D objects drawing
-	tigl::shader->enableTexture(true);
-	tigl::shader->enableLighting(false);
 
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw(timer->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(gameLogic->getGameTimer()->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
-	textObject->draw(shotWord, windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw(correctWord, windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
 	crosshair->draw();
 	glDisable(GL_DEPTH_TEST);
@@ -175,44 +153,43 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 }
 
 void SceneIngame::update() {
-	//check if wordlength has changed
-	if (currentWord->getWordLength() != currentWordLength) {
-		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
-		currentWord = wordsToGuess.at(chosenWordsAmount);
-		correctLetters.resize(currentWordLength);
-		shotLetters.resize(currentWordLength);
-	}
-
-	//check if it is the start of the game
-	if (!gameStarted) {
-		gameStarted = true;
-		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
-		currentWord = wordsToGuess.at(chosenWordsAmount);
-		timer->start();
-		oneSecondTimer->start();
-	}
-
 	//Maybe make into callback function. Now is dependent on update (timing).
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
 	{
 		currentScene = scenes[Scenes::PAUSE];
 	}
 
+	// Update vision component
 	VC->update();
-	gameLogic();
-	drawShootedWords();
-	//Dont forget to remove camera update so the user cant move
-	//camera->update(window, &lastX, &lastY, &textureIndex);
 
+	// Select object where mouse is hovering over
+	selectObject();
+	// Update the gameLogic
+	bool hasFinished = gameLogic->update(&(VC->redDetected));
+	// If has finished all the words are guessed or the timer has run out
+	if (hasFinished)
+	{
+		currentScene = scenes[Scenes::STARTUP];
+		return;
+	}
+
+	if (gameLogic->reset)
+	{
+		createLetterCubes();
+		gameLogic->reset = false;
+		return;
+	}
+
+	// Update the position of the crosshair
+	crosshair->update(VC->getCrossHairCoords());
+
+
+	// Calculate the time that has past, used to move the component by the same amount every second
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
 	lastFrameTime = currentFrameTime;
 
-	crosshair->update(VC->getCrossHairCoords());
-
-	debugCube->position = mouse3d;
-
-	int* axis;
+	// Check for collisions
 	for (auto& o : objects) {
 		for (auto& next : objects) {
 
@@ -272,123 +249,18 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix,
 		return;
 	}
 
+	// get the viewports
 	int Viewport[4];
 	glGetIntegerv(GL_VIEWPORT, Viewport);
 	
+	// Calculate the real y
 	yOrigin = Viewport[3] - yOrigin;
 
+	// Calculate the Z of the point
 	float winZ;
 	glReadPixels(xOrigin, yOrigin, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+	// Calculate the 3d coordinates of the intersection with the viewport
 	mouse3d = glm::vec4(glm::unProject(glm::vec3(xOrigin,yOrigin, winZ), viewMatrix, projectionMatrix, glm::vec4(Viewport[0], Viewport[1], Viewport[2], Viewport[3])), winZ);
-}
-
-void SceneIngame::clearVector(std::vector<char> *vector) {
-	for (int i = 0; i < vector->size(); i++) {
-		vector->at(i) = '_';
-	}
-}
-
-/*
-* This function draws the shot word and the correct letters
-*/
-void SceneIngame::drawShootedWords() {
-	shotWord = ""; //clear the shotWord string
-	for (int i = 0; i < shotLetters.size(); i++) {
-		shotWord += shotLetters.at(i); //fill the string with the letters of the vector
-	}
-
-	correctWord = ""; //clear the correctWord string
-	for (int i = 0; i < correctLetters.size(); i++) {
-		correctWord += correctLetters.at(i); //fill the string with the letters of the vector
-	}
-}
-
-/*
-* This function fills 2 vectors with letters or an _
-*/
-void SceneIngame::fillVector() {
-	for (int i = 0; i < correctLetters.size(); i++) {
-		shotLetters.at(i) = '_'; //fill the shotLetter vector with _
-		if (i == 0) {
-			correctLetters.at(i) = currentWord->getFirstLetter(); //fill the vector with the first letter of the current word
-		}
-		else {
-			correctLetters.at(i) = '_'; //fill the other indexes with an _
-		}
-	}
-	drawShootedWords(); //draw both words
-}
-
-bool SceneIngame::checkWord() {
-	int correctLettersAmount = 0;
-	for (int i = 0; i < currentWordLength; i++) {
-		if (currentWord->getWord()[i] == shotLetters.at(i)) { 
-			correctLetters.at(i) = currentWord->getWord()[i];
-			correctLettersAmount++;
-		}
-	}
-
-	if (correctLettersAmount == currentWordLength) {
-		clearVector(&correctLetters);
-		currentWordIndex = -1;
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-void SceneIngame::gameLogic() {
-	char letter;
-	if (currentWordIndex == -1) {
-		fillVector();
-		currentWordIndex = 0;
-		cout << currentWord->getWord();
-		return;
-	}
-
-	//TODO --> check for lives
-	//TODO --> check for timer
-	//TODO --> check for color detection
-	if (VC->redDetected) {
-		if (oneSecondTimer->hasFinished()) {
-			oneSecondTimer->start();
-			VC->redDetected = false;
-
-			if (chosenWordsAmount < currentWordAmount) {
-
-				if (currentWordIndex < currentWordLength) {
-					//tESTCODE
-					//cin >> letter;
-					letter = currentWord->getWord()[currentWordIndex];
-					shotWord += letter;
-					shotLetters.at(currentWordIndex) = letter;
-					currentWordIndex++;
-				}
-				else {
-					if (checkWord()) {
-						chosenWordsAmount++;
-						if (chosenWordsAmount < currentWordAmount) {
-							currentWord = wordsToGuess.at(chosenWordsAmount);
-						}
-					}
-					else {
-						currentWordIndex = 0;
-						shotWord = "";
-						clearVector(&shotLetters);
-					}
-				}
-			}
-			else {
-				chosenWordsAmount = 0;
-				currentWordIndex = -1;
-				gameStarted = false;
-				destroyAllWindows();
-				currentScene = scenes[Scenes::STARTUP];
-			}
-		}
-	}
-
 }
 
 void SceneIngame::initSkyboxTextures() {
@@ -403,10 +275,10 @@ void SceneIngame::initSkyboxTextures() {
 void SceneIngame::createLetterCubes()
 {
 	objects.clear();
-	for (int i = 0; i < currentWord->getLetters().size(); i++) {
+	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
 
-		o->addComponent(new LetterModelComponent(currentWord->getLetters().at(i)));
+		o->addComponent(new LetterModelComponent(gameLogic->getCurrentWord()->getLetters()[i]));
 		o->addComponent(new BoundingBox(o));
 		o->addComponent(new MoveToComponent());
 		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
@@ -418,7 +290,6 @@ void SceneIngame::createLetterCubes()
 
 		for (auto& next : objects) {
 			if (next != o) {
-				cout << o->getComponent<BoundingBox>()->collideWithObject(next) << endl;
 				while (o->getComponent<BoundingBox>()->collideWithObject(next)) {
 					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
 					o->position = pos;
@@ -433,5 +304,36 @@ void SceneIngame::createLetterCubes()
 			}
 		}
 		objects.push_back(o);
+	}
+}
+
+void SceneIngame::selectObject() {
+	double minimalDistance = 0;
+	GameObject* object = nullptr;
+	glm::vec3 mousePos(mouse3d.x, mouse3d.y, mouse3d.z);
+
+	for (const auto& o : objects) {
+		if (minimalDistance == 0)
+		{
+			minimalDistance = glm::distance(o->position, mousePos);
+			object = o;
+			continue;
+		}
+
+		double distance = glm::distance(o->position, mousePos);
+
+		if (distance< minimalDistance)
+		{
+			object = o;
+			minimalDistance = distance;
+		}
+	}
+	
+	if (minimalDistance < 10)
+	{
+		gameLogic->selectedObject = object;
+	}
+	else {
+		gameLogic->selectedObject = nullptr;
 	}
 }
