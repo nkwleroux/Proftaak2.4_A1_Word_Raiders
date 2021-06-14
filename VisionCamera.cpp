@@ -89,11 +89,11 @@ void VisionCamera::findColor()
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			if (i == 0) {
 				redDetected = false;
-				currentCrosshair = i;
+				currentCrosshair = 0;
 			}
 			else if (i == 1) {
 				redDetected = true;
-				currentCrosshair = i;
+				currentCrosshair = 1;
 			}
 			circle(img, myPoint, 5, Scalar(255, 255, 0), FILLED);
 			currentPoint = myPoint;
@@ -134,8 +134,8 @@ glm::vec2 VisionCamera::getCrossHairCoords()
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	
-	float percentageX = myPoint.x / 640.0f;
-	float percentageY = myPoint.y / 480.0f;
+	float percentageX = currentPoint.x / 640.0f;
+	float percentageY = currentPoint.y / 480.0f;
 
 	float xCoordinate = (float)viewport[2] * percentageX;
 	float yCoordinate = (float)viewport[3] * percentageY;

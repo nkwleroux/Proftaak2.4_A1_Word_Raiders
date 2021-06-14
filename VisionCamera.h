@@ -20,8 +20,8 @@ private:
 
 	vector<vector<int>> myColors{
 	{55, 52, 7, 93, 106, 172}, //green
-	//{0, 194, 75, 18, 246, 255} //red
-	{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+	{0, 146, 165, 22, 236, 255} //red
+	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
 	};
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 

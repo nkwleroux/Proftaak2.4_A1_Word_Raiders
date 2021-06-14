@@ -107,19 +107,19 @@ void SceneIngame::draw()
 	}
 
 	// Calculate where the crosshair would hit
-	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 	
 	// Debug use mouse as pointer
-	//{
-	//	double xpos, ypos;
-	//	glfwGetCursorPos(window, &xpos, &ypos);
-	//	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	//	if (state == GLFW_PRESS)
-	//	{
-	//		VC->redDetected = true;
-	//	}
-	//	rayCast(xpos, ypos, viewmatrix, projection);
-	//}
+	{
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		if (state == GLFW_PRESS)
+		{
+			VC->redDetected = true;
+		}
+		rayCast(xpos, ypos, viewmatrix, projection);
+	}
 
 	tigl::shader->enableLighting(false);
 
@@ -158,7 +158,7 @@ void SceneIngame::update() {
 
 	// Update vision component
 	VC->update();
-	crosshair->setHandStyle(VC->currentCrosshair == 0);
+	crosshair->setHandStyle(!VC->currentCrosshair);
 
 
 	// Select object where mouse is hovering over
