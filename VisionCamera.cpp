@@ -5,6 +5,7 @@
 
 VisionCamera::VisionCamera(VideoCapture vidCap) : cap(vidCap)
 {
+	//colorSettings();
 }
 
 VisionCamera::~VisionCamera()

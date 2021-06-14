@@ -106,7 +106,7 @@
       <Filter>Components\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoundingBoxComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Components\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +186,7 @@
       <Filter>Components\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoundingBoxComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
