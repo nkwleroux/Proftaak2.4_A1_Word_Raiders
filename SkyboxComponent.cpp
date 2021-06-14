@@ -7,53 +7,54 @@ SkyboxComponent::SkyboxComponent(float size, Texture** textures) : textures{ tex
 	z = z - size / 2;
 
 	glm::vec3 p(0, 0, 0);
+	glm::vec3 n(0, 0, 0);
 
 	//middle
 	std::vector<Vertex> vertexMiddle;
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(1, 0),			n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(1, 1),	n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 1),			n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 0),					n));
 	verts.push_back(vertexMiddle);
 
 	//right
 	std::vector<Vertex> vertexRight;
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(0, 0),				n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(1, 0),		n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(1, 1), n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(0, 1),		n));
 	verts.push_back(vertexRight);
 
 	//left
 	std::vector<Vertex> vertexLeft;
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 0),		n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(1, 0), n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 1),		n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 1),				n));
 	verts.push_back(vertexLeft);
 
 	//back
 	std::vector<Vertex> vertexBack;
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 0),				n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(1, 1),			n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(0, 1),	n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(0, 0),			n));
 	verts.push_back(vertexBack);
 
 	//bottom
 	std::vector<Vertex> vertexBottom;
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(1, 0),					n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z + size), glm::vec2(1, 1),			n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z + size), glm::vec2(0, 1),	n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + size, y, z), glm::vec2(0, 0),			n));
 	verts.push_back(vertexBottom);
 
 	//top
 	std::vector<Vertex> vertexTop;
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z), glm::vec2(1, 0),			n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + size, y + size, z + size), glm::vec2(1, 1),	n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z + size), glm::vec2(0, 1),			n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + size, z), glm::vec2(0, 0),					n));
 	verts.push_back(vertexTop);
 	
 }
@@ -66,53 +67,54 @@ SkyboxComponent::SkyboxComponent(float height, float width, float length, Textur
 	z = z - length / 2;
 
 	glm::vec3 p(0, 0, 0);
+	glm::vec3 n(0, 0, 0);
 
 	//middle
 	std::vector<Vertex> vertexMiddle;
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(1, 0),				n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 1),	n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 1),			n));
+	vertexMiddle.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 0),						n));
 	verts.push_back(vertexMiddle);
 
 	//right
 	std::vector<Vertex> vertexRight;
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0),						n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(1, 0),				n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1),	n));
+	vertexRight.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(0, 1),				n));
 	verts.push_back(vertexRight);
 
 	//left
 	std::vector<Vertex> vertexLeft;
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0),				n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 0),		n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1),				n));
+	vertexLeft.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(0, 1),						n));
 	verts.push_back(vertexLeft);
 
 	//back
 	std::vector<Vertex> vertexBack;
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 0),					n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(1, 1),			n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(0, 1), n));
+	vertexBack.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 0),			n));
 	verts.push_back(vertexBack);
 
 	//bottom
 	std::vector<Vertex> vertexBottom;
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z), glm::vec2(1, 0),						n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x, y, z + length), glm::vec2(1, 1),			n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z + length), glm::vec2(0, 1),	n));
+	vertexBottom.push_back(Vertex::PTN(p + glm::vec3(x + width, y, z), glm::vec2(0, 0),				n));
 	verts.push_back(vertexBottom);
 
 	//top
 	std::vector<Vertex> vertexTop;
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 0), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(0, 1), glm::vec3(0, -1, 0)));
-	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0), glm::vec3(0, -1, 0)));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z), glm::vec2(1, 0),			n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x + width, y + height, z + length), glm::vec2(1, 1),	n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z + length), glm::vec2(0, 1),			n));
+	vertexTop.push_back(Vertex::PTN(p + glm::vec3(x, y + height, z), glm::vec2(0, 0),					n));
 	verts.push_back(vertexTop);
 
 }

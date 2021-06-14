@@ -33,14 +33,8 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FpsCam.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpinComponent.cpp">
-      <Filter>Components\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveToComponent.cpp">
       <Filter>Components\Source Files</Filter>
@@ -51,14 +45,8 @@
     <ClCompile Include="Component.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimerJumper.cpp">
-      <Filter>Components\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tigl.cpp">
       <Filter>lib</Filter>
-    </ClCompile>
-    <ClCompile Include="CrosshairComponent.cpp">
-      <Filter>Components\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ObjectModelComponent.cpp">
       <Filter>Components\Source Files</Filter>
@@ -72,13 +60,7 @@
     <ClCompile Include="DrawComponent.cpp">
       <Filter>Components\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BoundingBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VisionCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyboxComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Text\Text.cpp">
@@ -120,19 +102,19 @@
     <ClCompile Include="GameLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkyboxComponent.cpp">
+      <Filter>Components\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBoxComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FpsCam.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpinComponent.h">
-      <Filter>Components\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MoveToComponent.h">
       <Filter>Components\Header Files</Filter>
@@ -143,14 +125,8 @@
     <ClInclude Include="Component.h">
       <Filter>Components\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TimerJumper.h">
-      <Filter>Components\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tigl.h">
       <Filter>lib</Filter>
-    </ClInclude>
-    <ClInclude Include="CrosshairComponent.h">
-      <Filter>Components\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LetterModelComponent.h">
       <Filter>Components\Header Files</Filter>
@@ -164,13 +140,7 @@
     <ClInclude Include="CubeComponent.h">
       <Filter>Components\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BoundingBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VisionCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyboxComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Text\Text.h">
@@ -183,9 +153,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WordLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
@@ -215,21 +182,15 @@
     <ClInclude Include="GameLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxComponent.h">
+      <Filter>Components\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBoxComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Images\closeHand.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Images\container.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Images\openHand.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Images\rainbow.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Images\shapes.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Images\startup.png">

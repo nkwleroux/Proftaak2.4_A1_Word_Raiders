@@ -34,7 +34,6 @@ Text::Text(std::string path, float sizeFont)
 	delete[] temp_bitmap;
 }
 
-
 Text::~Text()
 {
 }

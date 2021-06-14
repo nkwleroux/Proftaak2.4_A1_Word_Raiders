@@ -1,11 +1,11 @@
-#include "BoundingBox.h"
+#include "BoundingBoxComponent.h"
 #include "ObjectModelComponent.h"
 #include "GameObject.h"
 #include "CubeComponent.h"
 #include "tigl.h"
 #include <iostream>
 
-BoundingBox::BoundingBox(GameObject* gameObject) {
+BoundingBoxComponent::BoundingBoxComponent(GameObject* gameObject) {
 	min = glm::vec3(std::numeric_limits<float>::max());
 	max = glm::vec3(std::numeric_limits<float>::min());
 
@@ -21,21 +21,21 @@ BoundingBox::BoundingBox(GameObject* gameObject) {
 		}
 	}
 }
-BoundingBox::~BoundingBox() {
+BoundingBoxComponent::~BoundingBoxComponent() {
 
 }
-void BoundingBox::addVector(glm::vec3 vector) {
+void BoundingBoxComponent::addVector(glm::vec3 vector) {
 	min += vector;
 	max += vector;
 }
 
-bool BoundingBox::collideWithObject(GameObject* otherObject)
+bool BoundingBoxComponent::collideWithObject(GameObject* otherObject)
 {
 	glm::vec4 realMin = gameObject->modelMatrix * glm::vec4(min, 1.0f);
 	glm::vec4 realMax = gameObject->modelMatrix * glm::vec4(max, 1.0f);
 
-	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
-	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
+	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBoxComponent>()->min, 1.0f);
+	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBoxComponent>()->max, 1.0f);
 
 	//Check for collision
 
@@ -45,13 +45,13 @@ bool BoundingBox::collideWithObject(GameObject* otherObject)
 	 return collisionX && collisionY && collisionZ;
 }
 
-bool BoundingBox::collideWithWall(GameObject* otherObject)
+bool BoundingBoxComponent::collideWithWall(GameObject* otherObject)
 {
 	glm::vec4 realMin = gameObject->modelMatrix * glm::vec4(min, 1.0f);
 	glm::vec4 realMax = gameObject->modelMatrix * glm::vec4(max, 1.0f);
 
-	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->min, 1.0f);
-	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBox>()->max, 1.0f);
+	glm::vec4 otherRealMin = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBoxComponent>()->min, 1.0f);
+	glm::vec4 otherRealMax = otherObject->modelMatrix * glm::vec4(otherObject->getComponent<BoundingBoxComponent>()->max, 1.0f);
 
 	//Check for collision
 	return !((realMin.x <= otherRealMin.x && realMax.x >= otherRealMax.x) &&
@@ -62,7 +62,7 @@ bool BoundingBox::collideWithWall(GameObject* otherObject)
 		(otherRealMin.z <= realMin.z && otherRealMax.z >= realMin.z);*/
 }
 
-void BoundingBox::draw()
+void BoundingBoxComponent::draw()
 {
 	tigl::shader->enableColor(true);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -80,7 +80,7 @@ void BoundingBox::draw()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-std::vector<glm::vec3> BoundingBox::getVertices()
+std::vector<glm::vec3> BoundingBoxComponent::getVertices()
 {
 	return std::vector<glm::vec3>();
 }

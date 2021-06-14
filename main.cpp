@@ -95,7 +95,7 @@ void init()
 	scenes[Scenes::SETTINGS] = new SceneSettings();
 	scenes[Scenes::CREDITS] = new SceneCredits();
 	scenes[Scenes::GAMEEND] = new SceneEnding();
-	currentScene = scenes[Scenes::GAMEEND];
+	currentScene = scenes[Scenes::STARTUP];
 }
 
 void update()

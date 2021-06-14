@@ -10,13 +10,10 @@
 #include "PlayerComponent.h"
 #include "CubeComponent.h"
 #include "MoveToComponent.h"
-#include "SpinComponent.h"
-#include "TimerJumper.h"
-#include "CrosshairComponent.h"
 #include "Timer.h"
 #include "Word.h"
 #include "WordLoader.h"
-#include "BoundingBox.h"
+#include "BoundingBoxComponent.h"
 #include "SkyboxComponent.h"
 #include "LetterModelComponent.h"
 
@@ -80,7 +77,7 @@ SceneIngame::SceneIngame()
 	backgroundBox = new GameObject(0);
 	backgroundBox->position = glm::vec3(0, 0, 5);
 	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
-	backgroundBox->addComponent(new BoundingBox(backgroundBox));
+	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
 
 	crosshair = new Crosshair();
 	createLetterCubes();
@@ -110,19 +107,19 @@ void SceneIngame::draw()
 	}
 
 	// Calculate where the crosshair would hit
-	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 	
 	// Debug use mouse as pointer
-	{
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-		if (state == GLFW_PRESS)
-		{
-			VC->redDetected = true;
-		}
-		rayCast(xpos, ypos, viewmatrix, projection);
-	}
+	//{
+	//	double xpos, ypos;
+	//	glfwGetCursorPos(window, &xpos, &ypos);
+	//	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	//	if (state == GLFW_PRESS)
+	//	{
+	//		VC->redDetected = true;
+	//	}
+	//	rayCast(xpos, ypos, viewmatrix, projection);
+	//}
 
 	tigl::shader->enableLighting(false);
 
@@ -183,7 +180,6 @@ void SceneIngame::update() {
 	// Update the position of the crosshair
 	crosshair->update(VC->getCrossHairCoords());
 
-
 	// Calculate the time that has past, used to move the component by the same amount every second
 	double currentFrameTime = glfwGetTime();
 	double deltaTime = currentFrameTime - lastFrameTime;
@@ -195,9 +191,9 @@ void SceneIngame::update() {
 
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
-				if (o->getComponent<BoundingBox>() && next->getComponent<BoundingBox>() &&o->getComponent<BoundingBox>()->collideWithObject(next)) {
+				if (o->getComponent<BoundingBoxComponent>() && next->getComponent<BoundingBoxComponent>() &&o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
 
-					BoundingBox* oBox = o->getComponent<BoundingBox>();
+					BoundingBoxComponent* oBox = o->getComponent<BoundingBoxComponent>();
 
 					glm::vec3 temp = glm::vec3(0);
 
@@ -228,7 +224,7 @@ void SceneIngame::update() {
 				}
 			}
 		}
-		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBox>()->collideWithWall(o)) {
+		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBoxComponent>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 			o->getComponent<MoveToComponent>()->target = oTarget;
@@ -279,7 +275,7 @@ void SceneIngame::createLetterCubes()
 		GameObject* o = new GameObject(i);
 
 		o->addComponent(new LetterModelComponent(gameLogic->getCurrentWord()->getLetters()[i]));
-		o->addComponent(new BoundingBox(o));
+		o->addComponent(new BoundingBoxComponent(o));
 		o->addComponent(new MoveToComponent());
 		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
 		glm::vec3 pos = glm::vec3(0, 0, 0);
@@ -290,7 +286,7 @@ void SceneIngame::createLetterCubes()
 
 		for (auto& next : objects) {
 			if (next != o) {
-				while (o->getComponent<BoundingBox>()->collideWithObject(next)) {
+				while (o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
 					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
 					o->position = pos;
 					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 30, rand() % 30, 0);

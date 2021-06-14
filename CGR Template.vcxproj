@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)lib\glm;$(SolutionDir)lib\glew-2.1.0\include;$(SolutionDir)lib\glfw-3.3.2\include;$(SolutionDir)lib\stb\include;$(SolutionDir)lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\glm;$(SolutionDir)lib\glew-2.1.0\include;$(SolutionDir)lib\glfw-3.3.2\include;$(SolutionDir)lib\stb\include;$(SolutionDir)lib\imgui;$(SolutionDir)lib\json;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,13 +162,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="BoundingBoxComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Crosshair.cpp" />
-    <ClCompile Include="CrosshairComponent.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
-    <ClCompile Include="FpsCam.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="LetterModelComponent.cpp" />
     <ClCompile Include="main.cpp" />
@@ -182,12 +180,10 @@
     <ClCompile Include="ScenePause.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
     <ClCompile Include="SceneStartup.cpp" />
-    <ClCompile Include="SpinComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Text\Text.cpp" />
     <ClCompile Include="tigl.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="TimerJumper.cpp" />
     <ClCompile Include="VisionCamera.cpp" />
     <ClCompile Include="Word.cpp" />
     <ClCompile Include="WordLoader.cpp" />
@@ -195,15 +191,12 @@
     <ClCompile Include="GameLogic.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="BoundingBoxComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Crosshair.h" />
-    <ClInclude Include="CrosshairComponent.h" />
     <ClInclude Include="CubeComponent.h" />
     <ClInclude Include="DrawComponent.h" />
-    <ClInclude Include="FpsCam.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="json.hpp" />
     <ClInclude Include="LetterModelComponent.h" />
     <ClInclude Include="MoveToComponent.h" />
     <ClInclude Include="ObjectModelComponent.h" />
@@ -215,12 +208,10 @@
     <ClInclude Include="ScenePause.h" />
     <ClInclude Include="SceneSettings.h" />
     <ClInclude Include="SceneStartup.h" />
-    <ClInclude Include="SpinComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Text\Text.h" />
     <ClInclude Include="tigl.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="TimerJumper.h" />
     <ClInclude Include="VisionCamera.h" />
     <ClInclude Include="SkyboxComponent.h" />
     <ClInclude Include="Word.h" />
@@ -229,15 +220,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\closedHand.png" />
-    <Image Include="Images\closeHand.png" />
-    <Image Include="Images\container.jpg" />
     <Image Include="Images\credits.png" />
     <Image Include="Images\ending.png" />
     <Image Include="Images\openHand.png" />
     <Image Include="Images\pause.png" />
-    <Image Include="Images\rainbow.jpg" />
     <Image Include="Images\settings.png" />
-    <Image Include="Images\shapes.png" />
     <Image Include="Images\skybox_bottom.png" />
     <Image Include="Images\skybox_galaxy_original.png" />
     <Image Include="Images\skybox_left.png" />
