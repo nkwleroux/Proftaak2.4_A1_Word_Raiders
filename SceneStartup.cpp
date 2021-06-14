@@ -39,6 +39,11 @@ void SceneStartup::onKey(int key, int scancode, int action, int mods)
 	}
 }
 
+void SceneStartup::freeTextures()
+{
+	startupTexture->unBind();
+}
+
 void SceneStartup::update()
 {
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

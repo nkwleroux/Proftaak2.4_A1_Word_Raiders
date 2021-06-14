@@ -15,5 +15,6 @@ public:
 	void draw();
 	void setHandStyle(bool isOpen);
 	void update(glm::vec2 coordinate);
+	void freeTextures();
 };
 

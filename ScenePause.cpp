@@ -42,3 +42,8 @@ void ScenePause::update()
 		currentScene = scenes[Scenes::STARTUP];
 	}
 }
+
+void ScenePause::freeTextures()
+{
+	pauseTexture->unBind();
+}

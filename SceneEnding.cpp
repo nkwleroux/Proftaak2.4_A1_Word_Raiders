@@ -81,6 +81,11 @@ std::string SceneEnding::getWonText(bool won){
 void SceneEnding::update(){
 
 }
+void SceneEnding::freeTextures()
+{
+
+	endingTexture->unBind();
+}
 //
 //void SceneEnding::updateScore()
 //{

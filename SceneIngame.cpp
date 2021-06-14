@@ -158,7 +158,8 @@ void SceneIngame::update() {
 
 	// Update vision component
 	VC->update();
-	crosshair->setHandStyle(VC->currentCrosshair);
+	crosshair->setHandStyle(VC->currentCrosshair == 0);
+
 
 	// Select object where mouse is hovering over
 	selectObject();
@@ -237,6 +238,14 @@ void SceneIngame::update() {
 	}
 }
 
+void SceneIngame::freeTextures()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		textureSkybox[i]->unBind();
+	}
+	crosshair->freeTextures();
+}
 
 void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {

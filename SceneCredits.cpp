@@ -38,3 +38,8 @@ void SceneCredits::update()
 		currentScene = scenes[Scenes::STARTUP];
 	}
 }
+
+void SceneCredits::freeTextures()
+{
+	creditsTexture->unBind();
+}

@@ -90,3 +90,8 @@ void Crosshair::setHandStyle(bool isOpen) {
 void Crosshair::update(glm::vec2 coordinate) {
 	crosshairCoordinate = coordinate;
 }
+
+void Crosshair::freeTextures() {
+	closedHand->unBind();
+	openHand->unBind();
+}

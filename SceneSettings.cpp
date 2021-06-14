@@ -88,3 +88,8 @@ void SceneSettings::update()
 	
 }
 
+void SceneSettings::freeTextures()
+{
+	settingsTexture->unBind();
+}
+

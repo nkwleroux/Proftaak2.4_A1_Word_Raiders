@@ -77,6 +77,11 @@ int main(void)
 	glfwTerminate();
 	destroyAllWindows();
 
+	for (auto const& x : scenes)
+	{
+		x.second->freeTextures();
+	}
+
 	return 0;
 }
 
@@ -110,6 +115,3 @@ void draw()
 
 	currentScene->draw();
 }
-
-
-
