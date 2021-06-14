@@ -158,6 +158,7 @@ void SceneIngame::update() {
 
 	// Update vision component
 	VC->update();
+	crosshair->setHandStyle(VC->currentCrosshair);
 
 	// Select object where mouse is hovering over
 	selectObject();
