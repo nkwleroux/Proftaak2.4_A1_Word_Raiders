@@ -7,15 +7,17 @@ class Timer
 {
 private:
     std::chrono::steady_clock::time_point startTime;
-    double duration;
+    std::chrono::steady_clock::time_point endTime;
+    float duration;
     bool isRunning;
 public:
-    Timer(double duration);
+    Timer(float duration);
     ~Timer();
     void start();
     void stop();
-    double secondsToGo();
-    std::string secondsToGoString();
+    float timeRemaining();
+    std::string timeRemainingToString();
     bool hasFinished();
+    void reset();
 };
 

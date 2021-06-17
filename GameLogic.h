@@ -11,12 +11,9 @@ class GameLogic
 private:
 	WordLoader* wordLoader;
 
-	int currentWordLength;
-	int currentWordAmount;
+	int currentWordIndex;
+	int levens;
 
-	int currentWordIndex = -1;
-	int chosenWordsAmount = 0;
-	
 	// List containing all the words that have to be guessed
 	std::vector<Word*> wordsToGuess;
 	// List of all the letters that are already guessed correctly
@@ -36,6 +33,7 @@ private:
 	Timer* oneSecondTimer;
 
 	void checkForStartingConditions();
+	void setEndScreen();
 	void clearVector(std::vector<char>* vector);
 	void fillVector();
 	bool checkWord();
@@ -52,9 +50,10 @@ public:
 	std::string getCorrectWord();
 	Word* getCurrentWord();
 	Timer* getGameTimer();
+	std::string getLevens();
+	std::string getScore();
 
 	bool reset;
 	bool wordCorrect;
 	bool gameStarted = false;
 };
-

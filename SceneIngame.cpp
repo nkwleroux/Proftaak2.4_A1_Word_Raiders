@@ -34,6 +34,7 @@
 #include <map>
 #include "Crosshair.h"
 #include "GameLogic.h"
+#include <unordered_map>
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -62,7 +63,7 @@ Crosshair* crosshair;
 GameLogic* gameLogic;
 
 int textureIndex;
-float rotation = 0;
+std::unordered_map<char,LetterModelComponent*> lettersMap;
 
 SceneIngame::SceneIngame()
 {
@@ -82,7 +83,11 @@ SceneIngame::SceneIngame()
 	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
 
 	crosshair = new Crosshair();
-	//createLetterCubes();
+	char chars[] = {'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
+	Texture* texture = new Texture("resources/LetterBlockTexture.png");
+	for (int i = 0; i < sizeof(chars) - 1; i++) {
+		lettersMap[chars[i]] = new LetterModelComponent(chars[i],texture);
+	}
 }
 
 void SceneIngame::draw()
@@ -131,9 +136,9 @@ void SceneIngame::draw()
 	// 2D objects drawing
 
 	//timer
-	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw(gameLogic->getGameTimer()->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("Score: " + gameLogic->getScore(), 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(gameLogic->getGameTimer()->timeRemainingToString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("Levens: " + gameLogic->getLevens(), 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
@@ -193,7 +198,7 @@ void SceneIngame::update() {
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		currentScene = scenes[Scenes::STARTUP];
+		currentScene = scenes[Scenes::GAMEEND];
 		gameLogic->gameStarted = false;
 		return;
 	}
@@ -351,8 +356,7 @@ void SceneIngame::createLetterCubes()
 	tempObjects.clear();
 	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
-
-		o->addComponent(new LetterModelComponent(gameLogic->getCurrentWord()->getLetters()[i]));
+		o->addComponent(lettersMap[gameLogic->getCurrentWord()->getLetters()[i]]);
 		o->addComponent(new BoundingBoxComponent(o));
 		o->addComponent(new MoveToComponent());
 		glm::vec3 pos = glm::vec3(0, 0, 0); //original position

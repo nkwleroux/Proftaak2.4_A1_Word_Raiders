@@ -8,9 +8,11 @@
 #include <sstream>
 
 
-Timer::Timer(double durationInSeconds) {
+Timer::Timer(float durationInSeconds) {
     this->duration = durationInSeconds;
     this->startTime = std::chrono::steady_clock::now();
+    this->endTime = std::chrono::steady_clock::now();
+    isRunning = false;
 }
 
 Timer::~Timer()
@@ -24,17 +26,16 @@ void Timer::start()
 
 void Timer::stop()
 {
+    this->endTime = std::chrono::steady_clock::now();
     this->isRunning = false;
 }
 
-double Timer::secondsToGo()
+float Timer::timeRemaining()
 {
-    std::chrono::steady_clock::time_point now;
-
     if (isRunning)
     {
-        now = std::chrono::steady_clock::now();
-        double timePassed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() / 1000.0;
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        float timePassed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() / 1000.0;
         
         if (timePassed>duration)
         {
@@ -45,13 +46,14 @@ double Timer::secondsToGo()
     }
     else
     {
-        return 0;
+        float timePassed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() / 1000.0;
+        return this->duration - timePassed;
     }
 }
 
-std::string Timer::secondsToGoString()
+std::string Timer::timeRemainingToString()
 {
-    double rounded = secondsToGo();
+    float rounded = timeRemaining();
     std::stringstream stream;
     stream << std::fixed << std::setprecision(2) << rounded;
     std::string s = stream.str();
@@ -60,7 +62,7 @@ std::string Timer::secondsToGoString()
 }
 
 bool Timer::hasFinished() {
-    if (secondsToGo() <= 0)
+    if (timeRemaining() <= 0)
     {
         stop();
         return true;
@@ -69,3 +71,7 @@ bool Timer::hasFinished() {
     return false;
 }
 
+void Timer::reset() {
+    this->startTime = std::chrono::steady_clock::now();
+    isRunning = true;
+}

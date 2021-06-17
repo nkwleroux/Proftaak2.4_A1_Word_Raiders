@@ -2,13 +2,27 @@
 #include "WordLoader.h"
 #include "Scene.h"
 #include "LetterModelComponent.h"
+#include "Timer.h"
+
+
+float timeSpent;
+int achievedScore;
+bool wonGame;
+
+int currentWordLength;
+int currentWordAmount;
+
 
 GameLogic::GameLogic() {
 	// Initiate variables to standard values
 	reset = false;
-	currentWordLength = 5;
-	currentWordAmount = 3;
+	wonGame = false;
+	timeSpent = 0;
 	currentWordIndex = -1;
+	currentWordAmount = 1;
+	currentWordLength = 5;
+	achievedScore = 0;
+	levens = 3;
 
 	// Initiate timers
 	gameTimer = new Timer(90);
@@ -28,15 +42,21 @@ void GameLogic::checkForStartingConditions() {
 	if (!gameStarted) {
 		gameStarted = true;
 		reset = true;
+		levens = 3;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		wordLoader->printWords(wordsToGuess);
-		currentWord = wordsToGuess[chosenWordsAmount];
+		currentWord = wordsToGuess[0];
 		gameTimer->start();
 		oneSecondTimer->start();
 
 		correctLetters = std::vector<char>(currentWordLength);
 		shotLetters = std::vector<char>(currentWordLength);
 	}
+}
+
+void GameLogic::setEndScreen() {
+	gameTimer->stop();
+	timeSpent = gameTimer->timeRemaining();
 }
 
 int wordIndex = 0;
@@ -52,9 +72,20 @@ bool GameLogic::update(bool* redDetected) {
 		return false;
 	}
 
-	//TODO --> check for lives
-	//TODO --> check for timer
 
+	if (gameTimer->hasFinished())
+	{
+		if (levens>1)
+		{
+			levens--;
+			gameTimer->reset();
+		}
+		else {
+			setEndScreen();
+			wonGame = false;
+			return true;
+		}
+	}
 
 	// Check if the player want to fire
 	if (*redDetected) {
@@ -91,6 +122,9 @@ bool GameLogic::update(bool* redDetected) {
 					}
 					// If there are no words left we are done and return true
 					else {
+						wonGame = true;
+						achievedScore *= levens;
+						setEndScreen();
 						return true;
 					}
 				}
@@ -140,6 +174,18 @@ Timer* GameLogic::getGameTimer()
 	return gameTimer;
 }
 
+std::string GameLogic::getLevens()
+{
+	std::string stringLevens;
+	stringLevens.append(levens,'*');
+	return stringLevens;
+}
+
+std::string GameLogic::getScore()
+{
+	return std::to_string(achievedScore);
+}
+
 void GameLogic::clearVector(std::vector<char>* vector) {
 	for (int i = 0; i < vector->size(); i++) {
 		vector->at(i) = '_';
@@ -183,4 +229,5 @@ bool GameLogic::checkWord() {
 void GameLogic::shootLetter(char shotLetter) {
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
+	achievedScore += 10;
 }
