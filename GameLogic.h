@@ -32,8 +32,6 @@ private:
 	// String to display all the correct letters on their spot
 	std::string correctWord = "";
 
-	bool gameStarted;
-
 	Timer* gameTimer;
 	Timer* oneSecondTimer;
 
@@ -56,5 +54,7 @@ public:
 	Timer* getGameTimer();
 
 	bool reset;
+	bool wordCorrect;
+	bool gameStarted = false;
 };
 

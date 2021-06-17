@@ -54,6 +54,7 @@ extern int windowWidth;
 VisionCamera* VC;
 Text* textObject;
 Text* wordText;
+std::list<GameObject*> tempObjects;
 std::list<GameObject*> objects;
 double lastFrameTime = 0;
 GameObject* backgroundBox;
@@ -75,12 +76,13 @@ SceneIngame::SceneIngame()
 	wordText = new Text("c:/windows/fonts/Verdana.ttf", 128.0f);
 
 	backgroundBox = new GameObject(0);
+	//TODO changed
 	backgroundBox->position = glm::vec3(0, 0, 5);
 	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
 	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
 
 	crosshair = new Crosshair();
-	createLetterCubes();
+	//createLetterCubes();
 }
 
 void SceneIngame::draw()
@@ -90,6 +92,7 @@ void SceneIngame::draw()
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
 	tigl::shader->setProjectionMatrix(projection);
+	//TODO changed
 	glm::mat4 viewmatrix = glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	tigl::shader->setViewMatrix(viewmatrix);
 
@@ -108,7 +111,7 @@ void SceneIngame::draw()
 
 	// Calculate where the crosshair would hit
 	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
-	
+
 	// Debug use mouse as pointer
 	{
 		double xpos, ypos;
@@ -130,7 +133,7 @@ void SceneIngame::draw()
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getGameTimer()->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
+	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
@@ -140,10 +143,24 @@ void SceneIngame::draw()
 
 glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 	float x = 0, y = 0, z = 0;
-	if (xCollide)
+	int isNegative;
+
+	if (xCollide) {
 		x = (float(rand()) / float((RAND_MAX)) * max);
-	if (yCollide)
+
+		isNegative = (float(rand()) / float((RAND_MAX)) * 2);
+		if (isNegative == 1) {
+			x *= -1;
+		}
+	}
+	if (yCollide) {
 		y = (float(rand()) / float((RAND_MAX)) * max);
+
+		isNegative = (float(rand()) / float((RAND_MAX)) * 2);
+		if (isNegative == 1) {
+			y *= -1;
+		}
+	}
 	if (zCollide)
 		z = (float(rand()) / float((RAND_MAX)) * max);
 	return glm::vec3(x, y, 0);
@@ -160,23 +177,40 @@ void SceneIngame::update() {
 	VC->update();
 	crosshair->setHandStyle(!VC->currentCrosshair);
 
-
 	// Select object where mouse is hovering over
 	selectObject();
+
+	if (gameLogic->reset)
+	{
+		gameLogic->reset = false;
+		createLetterCubes();		
+		//return;
+	}
+
 	// Update the gameLogic
 	bool hasFinished = gameLogic->update(&(VC->redDetected));
+
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
 		currentScene = scenes[Scenes::STARTUP];
+		gameLogic->gameStarted = false;
 		return;
 	}
 
-	if (gameLogic->reset)
-	{
-		createLetterCubes();
-		gameLogic->reset = false;
-		return;
+	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter) {
+		objects.remove(gameLogic->selectedObject);
+		gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter = false;
+		gameLogic->selectedObject = nullptr;
+	}
+
+	if (gameLogic->wordCorrect) {
+		objects.clear();
+		for (auto const& o : tempObjects)
+		{
+			objects.push_back(o);
+		}
+		gameLogic->wordCorrect = false;
 	}
 
 	// Update the position of the crosshair
@@ -189,11 +223,13 @@ void SceneIngame::update() {
 
 	// Check for collisions
 	for (auto& o : objects) {
+		glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+
 		for (auto& next : objects) {
 
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
-				if (o->getComponent<BoundingBoxComponent>() && next->getComponent<BoundingBoxComponent>() &&o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
+				if (o->getComponent<BoundingBoxComponent>() && next->getComponent<BoundingBoxComponent>() && o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
 
 					BoundingBoxComponent* oBox = o->getComponent<BoundingBoxComponent>();
 
@@ -212,9 +248,34 @@ void SceneIngame::update() {
 
 					o->position -= temp / 8.0f;
 
-					glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
-					oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-					oTarget += RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
+					//glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+
+					//target - position
+
+					glm::vec3 difference = glm::vec3(oTarget.x - o->position.x, oTarget.y - o->position.y, oTarget.z - o->position.z);
+					//difference
+					//cout << o->id << "\t" << difference.x << "\t" << difference.y << "\t" << difference.z << "\n";
+
+					//position
+					//cout << o->id << "\t" << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
+
+					//oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
+					////oTarget += RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
+
+					int oTargetX = oTarget.x;
+					int oTargetY = oTarget.y;
+
+					if (difference.x >= 0) {
+						oTargetX *= -1;
+					}
+
+					if (difference.y >= 0) {
+						oTargetY *= -1;
+					}
+					
+					oTarget = glm::vec3(oTargetX, oTargetY, oTarget.z);
+					
+					//+RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
 
 					o->getComponent<MoveToComponent>()->target = oTarget;
 
@@ -226,14 +287,20 @@ void SceneIngame::update() {
 				}
 			}
 		}
+
+		//Have to fix, Blocks are flying out of the skybox
 		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBoxComponent>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
 			o->getComponent<MoveToComponent>()->target = oTarget;
 		}
-		if (o->getComponent<MoveToComponent>()->target == o->position) {
-			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false) + glm::vec3(-1 * o->position.x, -1 * o->position.y, -1 * o->position.z);;
+
+		glm::vec3 difference = glm::vec3(oTarget.x - o->position.x, oTarget.y - o->position.y, oTarget.z - o->position.z);
+		if (difference.x <= 1.0f && difference.y <= 1.0f) {
+			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false);
 		}
+
 		o->update(deltaTime);
 	}
 }
@@ -250,7 +317,7 @@ void SceneIngame::freeTextures()
 void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
 	// If no mouseposition is given we don't cast a ray
-	if (xOrigin == 0&&yOrigin == 0)
+	if (xOrigin == 0 && yOrigin == 0)
 	{
 		return;
 	}
@@ -258,7 +325,7 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix,
 	// get the viewports
 	int Viewport[4];
 	glGetIntegerv(GL_VIEWPORT, Viewport);
-	
+
 	// Calculate the real y
 	yOrigin = Viewport[3] - yOrigin;
 
@@ -266,7 +333,7 @@ void SceneIngame::rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix,
 	float winZ;
 	glReadPixels(xOrigin, yOrigin, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 	// Calculate the 3d coordinates of the intersection with the viewport
-	mouse3d = glm::vec4(glm::unProject(glm::vec3(xOrigin,yOrigin, winZ), viewMatrix, projectionMatrix, glm::vec4(Viewport[0], Viewport[1], Viewport[2], Viewport[3])), winZ);
+	mouse3d = glm::vec4(glm::unProject(glm::vec3(xOrigin, yOrigin, winZ), viewMatrix, projectionMatrix, glm::vec4(Viewport[0], Viewport[1], Viewport[2], Viewport[3])), winZ);
 }
 
 void SceneIngame::initSkyboxTextures() {
@@ -281,35 +348,32 @@ void SceneIngame::initSkyboxTextures() {
 void SceneIngame::createLetterCubes()
 {
 	objects.clear();
+	tempObjects.clear();
 	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
 
 		o->addComponent(new LetterModelComponent(gameLogic->getCurrentWord()->getLetters()[i]));
 		o->addComponent(new BoundingBoxComponent(o));
 		o->addComponent(new MoveToComponent());
-		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
-		glm::vec3 pos = glm::vec3(0, 0, 0);
+		glm::vec3 pos = glm::vec3(0, 0, 0); //original position
 		o->position = pos;
 		o->scale = glm::vec3(1.0f);
 		o->getComponent<MoveToComponent>()->target = pos;
 		o->draw();
 
+		// move blocks if they spawn in each other
 		for (auto& next : objects) {
 			if (next != o) {
 				while (o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
-					glm::vec3 pos = glm::vec3(rand() % 20, rand() % 20, 0);
+					glm::vec3 pos = RandomVec3(25, true, true, false);
 					o->position = pos;
-					o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 30, rand() % 30, 0);
-					//o->getComponent<MoveToComponent>()->target = glm::vec3(30, 30, 0);
-					//o->getComponent<MoveToComponent>()->target = glm::vec3(-1*(next->getComponent<MoveToComponent>()->target.x), -1 * (next->getComponent<MoveToComponent>()->target.y), 0);
+					o->getComponent<MoveToComponent>()->target = RandomVec3(30, true, true, false);
 					o->draw();
-					//o->update(0);
-					//next->draw();
-					//next->update(0);
 				}
 			}
 		}
 		objects.push_back(o);
+		tempObjects.push_back(o);
 	}
 }
 
@@ -328,13 +392,13 @@ void SceneIngame::selectObject() {
 
 		double distance = glm::distance(o->position, mousePos);
 
-		if (distance< minimalDistance)
+		if (distance < minimalDistance)
 		{
 			object = o;
 			minimalDistance = distance;
 		}
 	}
-	
+
 	if (minimalDistance < 10)
 	{
 		gameLogic->selectedObject = object;

@@ -11,5 +11,6 @@ public:
     LetterModelComponent(char letter);
     ~LetterModelComponent();
     char getLetter();
+    bool shotLetter = false;
 };
 

@@ -5,7 +5,6 @@
 
 GameLogic::GameLogic() {
 	// Initiate variables to standard values
-	gameStarted = false;
 	reset = false;
 	currentWordLength = 5;
 	currentWordAmount = 3;
@@ -28,6 +27,7 @@ void GameLogic::checkForStartingConditions() {
 	//check if it is the start of the game
 	if (!gameStarted) {
 		gameStarted = true;
+		reset = true;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		currentWord = wordsToGuess[chosenWordsAmount];
 		gameTimer->start();
@@ -70,6 +70,7 @@ bool GameLogic::update(bool* redDetected) {
 					// Get the letter of that lettermodel and shoot it
 					char shotLetter = selectedObject->getComponent<LetterModelComponent>()->getLetter();
 					shootLetter(shotLetter);
+					selectedObject->getComponent<LetterModelComponent>()->shotLetter = true;					
 				}
 			}
 
@@ -95,6 +96,8 @@ bool GameLogic::update(bool* redDetected) {
 					shotWord = "";
 					clearVector(&shotLetters);
 				}
+
+				wordCorrect = true;
 			}
 
 		}
