@@ -30,8 +30,6 @@ GameLogic::GameLogic() {
 
 	// Load words from json file
 	wordLoader = new WordLoader();
-
-	checkForStartingConditions();
 }
 
 GameLogic::~GameLogic()
@@ -43,9 +41,11 @@ void GameLogic::checkForStartingConditions() {
 		gameStarted = true;
 		reset = true;
 		levens = 3;
+		achievedScore = 0;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		wordLoader->printWords(wordsToGuess);
 		currentWord = wordsToGuess[0];
+		gameTimer->reset();
 		gameTimer->start();
 		oneSecondTimer->start();
 
