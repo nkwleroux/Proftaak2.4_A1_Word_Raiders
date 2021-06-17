@@ -10,6 +10,7 @@ private:
     std::chrono::steady_clock::time_point endTime;
     float duration;
     bool isRunning;
+    float pauseTimeRemaining;
 public:
     Timer(float duration);
     ~Timer();
@@ -19,5 +20,7 @@ public:
     std::string timeRemainingToString();
     bool hasFinished();
     void reset();
+    void pause();
+    void resume();
 };
 

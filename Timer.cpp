@@ -75,3 +75,14 @@ void Timer::reset() {
     this->startTime = std::chrono::steady_clock::now();
     isRunning = true;
 }
+
+void Timer::pause() {
+   pauseTimeRemaining = timeRemaining();
+   stop();
+}
+
+void Timer::resume() {
+    long long timeSpentFromClock = (long long)((this->duration - pauseTimeRemaining) * 1000.0);
+    this->startTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(timeSpentFromClock);
+    start();
+}
