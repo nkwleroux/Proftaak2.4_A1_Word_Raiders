@@ -3,13 +3,25 @@
 #include "Scene.h"
 #include "LetterModelComponent.h"
 
+
+float timeSpent;
+int achievedScore;
+bool wonGame;
+
+int currentWordLength;
+int currentWordAmount;
+
+
 GameLogic::GameLogic() {
 	// Initiate variables to standard values
 	gameStarted = false;
 	reset = false;
-	currentWordLength = 5;
-	currentWordAmount = 3;
+	wonGame = false;
+	timeSpent = 0;
 	currentWordIndex = -1;
+	currentWordAmount = 1;
+	currentWordLength = 5;
+	achievedScore = 0;
 
 	// Initiate timers
 	gameTimer = new Timer(90);
@@ -29,13 +41,19 @@ void GameLogic::checkForStartingConditions() {
 	if (!gameStarted) {
 		gameStarted = true;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
-		currentWord = wordsToGuess[chosenWordsAmount];
+		currentWord = wordsToGuess[0];
 		gameTimer->start();
 		oneSecondTimer->start();
 
 		correctLetters = std::vector<char>(currentWordLength);
 		shotLetters = std::vector<char>(currentWordLength);
 	}
+}
+
+void GameLogic::setEndScreen() {
+	gameTimer->stop();
+	timeSpent = gameTimer->timeRemaining();
+	//achievedScore = score;
 }
 
 bool GameLogic::update(bool* redDetected) {
@@ -52,7 +70,12 @@ bool GameLogic::update(bool* redDetected) {
 
 	//TODO --> check for lives
 	//TODO --> check for timer
-
+	if (gameTimer->hasFinished())
+	{
+		setEndScreen();
+		wonGame = false;
+		return true;
+	}
 
 	// Check if the player want to fire
 	if (*redDetected) {
@@ -86,6 +109,8 @@ bool GameLogic::update(bool* redDetected) {
 					}
 					// If there are no words left we are done and return true
 					else {
+						wonGame = true;
+						setEndScreen();
 						return true;
 					}
 				}
@@ -176,4 +201,5 @@ bool GameLogic::checkWord() {
 void GameLogic::shootLetter(char shotLetter) {
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
+	achievedScore += 10;
 }

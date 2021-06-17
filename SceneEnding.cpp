@@ -16,6 +16,7 @@ extern GLFWwindow* window;
 Text* finishedText;
 Text* timeUsedText;
 Text* scoreText;
+
 extern float timeSpent;
 extern int achievedScore;
 extern bool wonGame;
@@ -81,18 +82,9 @@ std::string SceneEnding::getWonText(bool won){
 void SceneEnding::update(){
 
 }
+
 void SceneEnding::freeTextures()
 {
 
 	endingTexture->unBind();
 }
-//
-//void SceneEnding::updateScore()
-//{
-//
-//}
-//
-//void SceneEnding::updateTime()
-//{
-//
-//}

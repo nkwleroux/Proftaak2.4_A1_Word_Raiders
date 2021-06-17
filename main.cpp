@@ -29,11 +29,6 @@ using namespace cv;
 //DO NOT MOVE
 int windowHeight = 1080;
 int windowWidth = 1920;
-int currentWordLength = 5;
-int currentWordAmount = 1;
-float timeSpent = 1;
-int achievedScore = 1;
-bool wonGame = false;
 
 std::map<Scenes, Scene*> scenes;
 Scene* currentScene = nullptr;

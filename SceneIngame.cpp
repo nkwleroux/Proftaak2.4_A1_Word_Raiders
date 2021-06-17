@@ -129,7 +129,7 @@ void SceneIngame::draw()
 
 	//timer
 	textObject->draw("score: 200 stars  ", 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw(gameLogic->getGameTimer()->secondsToGoString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw(gameLogic->getGameTimer()->timeRemainingToString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw("levens: ******", 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
@@ -168,7 +168,7 @@ void SceneIngame::update() {
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		currentScene = scenes[Scenes::STARTUP];
+		currentScene = scenes[Scenes::GAMEEND];
 		return;
 	}
 
