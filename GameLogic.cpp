@@ -29,6 +29,7 @@ void GameLogic::checkForStartingConditions() {
 		gameStarted = true;
 		reset = true;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
+		wordLoader->printWords(wordsToGuess);
 		currentWord = wordsToGuess[chosenWordsAmount];
 		gameTimer->start();
 		oneSecondTimer->start();
@@ -38,6 +39,7 @@ void GameLogic::checkForStartingConditions() {
 	}
 }
 
+int wordIndex = 0;
 bool GameLogic::update(bool* redDetected) {
 	checkForStartingConditions();
 
@@ -80,9 +82,11 @@ bool GameLogic::update(bool* redDetected) {
 				// Check the word if it is correct
 				if (checkWord()) {
 					// If it is correct we delete the word and set the new current word
-					wordsToGuess.pop_back();
+					wordsToGuess.erase(wordsToGuess.begin());
 					if (wordsToGuess.size() > 0) {
-						currentWord = wordsToGuess[wordsToGuess.size() - 1];
+						currentWord = wordsToGuess[0];
+						std::cout << currentWord << std::endl;
+						wordLoader->printWords(wordsToGuess);
 						reset = true;
 					}
 					// If there are no words left we are done and return true
