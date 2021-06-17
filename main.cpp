@@ -89,7 +89,7 @@ void init()
 {
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
+			if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) {
 				glfwSetWindowShouldClose(window, true);
 			}
 		});
