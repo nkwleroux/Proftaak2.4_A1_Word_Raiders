@@ -31,15 +31,7 @@ SceneEnding::SceneEnding()
 	//timeSpent = timespent;
 	//achievedScore = score;
 
-	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			if (key == GLFW_KEY_ESCAPE || cv::waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
-				glfwSetWindowShouldClose(window, true);
-			}
-			else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-				currentScene = scenes[Scenes::STARTUP];
-			}
-		});
+
 }
 
 std::string SceneEnding::intToString(int number) {
@@ -80,7 +72,15 @@ std::string SceneEnding::getWonText(bool won){
 
 
 void SceneEnding::update(){
-
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE || cv::waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
+				glfwSetWindowShouldClose(window, true);
+			}
+			if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+				currentScene = scenes[Scenes::STARTUP];
+			}
+		});
 }
 
 void SceneEnding::freeTextures()
