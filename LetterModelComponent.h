@@ -8,7 +8,7 @@ private:
     char blockLetter;
 
 public:
-    LetterModelComponent(char letter);
+    LetterModelComponent(char letter, Texture* texture);
     ~LetterModelComponent();
     char getLetter();
 };

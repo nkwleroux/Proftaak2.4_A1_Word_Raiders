@@ -34,6 +34,7 @@
 #include <map>
 #include "Crosshair.h"
 #include "GameLogic.h"
+#include <unordered_map>
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -61,7 +62,7 @@ Crosshair* crosshair;
 GameLogic* gameLogic;
 
 int textureIndex;
-float rotation = 0;
+std::unordered_map<char,LetterModelComponent*> lettersMap;
 
 SceneIngame::SceneIngame()
 {
@@ -80,6 +81,15 @@ SceneIngame::SceneIngame()
 	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
 
 	crosshair = new Crosshair();
+
+	
+
+	char chars[] = {'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
+	Texture* texture = new Texture("resources/LetterBlockTexture.png");
+	for (int i = 0; i < sizeof(chars) - 1; i++) {
+		lettersMap[chars[i]] = new LetterModelComponent(chars[i],texture);
+	}
+
 	createLetterCubes();
 }
 
@@ -283,11 +293,10 @@ void SceneIngame::createLetterCubes()
 	objects.clear();
 	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
-
-		o->addComponent(new LetterModelComponent(gameLogic->getCurrentWord()->getLetters()[i]));
+		o->addComponent(lettersMap[gameLogic->getCurrentWord()->getLetters()[i]]);
 		o->addComponent(new BoundingBoxComponent(o));
 		o->addComponent(new MoveToComponent());
-		//o->getComponent<MoveToComponent>()->target = glm::vec3(rand() % 20, rand() % 20, 0);
+		
 		glm::vec3 pos = glm::vec3(0, 0, 0);
 		o->position = pos;
 		o->scale = glm::vec3(1.0f);

@@ -48,20 +48,19 @@ private:
 		int materialIndex;
 		std::list<Face> faces;
 	};
-
-	//todo remove these when vbo is created
+	// Needed for boundry box
 	std::vector<glm::vec3>	vertices;
-	std::vector<glm::vec3>	normals;
-	std::vector<glm::vec2>	texcoords;
+
 	std::vector<ObjGroup*> groups;
 	std::vector<MaterialInfo*> materials;
 	std::vector<tigl::VBO*> vbos;
 
 	void loadMaterialFile(const std::string& fileName, const std::string& dirName);
+	void createVBO(std::vector<glm::vec3>	normals, std::vector<glm::vec2>	texcoords);
 
 public:
-	void createVBO();
-	ObjectModelComponent(const std::string &filename);
+	ObjectModelComponent(const std::string& filename);
+	ObjectModelComponent(const std::string &filename, Texture* texture);
 	~ObjectModelComponent(void);
 	int materialIndex;
 

@@ -2,6 +2,7 @@
 #include "WordLoader.h"
 #include "Scene.h"
 #include "LetterModelComponent.h"
+#include "Timer.h"
 
 
 float timeSpent;
@@ -75,6 +76,7 @@ bool GameLogic::update(bool* redDetected) {
 		if (levens>1)
 		{
 			levens--;
+			gameTimer->reset();
 		}
 		else {
 			setEndScreen();
@@ -116,6 +118,7 @@ bool GameLogic::update(bool* redDetected) {
 					// If there are no words left we are done and return true
 					else {
 						wonGame = true;
+						achievedScore *= levens;
 						setEndScreen();
 						return true;
 					}
