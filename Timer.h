@@ -18,5 +18,6 @@ public:
     float timeRemaining();
     std::string timeRemainingToString();
     bool hasFinished();
+    void reset();
 };
 

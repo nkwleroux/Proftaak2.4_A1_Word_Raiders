@@ -22,6 +22,7 @@ GameLogic::GameLogic() {
 	currentWordAmount = 1;
 	currentWordLength = 5;
 	achievedScore = 0;
+	levens = 3;
 
 	// Initiate timers
 	gameTimer = new Timer(90);
@@ -40,6 +41,7 @@ void GameLogic::checkForStartingConditions() {
 	//check if it is the start of the game
 	if (!gameStarted) {
 		gameStarted = true;
+		levens = 3;
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
 		currentWord = wordsToGuess[0];
 		gameTimer->start();
@@ -53,7 +55,6 @@ void GameLogic::checkForStartingConditions() {
 void GameLogic::setEndScreen() {
 	gameTimer->stop();
 	timeSpent = gameTimer->timeRemaining();
-	//achievedScore = score;
 }
 
 bool GameLogic::update(bool* redDetected) {
@@ -68,13 +69,18 @@ bool GameLogic::update(bool* redDetected) {
 		return false;
 	}
 
-	//TODO --> check for lives
-	//TODO --> check for timer
+
 	if (gameTimer->hasFinished())
 	{
-		setEndScreen();
-		wonGame = false;
-		return true;
+		if (levens>1)
+		{
+			levens--;
+		}
+		else {
+			setEndScreen();
+			wonGame = false;
+			return true;
+		}
 	}
 
 	// Check if the player want to fire
@@ -156,6 +162,18 @@ Word* GameLogic::getCurrentWord()
 Timer* GameLogic::getGameTimer()
 {
 	return gameTimer;
+}
+
+std::string GameLogic::getLevens()
+{
+	std::string stringLevens;
+	stringLevens.append(levens,'*');
+	return stringLevens;
+}
+
+std::string GameLogic::getScore()
+{
+	return std::to_string(achievedScore);
 }
 
 void GameLogic::clearVector(std::vector<char>* vector) {

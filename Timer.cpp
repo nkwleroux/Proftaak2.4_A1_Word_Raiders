@@ -71,3 +71,7 @@ bool Timer::hasFinished() {
     return false;
 }
 
+void Timer::reset() {
+    this->startTime = std::chrono::steady_clock::now();
+    isRunning = true;
+}

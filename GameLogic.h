@@ -12,6 +12,7 @@ private:
 	WordLoader* wordLoader;
 
 	int currentWordIndex;
+	int levens;
 
 	// List containing all the words that have to be guessed
 	std::vector<Word*> wordsToGuess;
@@ -51,6 +52,8 @@ public:
 	std::string getCorrectWord();
 	Word* getCurrentWord();
 	Timer* getGameTimer();
+	std::string getLevens();
+	std::string getScore();
 
 	bool reset;
 };
