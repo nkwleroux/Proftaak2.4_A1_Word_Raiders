@@ -35,6 +35,7 @@
 #include "Crosshair.h"
 #include "GameLogic.h"
 #include <unordered_map>
+#include <future>
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -64,6 +65,7 @@ GameLogic* gameLogic;
 
 int textureIndex;
 std::unordered_map<char,LetterModelComponent*> lettersMap;
+unordered_map<char, LetterModelComponent*> initLetters();
 
 SceneIngame::SceneIngame()
 {
@@ -83,11 +85,20 @@ SceneIngame::SceneIngame()
 	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
 
 	crosshair = new Crosshair();
-	char chars[] = {'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
+
+	std::future<unordered_map<char, LetterModelComponent*>> futureTextureMap = std::async(initLetters);
+	futureTextureMap.wait();
+	lettersMap = futureTextureMap.get();
+}
+
+unordered_map<char, LetterModelComponent*> initLetters() {
+	unordered_map<char, LetterModelComponent*> tempMap;
+	char chars[] = { 'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
 	Texture* texture = new Texture("resources/LetterBlockTexture.png");
 	for (int i = 0; i < sizeof(chars) - 1; i++) {
-		lettersMap[chars[i]] = new LetterModelComponent(chars[i],texture);
+		tempMap[chars[i]] = new LetterModelComponent(chars[i], texture);
 	}
+	return tempMap;
 }
 
 void SceneIngame::draw()
@@ -173,10 +184,16 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 
 void SceneIngame::update() {
 	//Maybe make into callback function. Now is dependent on update (timing).
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-	{
-		currentScene = scenes[Scenes::PAUSE];
-	}
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE) {
+				glfwSetWindowShouldClose(window, true);
+			}
+			if (key == GLFW_KEY_P && action == GLFW_PRESS)
+			{
+				currentScene = scenes[Scenes::PAUSE];
+			}
+		});
 
 	// Update vision component
 	VC->update();
@@ -253,19 +270,7 @@ void SceneIngame::update() {
 
 					o->position -= temp / 8.0f;
 
-					//glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
-
-					//target - position
-
 					glm::vec3 difference = glm::vec3(oTarget.x - o->position.x, oTarget.y - o->position.y, oTarget.z - o->position.z);
-					//difference
-					//cout << o->id << "\t" << difference.x << "\t" << difference.y << "\t" << difference.z << "\n";
-
-					//position
-					//cout << o->id << "\t" << o->position.x << "\t" << o->position.y << "\t" << o->position.z << "\n";
-
-					//oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-					////oTarget += RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
 
 					int oTargetX = oTarget.x;
 					int oTargetY = oTarget.y;
@@ -280,8 +285,6 @@ void SceneIngame::update() {
 					
 					oTarget = glm::vec3(oTargetX, oTargetY, oTarget.z);
 					
-					//+RandomVec3(30, oBox->collisionX, oBox->collisionY, oBox->collisionZ);
-
 					o->getComponent<MoveToComponent>()->target = oTarget;
 
 					oBox->collisionX = false;

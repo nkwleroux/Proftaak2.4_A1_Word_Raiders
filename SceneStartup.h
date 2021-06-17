@@ -13,7 +13,6 @@ public:
 
 	virtual void draw() override;
 	virtual void update() override;
-	virtual void onKey(int key, int scancode, int action, int mods) override;
 	virtual void freeTextures() override;
 };
 

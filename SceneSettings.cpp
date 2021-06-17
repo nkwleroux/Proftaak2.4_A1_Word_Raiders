@@ -22,40 +22,7 @@ SceneSettings::SceneSettings()
 	settingsTexture = new Texture("Images/settings.png");
 	wordAmountText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
 
-	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			if (key == GLFW_KEY_ESCAPE || cv::waitKey(100) == 1) { //todo make it so that if esc is pressed on either screens that app closes
-				glfwSetWindowShouldClose(window, true);
-			}
-			else if (key == GLFW_KEY_BACKSPACE || cv::waitKey(100) == 1) {
-				currentScene = scenes[Scenes::STARTUP];
-			}
-			else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-				currentWordLength--;
-				if (currentWordLength < 5) {
-					currentWordLength = 7;
-				}	
-			}
-			else if (key == GLFW_KEY_G && action == GLFW_PRESS) {
-				currentWordLength++;
-				if (currentWordLength > 7) {
-					currentWordLength = 5;
-				}
-			}
-			else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-				
-				currentWordAmount--;
-				if (currentWordAmount < 1) {
-					currentWordAmount = 9;
-				}
-			}
-			else if (key == GLFW_KEY_B && action == GLFW_PRESS) {
-				currentWordAmount++;
-				if (currentWordAmount > 9) {
-					currentWordAmount = 1;
-				}
-			}
-		});
+	
 }
 
 std::string SceneSettings::intToString(int number) {
@@ -85,6 +52,40 @@ void SceneSettings::draw()
 
 void SceneSettings::update()
 {
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE) { //todo make it so that if esc is pressed on either screens that app closes
+				glfwSetWindowShouldClose(window, true);
+			}
+			else if (key == GLFW_KEY_BACKSPACE) {
+				currentScene = scenes[Scenes::STARTUP];
+			}
+			else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+				currentWordLength--;
+				if (currentWordLength < 5) {
+					currentWordLength = 7;
+				}
+			}
+			else if (key == GLFW_KEY_G && action == GLFW_PRESS) {
+				currentWordLength++;
+				if (currentWordLength > 7) {
+					currentWordLength = 5;
+				}
+			}
+			else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+
+				currentWordAmount--;
+				if (currentWordAmount < 1) {
+					currentWordAmount = 9;
+				}
+			}
+			else if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+				currentWordAmount++;
+				if (currentWordAmount > 9) {
+					currentWordAmount = 1;
+				}
+			}
+		});
 	
 }
 

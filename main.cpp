@@ -84,7 +84,7 @@ void init()
 {
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			if (key == GLFW_KEY_ESCAPE || waitKey(100) == 1) {
+			if (key == GLFW_KEY_ESCAPE) {
 				glfwSetWindowShouldClose(window, true);
 			}
 		});
