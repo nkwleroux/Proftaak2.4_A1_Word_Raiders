@@ -35,7 +35,6 @@
 #include "Crosshair.h"
 #include "GameLogic.h"
 #include <unordered_map>
-#include <future>
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -65,7 +64,6 @@ GameLogic* gameLogic;
 
 int textureIndex;
 std::unordered_map<char,LetterModelComponent*> lettersMap;
-unordered_map<char, LetterModelComponent*> initLetters();
 
 SceneIngame::SceneIngame()
 {
@@ -86,20 +84,13 @@ SceneIngame::SceneIngame()
 
 	crosshair = new Crosshair();
 
-	std::future<unordered_map<char, LetterModelComponent*>> futureTextureMap = std::async(initLetters);
-	futureTextureMap.wait();
-	lettersMap = futureTextureMap.get();
-}
-
-unordered_map<char, LetterModelComponent*> initLetters() {
-	unordered_map<char, LetterModelComponent*> tempMap;
 	char chars[] = { 'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
 	Texture* texture = new Texture("resources/LetterBlockTexture.png");
-	for (int i = 0; i < sizeof(chars) - 1; i++) {
-		tempMap[chars[i]] = new LetterModelComponent(chars[i], texture);
+	for (int i = 0; i < sizeof(chars); i++) {
+		lettersMap[chars[i]] = new LetterModelComponent(chars[i], texture);
 	}
-	return tempMap;
 }
+
 
 void SceneIngame::draw()
 {
