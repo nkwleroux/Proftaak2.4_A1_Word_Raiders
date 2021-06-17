@@ -82,7 +82,7 @@ void Timer::pause() {
 }
 
 void Timer::resume() {
-    long long timeSpentFromClock = (long long)((this->duration - pauseTimeRemaining) * 1000.0);
+    long long timeSpentFromClock = ((this->duration - pauseTimeRemaining) * 1000.0);
     this->startTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(timeSpentFromClock);
     start();
 }
