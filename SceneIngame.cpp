@@ -221,11 +221,6 @@ void SceneIngame::update()
 	VC->update();
 	crosshair->setHandStyle(!VC->currentCrosshair);
 
-	// Select object where mouse is hovering over
-	selectObject();
-
-	// If we reset the game logic, boolean should change accordingly
-	// Also create new cubes
 	if (gameLogic->reset)
 	{
 		gameLogic->reset = false;
@@ -238,17 +233,21 @@ void SceneIngame::update()
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		currentScene = sceneList[Scenes::GAMEEND];
+		for (const auto& object : objects) {
+			object->getComponent<LetterModelComponent>()->shotLetter = false;
+		}
+		currentScene = scenes[Scenes::GAMEEND];
 		gameLogic->gameStarted = false;
 		return;
 	}
 
-	// If something has been shot
-	if (gameLogic->selectedObject != nullptr && gameLogic
-	                                            ->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot)
-	{
-		dynamicObjectsList.remove(gameLogic->selectedObject);
-		gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
+	// Select object where mouse is hovering over
+	selectObject();
+
+	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter) {
+		cout << "remove object" << endl;
+		objects.remove(gameLogic->selectedObject);
+		gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter = false;
 		gameLogic->selectedObject = nullptr;
 	}
 
@@ -494,6 +493,7 @@ void SceneIngame::selectObject()
 	// if minimal distance is lower then 10, set the selectedobject
 	if (minimalDistance < 10)
 	{
+		cout << "on object" << endl;
 		gameLogic->selectedObject = object;
 	}
 		// else there is no selected object
