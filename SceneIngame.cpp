@@ -198,9 +198,9 @@ void SceneIngame::update() {
 		return;
 	}
 
-	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter) {
+	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot) {
 		dynamicObjectsList.remove(gameLogic->selectedObject);
-		gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter = false;
+		gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
 		gameLogic->selectedObject = nullptr;
 	}
 

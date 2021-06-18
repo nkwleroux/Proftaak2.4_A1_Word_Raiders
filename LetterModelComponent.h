@@ -8,9 +8,13 @@ private:
     char blockLetter;
 
 public:
+	// Constructor
     LetterModelComponent(char letter, Texture* texture);
+	// Destructor
     ~LetterModelComponent();
+	// Getter for retreiving the letter
     char getLetter();
-    bool shotLetter = false;
+	// Boolean for if the letter has been shot or not
+    bool hasBeenShot = false;
 };
 

@@ -103,7 +103,7 @@ bool GameLogic::update(bool* redDetected) {
 					// Get the letter of that lettermodel and shoot it
 					char shotLetter = selectedObject->getComponent<LetterModelComponent>()->getLetter();
 					shootLetter(shotLetter);
-					selectedObject->getComponent<LetterModelComponent>()->shotLetter = true;					
+					selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = true;					
 				}
 			}
 
@@ -197,7 +197,7 @@ void GameLogic::clearVector(std::vector<char>* vector) {
 */
 void GameLogic::fillVector() {
 	for (int i = 0; i < correctLetters.size(); i++) {
-		shotLetters.at(i) = '_'; //fill the shotLetter vector with _
+		shotLetters.at(i) = '_'; //fill the hasBeenShot vector with _
 		if (i == 0) {
 			correctLetters.at(i) = currentWord->getFirstLetter(); //fill the vector with the first letter of the current word
 		}
