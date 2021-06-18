@@ -17,16 +17,16 @@ VisionCamera::~VisionCamera()
 }
 
 // Method to set color regocnitision values
-void VisionCamera::colorSettings()
+void VisionCamera::colorSettings(vector<int>* colorValues)
 {
 	// Create track slider bars so you can change colors
 	namedWindow("Trackbars", (640, 200));
-	createTrackbar("Hue Min", "Trackbars", &hueMin, 179);
-	createTrackbar("Hue Max", "Trackbars", &hueMax, 179);
-	createTrackbar("Sat Min", "Trackbars", &saturationMin, 255);
-	createTrackbar("Sat Max", "Trackbars", &saturationMax, 255);
-	createTrackbar("Val Min", "Trackbars", &valueMin, 255);
-	createTrackbar("Val Max", "Trackbars", &valueMax, 255);
+	createTrackbar("Hue Min", "Trackbars", &colorValues->at(0), 179);
+	createTrackbar("Hue Max", "Trackbars", &colorValues->at(3), 179);
+	createTrackbar("Sat Min", "Trackbars", &colorValues->at(1), 255);
+	createTrackbar("Sat Max", "Trackbars", &colorValues->at(4), 255);
+	createTrackbar("Val Min", "Trackbars", &colorValues->at(2), 255);
+	createTrackbar("Val Max", "Trackbars", &colorValues->at(5), 255);
 
 	while (true)
 	{
@@ -35,20 +35,20 @@ void VisionCamera::colorSettings()
 		// Converts an image from one color space to another.
 		cvtColor(img, imgHSV, COLOR_BGR2HSV);
 		// Upper and lower scalar variables
-		Scalar lower(hueMin, saturationMin, valueMin);
-		Scalar upper(hueMax, saturationMax, valueMax);
+		Scalar lower(colorValues->at(0), colorValues->at(1), colorValues->at(2));
+		Scalar upper(colorValues->at(3), colorValues->at(4), colorValues->at(5));
 		// Tresholding operation
 		inRange(imgHSV, lower, upper, mask);
 
-		// Some basic prints
-		cout << "hueMin: " << hueMin << ", saturationMin: " << saturationMin << ", valueMin: " << valueMin << endl;
-		cout << "hueMax: " << hueMax << ", saturationMax: " << saturationMax << ", valueMax: " << valueMax << endl;
-
 		// Show the image
 		imshow("Image", img);
-		imshow("Mask", mask);
-		// Small delay
-		waitKey(1);
+		imshow("Press q to quit", mask);
+
+		char key = (char)waitKey(30);
+		if (key == 113) {
+			destroyAllWindows();
+			break;
+		}
 	}
 }
 
@@ -165,7 +165,7 @@ glm::vec2 VisionCamera::getCrossHairCoords()
 {
 	// Create viewport
 	int viewport[4];
-	//glGet — return the value or values of a selected parameter
+	//glGet ï¿½ return the value or values of a selected parameter
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
 	// Store coordinates and percentages

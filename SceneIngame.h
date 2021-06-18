@@ -13,6 +13,7 @@
 #include "Crosshair.h"
 #include "LetterModelComponent.h"
 
+
 class GameObject;
 class Texture;
 
@@ -112,5 +113,6 @@ public:
 	/// Method used to unbind all the textures
 	/// </summary>
 	virtual void freeTextures() override;
+	VisionCamera* VC;
 };
 

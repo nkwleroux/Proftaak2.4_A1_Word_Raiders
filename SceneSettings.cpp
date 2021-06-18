@@ -18,12 +18,20 @@ extern int currentWordLength;
 extern int currentWordAmount;
 Text* wordAmountText;
 
+void SceneSettings::changeColor(int index)
+{
+	VC->colorSettings(&VC->myColors.at(index));
+}
+
 // Constructor
 SceneSettings::SceneSettings()
 {
 	// Set variables in the constructor
 	settingsTexture = new Texture("Images/settings.png");
 	wordAmountText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
+
+	glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
+	
 }
 
 // Method to convert integer to string type
@@ -64,7 +72,8 @@ void SceneSettings::update()
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			// Escape closes the application
-			if (key == GLFW_KEY_ESCAPE) {
+			SceneSettings* handler = reinterpret_cast<SceneSettings*>(glfwGetWindowUserPointer(window));
+			if (key == GLFW_KEY_ESCAPE) { //todo make it so that if esc is pressed on either screens that app closes
 				glfwSetWindowShouldClose(window, true);
 			}
 			// Backspace returns to the startup screen
@@ -101,6 +110,12 @@ void SceneSettings::update()
 					currentWordAmount = 1;
 				}
 			}
+			else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+				handler->changeColor(0);
+			}
+			else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+				handler->changeColor(1);
+			}
 		});
 
 }
@@ -111,4 +126,5 @@ void SceneSettings::freeTextures()
 {
 	settingsTexture->unBind();
 }
+
 

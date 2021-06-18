@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "tigl.h"
 #include <sstream>
+#include "VisionCamera.h"
 
 class Texture;
 
@@ -16,6 +17,7 @@ private:
     std::string intToString(int number);
 
 public:
+    void changeColor(int index);
 	//Constructor
     SceneSettings();
 	// Draw function for the scene

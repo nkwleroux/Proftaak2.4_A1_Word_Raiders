@@ -12,6 +12,7 @@
 #include "SceneCredits.h"
 #include "SceneSettings.h"
 #include "SceneEnding.h"
+#include "VisionCamera.h"
 
 
 // Using namespace to make things a  bit easier
@@ -34,6 +35,7 @@ std::map<Scenes, Scene*> sceneList;
 Scene* currentScene = nullptr;
 // Creating the 3D window
 GLFWwindow* window;
+VisionCamera* VC;
 
 // Declaring methods, init update and draw
 void init();
@@ -101,14 +103,21 @@ void init()
 			}
 		});
 
+	VideoCapture cap(0);
+	VC = new VisionCamera(cap);
+
+	SceneIngame* sceneInGame = new SceneIngame();
+	SceneSettings* sceneSettings = new SceneSettings();
+
+	scenes[Scenes::STARTUP] = new SceneStartup();
+	scenes[Scenes::INGAME] = sceneInGame;
+	sceneInGame->VC = VC;
+	scenes[Scenes::PAUSE] = new ScenePause();
+	scenes[Scenes::SETTINGS] = sceneSettings;
+	scenes[Scenes::CREDITS] = new SceneCredits();
+	scenes[Scenes::GAMEEND] = new SceneEnding();
+	currentScene = scenes[Scenes::STARTUP];
 	// Create all the scenes and add them to the scenelist
-	sceneList[Scenes::STARTUP] = new SceneStartup();
-	sceneList[Scenes::INGAME] = new SceneIngame();
-	sceneList[Scenes::PAUSE] = new ScenePause();
-	sceneList[Scenes::SETTINGS] = new SceneSettings();
-	sceneList[Scenes::CREDITS] = new SceneCredits();
-	sceneList[Scenes::GAMEEND] = new SceneEnding();
-	currentScene = sceneList[Scenes::STARTUP];
 }
 
 // Update the current scene, starts as startup scene

@@ -37,11 +37,6 @@ using namespace cv;
 
 SceneIngame::SceneIngame()
 {
-	// creating the videocapture object
-	VideoCapture videoCapture(0);
-
-	// creating visioncamera and gamelogic
-	VC = new VisionCamera(videoCapture);
 	gameLogic = new GameLogic();
 
 
@@ -128,11 +123,10 @@ void SceneIngame::draw()
 	}
 
 	// Calculate where the crosshair would hit
-	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 
 	// Debug use mouse as pointer
-	// You can uncomment this and the mouse is our pointer
-	{
+	/*{
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -141,7 +135,7 @@ void SceneIngame::draw()
 			VC->redDetected = true;
 		}
 		rayCast(xpos, ypos, viewmatrix, projection);
-	}
+	}*/
 
 	// Use the shader to enable lightning
 	tigl::shader->enableLighting(false);

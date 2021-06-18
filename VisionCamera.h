@@ -24,11 +24,7 @@ private:
 	int hueMin = 45, saturationMin = 110, valueMin = 75;
 	int hueMax = 110, saturationMax = 240, valueMax = 255;
 
-	// Creating vector with colors
-	vector<vector<int>> myColors{
-	{0, 146, 165, 22, 236, 255}, //red
-	{55, 52, 7, 93, 106, 172}, //green
-	};
+	
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 
 	// Setting standard boolean variables
@@ -53,7 +49,7 @@ public:
 	~VisionCamera();
 
 	// Method to set color settings
-	void colorSettings();
+	void colorSettings(vector<int> *colorValues);
 	// Method to retreive contours
 	Point getContours();
 	// Method to find color
@@ -64,5 +60,9 @@ public:
 	void update();
 	// Method to retreive crosshair coordinates
 	glm::vec2 getCrossHairCoords();
+	vector<vector<int>> myColors{
+		{55, 52, 7, 93, 106, 172}, //green
+		{0, 146, 165, 22, 236, 255} //red
+	};
 };
 
