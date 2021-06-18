@@ -106,18 +106,20 @@ void init()
 	VideoCapture cap(0);
 	VC = new VisionCamera(cap);
 
+	// Create all the scenes and add them to the scenelist
 	SceneIngame* sceneInGame = new SceneIngame();
 	SceneSettings* sceneSettings = new SceneSettings();
 
-	scenes[Scenes::STARTUP] = new SceneStartup();
-	scenes[Scenes::INGAME] = sceneInGame;
+	sceneList[Scenes::STARTUP] = new SceneStartup();
+	sceneList[Scenes::INGAME] = sceneInGame;
+	sceneList[Scenes::PAUSE] = new ScenePause();
+	sceneList[Scenes::SETTINGS] = sceneSettings;
+	sceneList[Scenes::CREDITS] = new SceneCredits();
+	sceneList[Scenes::GAMEEND] = new SceneEnding();
+	currentScene = sceneList[Scenes::STARTUP];
+
 	sceneInGame->VC = VC;
-	scenes[Scenes::PAUSE] = new ScenePause();
-	scenes[Scenes::SETTINGS] = sceneSettings;
-	scenes[Scenes::CREDITS] = new SceneCredits();
-	scenes[Scenes::GAMEEND] = new SceneEnding();
-	currentScene = scenes[Scenes::STARTUP];
-	// Create all the scenes and add them to the scenelist
+	sceneSettings->VC = VC;
 }
 
 // Update the current scene, starts as startup scene

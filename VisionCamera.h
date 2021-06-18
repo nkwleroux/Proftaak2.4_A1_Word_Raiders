@@ -17,10 +17,12 @@ private:
 	// Creating variables
 	// Variable for capturing videos
 	VideoCapture videoCapture;
+
 	// Image manipulation
 	Mat img, imgHSV, mask;
 	Point myPoint;
-	//
+
+	// Values used for detemining the bat
 	int hueMin = 45, saturationMin = 110, valueMin = 75;
 	int hueMax = 110, saturationMax = 240, valueMax = 255;
 

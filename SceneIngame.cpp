@@ -123,10 +123,10 @@ void SceneIngame::draw()
 	}
 
 	// Calculate where the crosshair would hit
-	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 
 	// Debug use mouse as pointer
-	/*{
+	{
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -135,7 +135,7 @@ void SceneIngame::draw()
 			VC->redDetected = true;
 		}
 		rayCast(xpos, ypos, viewmatrix, projection);
-	}*/
+	}
 
 	// Use the shader to enable lightning
 	tigl::shader->enableLighting(false);

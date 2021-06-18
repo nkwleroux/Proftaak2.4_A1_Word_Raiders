@@ -17,7 +17,9 @@ private:
     std::string intToString(int number);
 
 public:
-    void changeColor(int index);
+	// Vision camera
+	VisionCamera* VC;
+
 	//Constructor
     SceneSettings();
 	// Draw function for the scene
@@ -26,4 +28,6 @@ public:
 	virtual void update() override;
 	// Function that frees/unbinds the textures for the scene
 	virtual void freeTextures() override;
+	// Function that changes the VisionCamera settings
+	void changeColor(int index);
 };

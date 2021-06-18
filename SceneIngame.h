@@ -48,9 +48,6 @@ private:
 	// Texture used to draw the crosshair
 	Texture* textureCrosshair[2];
 
-	// Vision camera object which is used to detect where the player wants to shoot
-	VisionCamera* VC;
-
 	// Text object used to draw the gui elements
 	Text* textObject;
 
@@ -94,6 +91,9 @@ private:
 
 public:
 
+	// Vision camera object which is used to detect where the player wants to shoot
+	VisionCamera* VC;
+
 	/// <summary>
 	/// Constructor to initialise all the variables
 	/// </summary>
@@ -113,6 +113,5 @@ public:
 	/// Method used to unbind all the textures
 	/// </summary>
 	virtual void freeTextures() override;
-	VisionCamera* VC;
 };
 

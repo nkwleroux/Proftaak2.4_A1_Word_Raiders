@@ -3,18 +3,15 @@
 #include "tigl.h"
 #include <glm\ext\matrix_clip_space.hpp>
 
+#define KEY_Q 113
 
 // Constructor
 VisionCamera::VisionCamera(VideoCapture vidCap) : videoCapture(vidCap)
-{
-	//Enable to change color settings
-	//colorSettings();
-}
+{}
 
 // Destructor
 VisionCamera::~VisionCamera()
-{
-}
+{}
 
 // Method to set color regocnitision values
 void VisionCamera::colorSettings(vector<int>* colorValues)
@@ -44,8 +41,9 @@ void VisionCamera::colorSettings(vector<int>* colorValues)
 		imshow("Image", img);
 		imshow("Press q to quit", mask);
 
-		char key = (char)waitKey(30);
-		if (key == 113) {
+		// Wait 1 ms if the key is pressed
+		char key = (char)waitKey(1);
+		if (key == KEY_Q) {
 			destroyAllWindows();
 			break;
 		}
