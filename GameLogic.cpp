@@ -132,6 +132,9 @@ bool GameLogic::update(bool* redDetected) {
 					// If there are no words left we are done and return true
 					else {
 						wonGame = true;
+						// Time left added to score
+						achievedScore += gameTimer->timeRemaining()*5;
+						// Current lives is a multiplier for the score
 						achievedScore *= currentLives;
 						setEndScreen();
 						return true;
