@@ -3,66 +3,85 @@
 #include "tigl.h"
 #include <glm\ext\matrix_clip_space.hpp>
 
-VisionCamera::VisionCamera(VideoCapture vidCap) : cap(vidCap)
+
+// Constructor
+VisionCamera::VisionCamera(VideoCapture vidCap) : videoCapture(vidCap)
 {
+	//Enable to change color settings
 	//colorSettings();
 }
 
+// Destructor
 VisionCamera::~VisionCamera()
 {
 }
 
-Point myPoint;
-
-//not used
+// Method to set color regocnitision values
 void VisionCamera::colorSettings()
 {
+	// Create track slider bars so you can change colors
 	namedWindow("Trackbars", (640, 200));
-	createTrackbar("Hue Min", "Trackbars", &hmin, 179);
-	createTrackbar("Hue Max", "Trackbars", &hmax, 179);
-	createTrackbar("Sat Min", "Trackbars", &smin, 255);
-	createTrackbar("Sat Max", "Trackbars", &smax, 255);
-	createTrackbar("Val Min", "Trackbars", &vmin, 255);
-	createTrackbar("Val Max", "Trackbars", &vmax, 255);
+	createTrackbar("Hue Min", "Trackbars", &hueMin, 179);
+	createTrackbar("Hue Max", "Trackbars", &hueMax, 179);
+	createTrackbar("Sat Min", "Trackbars", &saturationMin, 255);
+	createTrackbar("Sat Max", "Trackbars", &saturationMax, 255);
+	createTrackbar("Val Min", "Trackbars", &valueMin, 255);
+	createTrackbar("Val Max", "Trackbars", &valueMax, 255);
 
 	while (true)
 	{
-		cap.read(img);
+		// Read the frame
+		videoCapture.read(img);
+		// Converts an image from one color space to another.
 		cvtColor(img, imgHSV, COLOR_BGR2HSV);
-		Scalar lower(hmin, smin, vmin);
-		Scalar upper(hmax, smax, vmax);
+		// Upper and lower scalar variables
+		Scalar lower(hueMin, saturationMin, valueMin);
+		Scalar upper(hueMax, saturationMax, valueMax);
+		// Tresholding operation
 		inRange(imgHSV, lower, upper, mask);
 
-		cout << "hmin: " << hmin << ", smin: " << smin << ", vmin: " << vmin << endl;
-		cout << "hmax: " << hmax << ", smax: " << smax << ", vmax: " << vmax << endl;
+		// Some basic prints
+		cout << "hueMin: " << hueMin << ", saturationMin: " << saturationMin << ", valueMin: " << valueMin << endl;
+		cout << "hueMax: " << hueMax << ", saturationMax: " << saturationMax << ", valueMax: " << valueMax << endl;
+
+		// Show the image
 		imshow("Image", img);
 		imshow("Mask", mask);
+		// Small delay
 		waitKey(1);
 	}
 }
 
+// Method to receive contours
 Point VisionCamera::getContours()
 {
+	// Creating variables we can use in this method, contours and mypoint
 	vector<vector<Point>> contours;
 	Point myPoint(0, 0);
+	// If mask is not empty
 	if (!mask.empty())
 	{
+		// Find the contours
 		findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
+		// Create an array/list with points, and a list with rectangles
 		vector<vector<Point>> conPoly(contours.size());
 		vector<Rect> boundRect(contours.size());
 
+		// Loop trough the whole of contours
 		for (int i = 0; i < contours.size(); i++)
 		{
+			// Request the area of the current countour
 			int area = contourArea(contours[i]);
 
 			String objectType;
 
+			// If area is over 500
 			if (area > 500)
 			{
+				// Request size and draw points and contours on screen
 				float peri = arcLength(contours[i], true);
 				approxPolyDP(contours[i], conPoly[i], 0.02 * peri, true);
-
 				boundRect[i] = boundingRect(conPoly[i]);
 				myPoint.x = boundRect[i].x + boundRect[i].width / 2;
 				myPoint.y = boundRect[i].y + boundRect[i].height / 2;
@@ -75,18 +94,26 @@ Point VisionCamera::getContours()
 	return myPoint;
 }
 
+// Method to find color
 void VisionCamera::findColor()
 {
+	// Convert colors
 	cvtColor(img, imgHSV, COLOR_BGR2HSV);
 
+	// Loop trough mycolors
 	for (int i = 0; i < myColors.size(); i++)
 	{
+		// Create scalars with lower and upper values
 		Scalar lower(myColors[i][0], myColors[i][1], myColors[i][2]);
 		Scalar upper(myColors[i][3], myColors[i][4], myColors[i][5]);
+
+		// Check if colors are in range
 		inRange(imgHSV, lower, upper, mask);
 
+		// Request contours
 		myPoint = getContours();
 
+		// Check if the color is detected
 		if (myPoint.x != 0 && myPoint.y != 0) {
 			if (i == 0) {
 				redDetected = false;
@@ -102,7 +129,6 @@ void VisionCamera::findColor()
 	}
 }
 
-//not used
 void VisionCamera::displayImage()
 {
 	//Create image - Row, Column, 8bit [signed = -127 to 127, unsigned = 0 - 255] C = Num channels, BGR values.
@@ -119,22 +145,30 @@ void VisionCamera::displayImage()
 	waitKey(1);
 }
 
+// Update function for VisionCamera
 void VisionCamera::update() {
-
-	cap.read(img);
+	// Read the webcam
+	videoCapture.read(img);
+	// Find the color
 	findColor();
+	// Show video
 	imshow("Video", img);
 
-	videoHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
-	videoWidth = cap.get(CAP_PROP_FRAME_WIDTH);
+	// Get height and width
+	videoHeight = videoCapture.get(CAP_PROP_FRAME_HEIGHT);
+	videoWidth = videoCapture.get(CAP_PROP_FRAME_WIDTH);
 
 }
 
+// Method to retreive crosshair coordinates
 glm::vec2 VisionCamera::getCrossHairCoords()
 {
+	// Create viewport
 	int viewport[4];
+	//glGet — return the value or values of a selected parameter
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	
+
+	// Store coordinates and percentages
 	float percentageX = currentPoint.x / 640.0f;
 	float percentageY = currentPoint.y / 480.0f;
 
@@ -142,6 +176,7 @@ glm::vec2 VisionCamera::getCrossHairCoords()
 	float yCoordinate = (float)viewport[3] * percentageY;
 
 	xCoordinate = (float)viewport[2] - xCoordinate; //Alleen voor Nicholas (inverted camera)
+	// Return coordinates
 	return glm::vec2(xCoordinate, yCoordinate);
 }
 
