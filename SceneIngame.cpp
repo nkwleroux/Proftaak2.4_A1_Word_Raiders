@@ -86,7 +86,7 @@ void SceneIngame::draw()
 {
 	// Create viewport
 	int viewport[4];
-	//glGet — return the value or values of a selected parameter
+	//glGet ï¿½ return the value or values of a selected parameter
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	// create projection matrix
 	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
@@ -103,6 +103,13 @@ void SceneIngame::draw()
 	// passtrough the modelmatrix to the shader
 	tigl::shader->setModelMatrix(modelmatrix);
 
+	// Set the light in the scene
+	tigl::shader->setLightCount(1);
+	tigl::shader->setShinyness(1.0f);
+	tigl::shader->setLightPosition(0, glm::vec3(0,0,1));
+	tigl::shader->setLightDirectional(0, true);
+	
+	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
 	// uncomment if we want to see outlines
 	//glpolygonmode(gl_front_and_back, gl_line);
@@ -130,11 +137,13 @@ void SceneIngame::draw()
 
 	// Use the shader to enable lightning
 	tigl::shader->enableLighting(false);
+	skyBox->draw();
 
 	// Draw the backgroundbox
 	backgroundBox->draw();
 
 	// 2D objects drawing
+	glDisable(GL_DEPTH_TEST);
 
 	//timer functions
 	// below we draw the score, lives, and words
@@ -146,7 +155,6 @@ void SceneIngame::draw()
 
 	// drawing the crosshair
 	crosshair->draw();
-	glDisable(GL_DEPTH_TEST);
 }
 
 // Method to generate a random vector, to which the boxes then can bounce
@@ -175,7 +183,8 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 			y *= -1;
 		}
 	}
-	if (zCollide)
+
+	if (zCollide) {
 		z = (float(rand()) / float((RAND_MAX)) * max);
 
 	// return the random vector, z should always be 0 because we dont need to check that

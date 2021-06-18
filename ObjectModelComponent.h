@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include "Texture.h"
 
 // We want to use a texture and map it to the component
 class Texture;

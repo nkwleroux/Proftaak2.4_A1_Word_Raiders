@@ -65,7 +65,7 @@ private:
 	double lastFrameTime;
 
 	// Object containing the boundingbox
-	GameObject* backgroundBox;
+	GameObject* skyBox;
 
 	// Crosshair object used to draw a crosshair with
 	Crosshair* crosshair;
