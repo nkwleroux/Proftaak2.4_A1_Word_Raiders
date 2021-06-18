@@ -14,7 +14,7 @@ extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 Text* finishedText;
-Text* timeUsedText;
+Text* timeOverText;
 Text* scoreText;
 
 extern float timeSpent;
@@ -25,7 +25,7 @@ SceneEnding::SceneEnding()
 {
 	endingTexture = new Texture("Images/ending.png");
 	finishedText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
-	timeUsedText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
+	timeOverText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
 	scoreText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
 
 	//timeSpent = timespent;
@@ -56,7 +56,7 @@ void SceneEnding::draw()
 	tigl::end();
 
 	finishedText->draw("You " + getWonText(wonGame), 1920 / 2 - 140, 1080 / 2, glm::vec4(0.0f, 0.0f, 0.0f, 0));
-	timeUsedText->draw("Time Used: " + intToString(timeSpent), 1920 / 2 - 140, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	timeOverText->draw("Time over: " + intToString(timeSpent), 1920 / 2 - 140, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 	scoreText->draw("Score: " + intToString(achievedScore), 1920 / 2 - 140, 1080 / 2 + 190, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 }
 

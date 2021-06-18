@@ -44,26 +44,12 @@ using tigl::Vertex;
 using namespace std;
 using namespace cv;
 
+// Variables defined elsewhere
 extern std::map<Scenes, Scene*> scenes;
 extern Scene* currentScene;
 extern GLFWwindow* window;
-
-Texture* textureSkybox[6];
-Texture* textureCrosshair[2];
 extern int windowHeight;
 extern int windowWidth;
-VisionCamera* VC;
-Text* textObject;
-Text* wordText;
-std::list<GameObject*> tempObjects;
-std::list<GameObject*> objects;
-double lastFrameTime = 0;
-GameObject* backgroundBox;
-Crosshair* crosshair;
-GameLogic* gameLogic;
-
-int textureIndex;
-std::unordered_map<char,LetterModelComponent*> lettersMap;
 
 SceneIngame::SceneIngame()
 {
@@ -74,7 +60,6 @@ SceneIngame::SceneIngame()
 	initSkyboxTextures();
 
 	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0f);
-	wordText = new Text("c:/windows/fonts/Verdana.ttf", 128.0f);
 
 	backgroundBox = new GameObject(0);
 	//TODO changed
@@ -89,6 +74,8 @@ SceneIngame::SceneIngame()
 	for (int i = 0; i < sizeof(chars); i++) {
 		lettersMap[chars[i]] = new LetterModelComponent(chars[i], texture);
 	}
+
+	lastFrameTime = 0;
 }
 
 
@@ -112,7 +99,7 @@ void SceneIngame::draw()
 	//glpolygonmode(gl_front_and_back, gl_line);
 
 	// drawing objects
-	for (auto& o : objects) {
+	for (auto& o : dynamicObjectsList) {
 		o->draw();
 	}
 
@@ -212,16 +199,16 @@ void SceneIngame::update() {
 	}
 
 	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter) {
-		objects.remove(gameLogic->selectedObject);
+		dynamicObjectsList.remove(gameLogic->selectedObject);
 		gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter = false;
 		gameLogic->selectedObject = nullptr;
 	}
 
 	if (gameLogic->wordCorrect) {
-		objects.clear();
-		for (auto const& o : tempObjects)
+		dynamicObjectsList.clear();
+		for (auto const& o : fullObjectsList)
 		{
-			objects.push_back(o);
+			dynamicObjectsList.push_back(o);
 		}
 		gameLogic->wordCorrect = false;
 	}
@@ -235,10 +222,10 @@ void SceneIngame::update() {
 	lastFrameTime = currentFrameTime;
 
 	// Check for collisions
-	for (auto& o : objects) {
+	for (auto& o : dynamicObjectsList) {
 		glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
 
-		for (auto& next : objects) {
+		for (auto& next : dynamicObjectsList) {
 
 			//Skip first element so you can compare with the previous one
 			if (next != o) {
@@ -346,8 +333,8 @@ void SceneIngame::initSkyboxTextures() {
 
 void SceneIngame::createLetterCubes()
 {
-	objects.clear();
-	tempObjects.clear();
+	dynamicObjectsList.clear();
+	fullObjectsList.clear();
 	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
 		o->addComponent(lettersMap[gameLogic->getCurrentWord()->getLetters()[i]]);
@@ -360,7 +347,7 @@ void SceneIngame::createLetterCubes()
 		o->draw();
 
 		// move blocks if they spawn in each other
-		for (auto& next : objects) {
+		for (auto& next : dynamicObjectsList) {
 			if (next != o) {
 				while (o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
 					glm::vec3 pos = RandomVec3(25, true, true, false);
@@ -370,8 +357,8 @@ void SceneIngame::createLetterCubes()
 				}
 			}
 		}
-		objects.push_back(o);
-		tempObjects.push_back(o);
+		dynamicObjectsList.push_back(o);
+		fullObjectsList.push_back(o);
 	}
 }
 
@@ -380,7 +367,7 @@ void SceneIngame::selectObject() {
 	GameObject* object = nullptr;
 	glm::vec3 mousePos(mouse3d.x, mouse3d.y, mouse3d.z);
 
-	for (const auto& o : objects) {
+	for (const auto& o : dynamicObjectsList) {
 		if (minimalDistance == 0)
 		{
 			minimalDistance = glm::distance(o->position, mousePos);
