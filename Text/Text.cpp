@@ -65,22 +65,6 @@ void Text::draw(const std::string& text, float x, float y, glm::vec4 color)
 	glDisable(GL_DEPTH_TEST);
 	glBindTexture(GL_TEXTURE_2D, texId);
 	stbtt_aligned_quad q;
-	// float 	s0
-	//
-	// 	float 	s1
-	//
-	// 	float 	t0
-	//
-	// 	float 	t1
-	//
-	// 	float 	x0
-	//
-	// 	float 	x1
-	//
-	// 	float 	y0
-	//
-	// 	float 	y1
-
 	tigl::begin(GL_QUADS);
 
 	// create the text

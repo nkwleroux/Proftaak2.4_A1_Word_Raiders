@@ -14,7 +14,6 @@ private:
 
 	// Variable to store the index and current lives
 	int currentWordIndex;
-	int currentLives;
 
 	// List containing all the words that have to be guessed
 	std::vector<Word*> wordsToGuess;

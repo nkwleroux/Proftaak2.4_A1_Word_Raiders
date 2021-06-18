@@ -224,6 +224,7 @@ void SceneIngame::update()
 	if (gameLogic->reset)
 	{
 		gameLogic->reset = false;
+		gameLogic->getGameTimer()->reset();
 		createLetterCubes();
 	}
 
@@ -233,10 +234,10 @@ void SceneIngame::update()
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		for (const auto& object : objects) {
-			object->getComponent<LetterModelComponent>()->shotLetter = false;
+		for (const auto& object : dynamicObjectsList) {
+			object->getComponent<LetterModelComponent>()->hasBeenShot = false;
 		}
-		currentScene = scenes[Scenes::GAMEEND];
+		currentScene = sceneList[Scenes::GAMEEND];
 		gameLogic->gameStarted = false;
 		return;
 	}
@@ -244,10 +245,10 @@ void SceneIngame::update()
 	// Select object where mouse is hovering over
 	selectObject();
 
-	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter) {
+	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot) {
 		cout << "remove object" << endl;
-		objects.remove(gameLogic->selectedObject);
-		gameLogic->selectedObject->getComponent<LetterModelComponent>()->shotLetter = false;
+		dynamicObjectsList.remove(gameLogic->selectedObject);
+		gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
 		gameLogic->selectedObject = nullptr;
 	}
 

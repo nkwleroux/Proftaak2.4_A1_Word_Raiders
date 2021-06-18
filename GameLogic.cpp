@@ -8,6 +8,7 @@
 float timeSpent;
 int achievedScore;
 bool wonGame;
+int currentLives;
 
 int currentWordLength;
 int currentWordAmount;
@@ -25,7 +26,7 @@ GameLogic::GameLogic() {
 	currentLives = 3;
 
 	// Initiate timers
-	gameTimer = new Timer(90);
+	gameTimer = new Timer(10);
 	antiSpamTimer = new Timer(1);
 
 	// Load words from json file
@@ -120,6 +121,9 @@ bool GameLogic::update(bool* redDetected) {
 			{
 				// Check the word if it is correct
 				if (checkWord()) {
+					// 100 point becuase the word is correct
+					achievedScore += 100;
+
 					// If it is correct we delete the word and set the new current word
 					wordsToGuess.erase(wordsToGuess.begin());
 					if (wordsToGuess.size() > 0) {
@@ -251,6 +255,6 @@ void GameLogic::shootLetter(char shotLetter) {
 	std::cout << "shotletter" << std::endl;
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
-	achievedScore += 10;
-	selectedObject->getComponent<LetterModelComponent>()->shotLetter = true;		
+	achievedScore += 5;
+	selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = true;
 }

@@ -14,12 +14,10 @@ extern std::map<Scenes, Scene*> sceneList;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
-// Text that should be shown when "game over" variables
-Text* finishedText;
-Text* timeOverText;
-Text* scoreText;
+
 
 extern float timeSpent;
+extern int currentLives;
 extern int achievedScore;
 extern bool wonGame;
 
@@ -30,9 +28,7 @@ SceneEnding::SceneEnding()
 	// texture the screen should show
 	endingTexture = new Texture("Images/ending.png");
 	// Loading text object which we can use to draw text
-	finishedText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
-	timeOverText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
-	scoreText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
+	text = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
 }
 
 // method that converts integer to string
@@ -63,9 +59,10 @@ void SceneEnding::draw()
 	tigl::end();
 
 	// Draw the text on the screen
-	finishedText->draw("You " + getWonText(wonGame), 1920 / 2 - 140, 1080 / 2, glm::vec4(0.0f, 0.0f, 0.0f, 0));
-	timeOverText->draw("Time over: " + intToString(timeSpent), 1920 / 2 - 140, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
-	scoreText->draw("Score: " + intToString(achievedScore), 1920 / 2 - 140, 1080 / 2 + 190, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	text->draw("You " + getWonText(wonGame), 1920 / 2 - 140, 1080 / 2, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	text->draw("Time left: " + intToString(timeSpent), 1920 / 2 - 140, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	text->draw("Lives: " + intToString(currentLives), 1920 / 2 - 140, 1080 / 2 + 190, glm::vec4(0.0f, 0.0f, 0.0f, 0));
+	text->draw("Score: " + intToString(achievedScore), 1920 / 2 - 140, 1080 / 2 + 285, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 }
 
 // Getter to retreive the won text

@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "tigl.h"
 #include <sstream>
+#include "Text/text.h"
 
 class Texture;
 
@@ -15,6 +16,8 @@ private:
 	// Method to get the winning text (your score etc)
     std::string getWonText(bool won);
 
+	// Text that should be shown variables
+	Text* text;
 public:
     SceneEnding();
 	// Draw function for the scene
