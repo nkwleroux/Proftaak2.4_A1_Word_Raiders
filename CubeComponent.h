@@ -3,20 +3,26 @@
 #include "DrawComponent.h"
 #include "Texture.h"
 #include "tigl.h"
-
-using tigl::Vertex;
-
 #include <vector>
+
+// Using to make it a bit easier :)
+using tigl::Vertex;
 
 class CubeComponent : public DrawComponent
 {
+	//Texture of the cubecomponent
 	Texture* texture;
 public:
-	std::vector<Vertex> verts;
+	// Global variable for vertexes
+	std::vector<Vertex> vertexesList;
 
+	// Constructor, you can pass trough a size float
 	CubeComponent(float size);
+
+	//Destructor
 	~CubeComponent();
 
+	// Draw function for the cube
 	virtual void draw() override;
 
 	// Inherited via DrawComponent
