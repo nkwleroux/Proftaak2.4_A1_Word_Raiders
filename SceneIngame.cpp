@@ -132,7 +132,7 @@ void SceneIngame::draw()
 	glDisable(GL_DEPTH_TEST);
 
 	// Draw all the gui details
-	textObject->draw("Score: " + gameLogic->getScore(), 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
+	textObject->draw("Score: " + gameLogic->getCurrentScore(), 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getGameTimer()->timeRemainingToString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw("Levens: " + gameLogic->getCurrentLifes(), 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
