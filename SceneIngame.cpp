@@ -223,7 +223,7 @@ void SceneIngame::update() {
 
 	// Check for collisions
 	for (auto& o : dynamicObjectsList) {
-		glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+		glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->targetLocation);
 
 		for (auto& next : dynamicObjectsList) {
 
@@ -263,7 +263,7 @@ void SceneIngame::update() {
 					
 					oTarget = glm::vec3(oTargetX, oTargetY, oTarget.z);
 					
-					o->getComponent<MoveToComponent>()->target = oTarget;
+					o->getComponent<MoveToComponent>()->targetLocation = oTarget;
 
 					oBox->collisionX = false;
 					oBox->collisionZ = false;
@@ -276,15 +276,15 @@ void SceneIngame::update() {
 
 		//Have to fix, Blocks are flying out of the skybox
 		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBoxComponent>()->collideWithWall(o)) {
-			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->target);
+			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->targetLocation);
 
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
-			o->getComponent<MoveToComponent>()->target = oTarget;
+			o->getComponent<MoveToComponent>()->targetLocation = oTarget;
 		}
 
 		glm::vec3 difference = glm::vec3(oTarget.x - o->position.x, oTarget.y - o->position.y, oTarget.z - o->position.z);
 		if (difference.x <= 1.0f && difference.y <= 1.0f) {
-			o->getComponent<MoveToComponent>()->target = RandomVec3(25, true, true, false);
+			o->getComponent<MoveToComponent>()->targetLocation = RandomVec3(25, true, true, false);
 		}
 
 		o->update(deltaTime);
@@ -343,7 +343,7 @@ void SceneIngame::createLetterCubes()
 		glm::vec3 pos = glm::vec3(0, 0, 0); //original position
 		o->position = pos;
 		o->scale = glm::vec3(1.0f);
-		o->getComponent<MoveToComponent>()->target = pos;
+		o->getComponent<MoveToComponent>()->targetLocation = pos;
 		o->draw();
 
 		// move blocks if they spawn in each other
@@ -352,7 +352,7 @@ void SceneIngame::createLetterCubes()
 				while (o->getComponent<BoundingBoxComponent>()->collideWithObject(next)) {
 					glm::vec3 pos = RandomVec3(25, true, true, false);
 					o->position = pos;
-					o->getComponent<MoveToComponent>()->target = RandomVec3(30, true, true, false);
+					o->getComponent<MoveToComponent>()->targetLocation = RandomVec3(30, true, true, false);
 					o->draw();
 				}
 			}
