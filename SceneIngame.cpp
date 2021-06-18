@@ -59,10 +59,10 @@ SceneIngame::SceneIngame()
 
 
 	// Creating a backgroundbox/skybox
-	backgroundBox = new GameObject(0);
-	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
-	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
+	skyBox = new GameObject(0);
+	skyBox->position = glm::vec3(0, 0, 5);
+	skyBox->addComponent(new SkyboxComponent(50, textureSkybox));
+	skyBox->addComponent(new BoundingBoxComponent(skyBox));
 
 	// Creating the crosshair
 	crosshair = new Crosshair();
@@ -145,10 +145,9 @@ void SceneIngame::draw()
 
 	// Use the shader to enable lightning
 	tigl::shader->enableLighting(false);
-	skyBox->draw();
 
 	// Draw the backgroundbox
-	backgroundBox->draw();
+	skyBox->draw();
 
 	// 2D objects drawing
 	glDisable(GL_DEPTH_TEST);
@@ -200,10 +199,10 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide)
 	if (zCollide)
 	{
 		z = (float(rand()) / float((RAND_MAX)) * max);
-
-		// return the random vector, z should always be 0 because we dont need to check that
-		return glm::vec3(x, y, 0);
 	}
+
+	// return the random vector, z should always be 0 because we dont need to check that
+	return glm::vec3(x, y, z);
 }
 
 void SceneIngame::update()
@@ -362,7 +361,7 @@ void SceneIngame::update()
 
 		//Have to fix, Blocks are flying out of the skybox
 		// Check collisionw ith the wall lastly
-		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBoxComponent>()->collideWithWall(object))
+		if (skyBox != nullptr && skyBox->getComponent<BoundingBoxComponent>()->collideWithWall(object))
 		{
 			// if there is collision with the wall, move to other location
 			glm::vec3 oTarget = (object->getComponent<MoveToComponent>()->targetLocation);

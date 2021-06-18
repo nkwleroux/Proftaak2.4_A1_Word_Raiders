@@ -41,7 +41,7 @@ private:
 	glm::vec4 mouse3d;
 
 	// Textures used by the sky box
-	GameObject* backgroundBox;
+	GameObject* skyBox;
 	Texture* textureSkybox[6];
 
 	// Texture used to draw the crosshair
@@ -64,9 +64,6 @@ private:
 
 	// Time used to calculate how how much time has passed since last frame
 	double lastFrameTime;
-
-	// Object containing the boundingbox
-	GameObject* skyBox;
 
 	// Crosshair object used to draw a crosshair with
 	Crosshair* crosshair;
