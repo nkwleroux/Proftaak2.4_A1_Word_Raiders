@@ -1,18 +1,22 @@
 #pragma once
 
 #include "Component.h"
-#include <list>
 #include <glm/glm.hpp>
 #include <vector>
 
 class DrawComponent : public Component
 {
 public:
+	// Constructor
 	DrawComponent();
+
+	// Destructor
 	~DrawComponent();
-	//virtual void setTexture(Texture* t) = 0;
+
+	//  =0 means nullpointer
 	virtual void draw() = 0;
 
+	// Getter for the vertices
 	virtual	std::vector<glm::vec3> getVertices() = 0;
 
 };
