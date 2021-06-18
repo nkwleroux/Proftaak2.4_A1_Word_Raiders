@@ -26,7 +26,7 @@ GameLogic::GameLogic() {
 	currentLives = 3;
 
 	// Initiate timers
-	gameTimer = new Timer(10);
+	gameTimer = new Timer(60);
 	antiSpamTimer = new Timer(1);
 
 	// Load words from json file
