@@ -41,6 +41,7 @@ private:
 	glm::vec4 mouse3d;
 
 	// Textures used by the sky box
+	GameObject* backgroundBox;
 	Texture* textureSkybox[6];
 
 	// Texture used to draw the crosshair
