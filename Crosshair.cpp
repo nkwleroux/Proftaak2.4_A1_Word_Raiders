@@ -47,6 +47,7 @@ void Crosshair::draw() {
 	// Set the position of the crosshair
 	glm::mat4 modelMatrix(1.0f);
 
+	// Matrix for moving the crosshair
 	modelMatrix = glm::translate(modelMatrix, glm::vec3(crosshairCoordinate, 0));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(100, 100, 1));
 	tigl::shader->setModelMatrix(modelMatrix);
@@ -77,7 +78,7 @@ void Crosshair::draw() {
 }
 
 /// <summary>
-/// Mathod to set the crosshair texture
+/// Method to set the crosshair texture
 /// </summary>
 /// <param name="isOpen">boolean to set the texture to openhand</param>
 void Crosshair::setHandStyle(bool isOpen) {
@@ -91,6 +92,7 @@ void Crosshair::update(glm::vec2 coordinate) {
 	crosshairCoordinate = coordinate;
 }
 
+// Freeing up the textures by unbinding them
 void Crosshair::freeTextures() {
 	closedHand->unBind();
 	openHand->unBind();
