@@ -94,7 +94,7 @@ bool GameLogic::update(bool* redDetected) {
 		if (oneSecondTimer->hasFinished()) {
 			oneSecondTimer->start();
 
-			// Check if an objcet is selected
+			// Check if an object is selected
 			if (selectedObject != nullptr)
 			{
 				// If the object is a letter model
@@ -102,8 +102,7 @@ bool GameLogic::update(bool* redDetected) {
 				{
 					// Get the letter of that lettermodel and shoot it
 					char shotLetter = selectedObject->getComponent<LetterModelComponent>()->getLetter();
-					shootLetter(shotLetter);
-					selectedObject->getComponent<LetterModelComponent>()->shotLetter = true;					
+					shootLetter(shotLetter);			
 				}
 			}
 
@@ -227,7 +226,9 @@ bool GameLogic::checkWord() {
 }
 
 void GameLogic::shootLetter(char shotLetter) {
+	std::cout << "shotletter" << std::endl;
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
 	achievedScore += 10;
+	selectedObject->getComponent<LetterModelComponent>()->shotLetter = true;		
 }
