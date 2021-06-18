@@ -17,11 +17,17 @@ Text* wordAmountText;
 extern int currentWordLength;
 extern int currentWordAmount;
 
+void SceneSettings::changeColor()
+{
+	VC->colorSettings(&VC->myColors.at(0));
+}
+
 SceneSettings::SceneSettings()
 {
 	settingsTexture = new Texture("Images/settings.png");
 	wordAmountText = new Text("c:/windows/fonts/Verdana.ttf", 64.0);
 
+	glfwSetWindowUserPointer(window, reinterpret_cast<void*>(this));
 	
 }
 
@@ -50,14 +56,11 @@ void SceneSettings::draw()
 	wordAmountText->draw(intToString(currentWordAmount), 1920 / 2 + 210, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 }
 
-void SceneSettings::changeColor() {
-	VC->colorSettings(&VC->myColors.at(0));
-}
-
 void SceneSettings::update()
 {
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
+			SceneSettings* handler = reinterpret_cast<SceneSettings*>(glfwGetWindowUserPointer(window));
 			if (key == GLFW_KEY_ESCAPE) { //todo make it so that if esc is pressed on either screens that app closes
 				glfwSetWindowShouldClose(window, true);
 			}
@@ -90,7 +93,7 @@ void SceneSettings::update()
 				}
 			}
 			else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-				changeColor();
+				handler->changeColor();
 			}
 		});
 	

@@ -15,15 +15,15 @@ VisionCamera::~VisionCamera()
 Point myPoint;
 
 //not used
-void VisionCamera::colorSettings(vector<int> *colorValues)
+void VisionCamera::colorSettings(vector<int>* colorValues)
 {
 	namedWindow("Trackbars", (640, 200));
-	createTrackbar("Hue Min", "Trackbars", colorValues[0].data(), 179);
-	createTrackbar("Hue Max", "Trackbars", colorValues[1].data(), 179);
-	createTrackbar("Sat Min", "Trackbars", colorValues[2].data(), 255);
-	createTrackbar("Sat Max", "Trackbars", colorValues[3].data(), 255);
-	createTrackbar("Val Min", "Trackbars", colorValues[4].data(), 255);
-	createTrackbar("Val Max", "Trackbars", colorValues[5].data(), 255);
+	createTrackbar("Hue Min", "Trackbars", &colorValues->at(0), 179);
+	createTrackbar("Hue Max", "Trackbars", &colorValues->at(1), 179);
+	createTrackbar("Sat Min", "Trackbars", &colorValues->at(2), 255);
+	createTrackbar("Sat Max", "Trackbars", &colorValues->at(3), 255);
+	createTrackbar("Val Min", "Trackbars", &colorValues->at(4), 255);
+	createTrackbar("Val Max", "Trackbars", &colorValues->at(5), 255);
 
 	while (true)
 	{

@@ -13,9 +13,9 @@ class SceneSettings :
 private:
     Texture* settingsTexture;
     std::string intToString(int number);
-    void changeColor();
 
 public:
+    void changeColor();
     SceneSettings();
     virtual void draw() override;
     virtual void update() override;
