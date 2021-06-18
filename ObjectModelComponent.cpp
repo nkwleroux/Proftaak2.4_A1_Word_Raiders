@@ -3,9 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "tigl.h"
 #include "Texture.h"
 
@@ -17,10 +15,10 @@ using tigl::Vertex;
 static std::string replace(std::string str, const std::string &toReplace, const std::string &replacement)
 {
 	size_t index = 0;
-	while (true) 
+	while (true)
 	{
 		 index = str.find(toReplace, index);
-		 if (index == std::string::npos) 
+		 if (index == std::string::npos)
 			 break;
 		 str.replace(index, toReplace.length(), replacement);
 		 ++index;
@@ -30,21 +28,24 @@ static std::string replace(std::string str, const std::string &toReplace, const 
 
 /**
 * Splits a string into substrings, based on a seperator
+* Seperator can be passed in trough the method
 */
 static std::vector<std::string> split(std::string str, const std::string &seperator)
 {
-	std::vector<std::string> ret;
-	size_t index;
+	// List in where we can store the strings
+	std::vector<std::string> stringList;
+	// Variable to store the index size
+	size_t sizeString;
 	while(true)
 	{
-		index = str.find(seperator);
-		if(index == std::string::npos)
+		sizeString = str.find(seperator);
+		if(sizeString == std::string::npos)
 			break;
-		ret.push_back(str.substr(0, index));
-		str = str.substr(index+1);
+		stringList.push_back(str.substr(0, sizeString));
+		str = str.substr(sizeString+1);
 	}
-	ret.push_back(str);
-	return ret;
+	stringList.push_back(str);
+	return stringList;
 }
 
 /**
@@ -81,6 +82,7 @@ void ObjectModelComponent::createVBO(std::vector<glm::vec3>	normals, std::vector
 	//foreach group in groups
 	for (int groupPos = 0; groupPos < this->groups.size(); groupPos++)
 	{
+		// variable for the color and list of vertices
 		glm::vec4 color = glm::vec4(1.0f);
 		std::vector<tigl::Vertex> verticesList;
 
@@ -104,10 +106,9 @@ void ObjectModelComponent::createVBO(std::vector<glm::vec3>	normals, std::vector
 				//emit vertex
 				if (materialIndex!=-1)
 				{
-					//verticesList.push_back(tigl::Vertex::PT(vertices[(face.vertices[vertexPos].position)], texcoords[(face.vertices[vertexPos].texcoord)] ));
 					verticesList.push_back(tigl::Vertex::PTN(
 						vertices[(vertex.position)],
-						texcoords[(vertex.texcoord)],
+						texcoords[(vertex.textureCoord)],
 						normals[(vertex.normal)]));
 				}
 				else
@@ -117,6 +118,7 @@ void ObjectModelComponent::createVBO(std::vector<glm::vec3>	normals, std::vector
 			}
 		}
 
+		// add to vertices List
 		vbos.push_back(tigl::createVbo(verticesList));
 	}
 
@@ -127,34 +129,43 @@ void ObjectModelComponent::createVBO(std::vector<glm::vec3>	normals, std::vector
 */
 ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 {
+	// variable for normals and coordinates of the text
 	std::vector<glm::vec3>	normals;
 	std::vector<glm::vec2>	texcoords;
 
+	// start index at -1
 	materialIndex = -1;
 
+	// Print what file we are trying to load
 	std::cout << "Loading " << fileName << std::endl;
+	// Setting directory to a local variable
 	std::string dirName = fileName;
+	//Translating the dir name to something we can use
 	if(dirName.rfind("/") != std::string::npos)
 		dirName = dirName.substr(0, dirName.rfind("/"));
+	//Translating the dir name to something we can use
 	if(dirName.rfind("\\") != std::string::npos)
 		dirName = dirName.substr(0, dirName.rfind("\\"));
+	//Translating the dir name to something we can use
 	if(fileName == dirName)
 		dirName = "";
 
-
+	// Load the file
 	std::ifstream pFile(fileName.c_str());
 
+	// If we can't load the file, print thi
 	if (!pFile.is_open())
 	{
 		std::cout << "Could not open file " << fileName << std::endl;
 		return;
 	}
 
-
+	// Create a new objgroup
 	ObjGroup* currentGroup = new ObjGroup();
+	// Set index at -1
 	currentGroup->materialIndex = -1;
 
-
+	// Reading trough the file, till the end
 	while(!pFile.eof())
 	{
 		std::string line;
@@ -166,6 +177,7 @@ ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 		std::vector<std::string> params = split(line, " ");
 		params[0] = toLower(params[0]);
 
+		// Adding to the vertices list on certain conditions
 		if(params[0] == "v")
 			vertices.push_back(glm::vec3((float)atof(params[1].c_str()), (float)atof(params[2].c_str()), (float)atof(params[3].c_str())));
 		else if(params[0] == "vn")
@@ -182,16 +194,17 @@ ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 				{
 					Vertex vertex;
 					std::vector<std::string> indices = split(params[i == (ii-3) ? 1 : i], "/");
-					if (indices.size() >= 1)	//er is een positie
+					if (indices.size() >= 1)	//We have a positon
 						vertex.position = atoi(indices[0].c_str()) - 1;
-					if(indices.size() == 2)		//alleen texture
-						vertex.texcoord = atoi(indices[1].c_str())-1;
-					if(indices.size() == 3)		//v/t/n of v//n
+					if(indices.size() == 2)		//Only texture
+						vertex.textureCoord = atoi(indices[1].c_str())-1;
+					if(indices.size() == 3)		//v/t/n or v//n
 					{
 						if( indices[1] != "")
-							vertex.texcoord = atoi(indices[1].c_str())-1;
+							vertex.textureCoord = atoi(indices[1].c_str())-1;
 						vertex.normal = atoi(indices[2].c_str())-1;
 					}
+					// Add to the vertex list
 					face.vertices.push_back(vertex);
 				}
 				currentGroup->faces.push_back(face);
@@ -199,7 +212,7 @@ ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 		}
 		else if(params[0] == "s")
 		{
-			//smoothing groups
+			//Smoothing groups
 		}
         else if(params[0] == "mtllib")
         {
@@ -225,34 +238,44 @@ ObjectModelComponent::ObjectModelComponent(const std::string &fileName)
 				std::cout<<"Could not find material name "<<params[1]<<std::endl;
 		}
 	}
+	// Add groups to the current group
 	groups.push_back(currentGroup);
 
+	// Create the VBO
 	createVBO(normals,texcoords);
 }
 
 ObjectModelComponent::ObjectModelComponent(const std::string& fileName, Texture* texture)
 {
+	// List of normals
 	std::vector<glm::vec3>	normals;
+	// List of texture coordinates
 	std::vector<glm::vec2>	texcoords;
 
+	// Get current material
 	MaterialInfo* currentMaterial = new MaterialInfo();
 	currentMaterial->name = "Material";
 	currentMaterial->texture = texture;
 	materials.push_back(currentMaterial);
 
+	// Setting starting index to -1
 	materialIndex = -1;
 
+	//Translating the dir name to something we can use
 	std::string dirName = fileName;
 	if (dirName.rfind("/") != std::string::npos)
+	//Translating the dir name to something we can use
 		dirName = dirName.substr(0, dirName.rfind("/"));
 	if (dirName.rfind("\\") != std::string::npos)
 		dirName = dirName.substr(0, dirName.rfind("\\"));
+	//Translating the dir name to something we can use
 	if (fileName == dirName)
 		dirName = "";
 
-
+	// Open the file
 	std::ifstream pFile(fileName.c_str());
 
+	// Print something if file couldn't be opened
 	if (!pFile.is_open())
 	{
 		std::cout << "Could not open file " << fileName << std::endl;
@@ -263,7 +286,7 @@ ObjectModelComponent::ObjectModelComponent(const std::string& fileName, Texture*
 	ObjGroup* currentGroup = new ObjGroup();
 	currentGroup->materialIndex = -1;
 
-
+	// Reading trough the file till the end
 	while (!pFile.eof())
 	{
 		std::string line;
@@ -294,11 +317,11 @@ ObjectModelComponent::ObjectModelComponent(const std::string& fileName, Texture*
 					if (indices.size() >= 1)	//er is een positie
 						vertex.position = atoi(indices[0].c_str()) - 1;
 					if (indices.size() == 2)		//alleen texture
-						vertex.texcoord = atoi(indices[1].c_str()) - 1;
+						vertex.textureCoord = atoi(indices[1].c_str()) - 1;
 					if (indices.size() == 3)		//v/t/n of v//n
 					{
 						if (indices[1] != "")
-							vertex.texcoord = atoi(indices[1].c_str()) - 1;
+							vertex.textureCoord = atoi(indices[1].c_str()) - 1;
 						vertex.normal = atoi(indices[2].c_str()) - 1;
 					}
 					face.vertices.push_back(vertex);
@@ -336,14 +359,17 @@ ObjectModelComponent::ObjectModelComponent(const std::string& fileName, Texture*
 }
 
 
+// Destructor
 ObjectModelComponent::~ObjectModelComponent(void)
 {
 }
 
+//Draw function for the ObjectModelComponent
 void ObjectModelComponent::draw()
 {
-	
+
 	for (auto vbo : vbos) {
+		// Enable color and textures
 		tigl::shader->enableColor(false);
 		tigl::shader->enableTexture(true);
 
@@ -372,19 +398,24 @@ void ObjectModelComponent::draw()
 	}
 }
 
-
+// Method for loadign the material file, you can input a filename and directory name
 void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const std::string &dirName )
 {
+	// Print to shnow what file we are loading
 	std::cout << "Loading " << fileName << std::endl;
+	// Open the file
 	std::ifstream pFile(fileName.c_str());
+	// If file couldn't be opened, print something
 	if (!pFile.is_open())
 	{
 		std::cout << "Could not open file " << fileName << std::endl;
 		return;
 	}
 
+	// Creating currentmaterial
 	MaterialInfo* currentMaterial = NULL;
 
+	// Reading trough the file line by line
 	while(!pFile.eof())
 	{
 		std::string line;
@@ -415,7 +446,7 @@ void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const 
 				currentMaterial->texture = new Texture(dirName + "/" + tex);
 			}
 
-		} 
+		}
 		else if (params[0] == "kd")
 		{
 			currentMaterial->kd = glm::vec3(atoi(params[1].c_str()), atoi(params[2].c_str()), atoi(params[3].c_str()));
@@ -429,9 +460,9 @@ void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const 
 			currentMaterial->ks = glm::vec3(atoi(params[1].c_str()), atoi(params[2].c_str()), atoi(params[3].c_str()));
 		}
 		else if (
-			params[0] == "illum" || 
-			params[0] == "map_bump" || 
-			params[0] == "map_ke" || 
+			params[0] == "illum" ||
+			params[0] == "map_bump" ||
+			params[0] == "map_ke" ||
 			params[0] == "map_ka" ||
 			params[0] == "map_d" ||
 			params[0] == "d" ||
@@ -450,6 +481,7 @@ void ObjectModelComponent::loadMaterialFile( const std::string &fileName, const 
 	}
 }
 
+// Getter for the vertices
 std::vector<glm::vec3> ObjectModelComponent::getVertices() {
 	return vertices;
 }

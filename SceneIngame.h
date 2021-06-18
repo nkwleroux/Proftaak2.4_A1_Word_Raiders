@@ -17,8 +17,8 @@ class GameObject;
 class Texture;
 
 
-// Map used to navigate between scenes
-extern std::map<Scenes, Scene*> scenes;
+// Map used to navigate between sceneList
+extern std::map<Scenes, Scene*> sceneList;
 
 // Currently selected scene
 extern Scene* currentScene;
@@ -106,7 +106,7 @@ public:
 	SceneIngame();
 
 	/// <summary>
-	/// Method used to draw all the scenes components
+	/// Method used to draw all the sceneList components
 	/// </summary>
 	virtual void draw() override;
 

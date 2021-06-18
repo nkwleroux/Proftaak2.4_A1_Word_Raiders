@@ -10,7 +10,7 @@
 #include <map>
 #include "Text/Text.h"
 
-extern std::map<Scenes, Scene*> scenes;
+extern std::map<Scenes, Scene*> sceneList;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 Text* wordAmountText;
@@ -58,7 +58,7 @@ void SceneSettings::update()
 				glfwSetWindowShouldClose(window, true);
 			}
 			else if (key == GLFW_KEY_BACKSPACE) {
-				currentScene = scenes[Scenes::STARTUP];
+				currentScene = sceneList[Scenes::STARTUP];
 			}
 			else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
 				currentWordLength--;

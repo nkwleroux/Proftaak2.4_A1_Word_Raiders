@@ -7,7 +7,7 @@
 #include "Scene.h"
 #include <map>
 
-extern std::map<Scenes, Scene*> scenes;
+extern std::map<Scenes, Scene*> sceneList;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
@@ -35,7 +35,7 @@ void SceneCredits::update()
 {
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS)
 	{
-		currentScene = scenes[Scenes::STARTUP];
+		currentScene = sceneList[Scenes::STARTUP];
 	}
 }
 

@@ -134,7 +134,7 @@ void SceneIngame::draw()
 	// Draw all the gui details
 	textObject->draw("Score: " + gameLogic->getScore(), 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getGameTimer()->timeRemainingToString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
-	textObject->draw("Levens: " + gameLogic->getLevens(), 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
+	textObject->draw("Levens: " + gameLogic->getCurrentLifes(), 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
@@ -192,7 +192,7 @@ void SceneIngame::update() {
 			}
 			if (key == GLFW_KEY_P && action == GLFW_PRESS)
 			{
-				currentScene = scenes[Scenes::PAUSE];
+				currentScene = sceneList[Scenes::PAUSE];
 			}
 		});
 
@@ -216,7 +216,7 @@ void SceneIngame::update() {
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		currentScene = scenes[Scenes::GAMEEND];
+		currentScene = sceneList[Scenes::GAMEEND];
 		gameLogic->gameStarted = false;
 		return;
 	}
