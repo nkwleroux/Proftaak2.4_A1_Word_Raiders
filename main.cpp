@@ -17,6 +17,7 @@
 #include "SceneCredits.h"
 #include "SceneSettings.h"
 #include "SceneEnding.h"
+#include "VisionCamera.h"
 
 using tigl::Vertex;
 using namespace std;
@@ -33,6 +34,7 @@ int windowWidth = 1920;
 std::map<Scenes, Scene*> scenes;
 Scene* currentScene = nullptr;
 GLFWwindow* window;
+VisionCamera* VC;
 
 void init();
 void update();
@@ -89,10 +91,18 @@ void init()
 			}
 		});
 
+	VideoCapture cap(0);
+	VC = new VisionCamera(cap);
+
+	SceneIngame* sceneInGame = new SceneIngame();
+	SceneSettings* sceneSettings = new SceneSettings();
+
 	scenes[Scenes::STARTUP] = new SceneStartup();
-	scenes[Scenes::INGAME] = new SceneIngame();
+	scenes[Scenes::INGAME] = sceneInGame;
+	sceneInGame->VC = VC;
 	scenes[Scenes::PAUSE] = new ScenePause();
-	scenes[Scenes::SETTINGS] = new SceneSettings();
+	scenes[Scenes::SETTINGS] = sceneSettings;
+	sceneSettings->VC = VC;
 	scenes[Scenes::CREDITS] = new SceneCredits();
 	scenes[Scenes::GAMEEND] = new SceneEnding();
 	currentScene = scenes[Scenes::STARTUP];

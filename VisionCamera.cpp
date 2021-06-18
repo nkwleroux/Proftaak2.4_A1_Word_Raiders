@@ -15,15 +15,15 @@ VisionCamera::~VisionCamera()
 Point myPoint;
 
 //not used
-void VisionCamera::colorSettings()
+void VisionCamera::colorSettings(vector<int> *colorValues)
 {
 	namedWindow("Trackbars", (640, 200));
-	createTrackbar("Hue Min", "Trackbars", &hmin, 179);
-	createTrackbar("Hue Max", "Trackbars", &hmax, 179);
-	createTrackbar("Sat Min", "Trackbars", &smin, 255);
-	createTrackbar("Sat Max", "Trackbars", &smax, 255);
-	createTrackbar("Val Min", "Trackbars", &vmin, 255);
-	createTrackbar("Val Max", "Trackbars", &vmax, 255);
+	createTrackbar("Hue Min", "Trackbars", colorValues[0].data(), 179);
+	createTrackbar("Hue Max", "Trackbars", colorValues[1].data(), 179);
+	createTrackbar("Sat Min", "Trackbars", colorValues[2].data(), 255);
+	createTrackbar("Sat Max", "Trackbars", colorValues[3].data(), 255);
+	createTrackbar("Val Min", "Trackbars", colorValues[4].data(), 255);
+	createTrackbar("Val Max", "Trackbars", colorValues[5].data(), 255);
 
 	while (true)
 	{
@@ -37,7 +37,11 @@ void VisionCamera::colorSettings()
 		cout << "hmax: " << hmax << ", smax: " << smax << ", vmax: " << vmax << endl;
 		imshow("Image", img);
 		imshow("Mask", mask);
-		waitKey(1);
+
+		char key = (char)waitKey(30);
+		if (key == 113) {
+			break;
+		}
 	}
 }
 

@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "tigl.h"
 #include "glm/glm.hpp"
+#include "VisionCamera.h"
+
 
 class GameObject;
 class Texture;
@@ -21,5 +23,6 @@ public:
 	virtual void draw() override;
 	virtual void update() override;
 	virtual void freeTextures() override;
+	VisionCamera* VC;
 };
 

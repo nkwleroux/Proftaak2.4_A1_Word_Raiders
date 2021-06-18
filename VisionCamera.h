@@ -18,12 +18,7 @@ private:
 	int hmin = 45, smin = 110, vmin = 75;
 	int hmax = 110, smax = 240, vmax = 255;
 
-	vector<vector<int>> myColors{
-	//{16, 28, 7, 93, 106, 172}, //Yellow - temp (delete after)
-	//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
-	{0, 146, 165, 22, 236, 255}, //red
-	{55, 52, 7, 93, 106, 172}, //green
-	};
+	
 	vector<Scalar> myColorValues{ {0, 255, 0} };
 
 	bool openHand = true;
@@ -40,11 +35,17 @@ public:
 
 	~VisionCamera();
 
-	void colorSettings();
+	void colorSettings(vector<int> *colorValues);
 	Point getContours();
 	void findColor();
 	void displayImage(); //delete maybe - not used
 	void update();
 	glm::vec2 getCrossHairCoords();
+	vector<vector<int>> myColors{
+		//{16, 28, 7, 93, 106, 172}, //Yellow - temp (delete after)
+		//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
+		{0, 146, 165, 22, 236, 255}, //red
+		{55, 52, 7, 93, 106, 172}, //green
+	};
 };
 

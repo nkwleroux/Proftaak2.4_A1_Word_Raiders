@@ -52,7 +52,6 @@ Texture* textureSkybox[6];
 Texture* textureCrosshair[2];
 extern int windowHeight;
 extern int windowWidth;
-VisionCamera* VC;
 Text* textObject;
 Text* wordText;
 std::list<GameObject*> tempObjects;
@@ -67,8 +66,6 @@ std::unordered_map<char,LetterModelComponent*> lettersMap;
 
 SceneIngame::SceneIngame()
 {
-	VideoCapture cap(0);
-	VC = new VisionCamera(cap);
 	gameLogic = new GameLogic();
 
 	initSkyboxTextures();
@@ -117,7 +114,7 @@ void SceneIngame::draw()
 	}
 
 	// Calculate where the crosshair would hit
-	//rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
+	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 
 	// Debug use mouse as pointer
 	{

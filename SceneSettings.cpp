@@ -50,6 +50,10 @@ void SceneSettings::draw()
 	wordAmountText->draw(intToString(currentWordAmount), 1920 / 2 + 210, 1080 / 2 + 95, glm::vec4(0.0f, 0.0f, 0.0f, 0));
 }
 
+void SceneSettings::changeColor() {
+	VC->colorSettings(&VC->myColors.at(0));
+}
+
 void SceneSettings::update()
 {
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -85,6 +89,9 @@ void SceneSettings::update()
 					currentWordAmount = 1;
 				}
 			}
+			else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+				changeColor();
+			}
 		});
 	
 }
@@ -93,4 +100,5 @@ void SceneSettings::freeTextures()
 {
 	settingsTexture->unBind();
 }
+
 
