@@ -10,7 +10,7 @@
 #include <map>
 #include "Text/Text.h"
 
-extern std::map<Scenes, Scene*> scenes;
+extern std::map<Scenes, Scene*> sceneList;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 Text* finishedText;
@@ -78,7 +78,7 @@ void SceneEnding::update(){
 				glfwSetWindowShouldClose(window, true);
 			}
 			if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-				currentScene = scenes[Scenes::STARTUP];
+				currentScene = sceneList[Scenes::STARTUP];
 			}
 		});
 }

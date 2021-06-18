@@ -163,7 +163,7 @@ void SceneIngame::update() {
 			}
 			if (key == GLFW_KEY_P && action == GLFW_PRESS)
 			{
-				currentScene = scenes[Scenes::PAUSE];
+				currentScene = sceneList[Scenes::PAUSE];
 			}
 		});
 
@@ -187,7 +187,7 @@ void SceneIngame::update() {
 	// If has finished all the words are guessed or the timer has run out
 	if (hasFinished)
 	{
-		currentScene = scenes[Scenes::GAMEEND];
+		currentScene = sceneList[Scenes::GAMEEND];
 		gameLogic->gameStarted = false;
 		return;
 	}

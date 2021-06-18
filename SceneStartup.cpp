@@ -7,7 +7,7 @@
 #include <map>
 #include "imgui.h"
 
-extern std::map<Scenes, Scene*> scenes;
+extern std::map<Scenes, Scene*> sceneList;
 extern Scene* currentScene;
 extern GLFWwindow* window;
 
@@ -48,19 +48,19 @@ void SceneStartup::update()
 			case GLFW_KEY_S:
 				if (action == GLFW_PRESS)
 				{
-					currentScene = scenes[Scenes::INGAME];
+					currentScene = sceneList[Scenes::INGAME];
 				}
 				break;
 			case GLFW_KEY_D:
 				if (action == GLFW_PRESS)
 				{
-					currentScene = scenes[Scenes::SETTINGS];
+					currentScene = sceneList[Scenes::SETTINGS];
 				}
 				break;
 			case GLFW_KEY_C:
 				if (action == GLFW_PRESS)
 				{
-					currentScene = scenes[Scenes::CREDITS];
+					currentScene = sceneList[Scenes::CREDITS];
 				}
 				break;
 			}
