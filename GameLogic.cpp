@@ -22,11 +22,11 @@ GameLogic::GameLogic() {
 	currentWordAmount = 1;
 	currentWordLength = 5;
 	achievedScore = 0;
-	levens = 3;
+	currentLives = 3;
 
 	// Initiate timers
 	gameTimer = new Timer(90);
-	oneSecondTimer = new Timer(1);
+	antiSpamTimer = new Timer(1);
 
 	// Load words from json file
 	wordLoader = new WordLoader();
@@ -38,28 +38,36 @@ GameLogic::~GameLogic()
 void GameLogic::checkForStartingConditions() {
 	//check if it is the start of the game
 	if (!gameStarted) {
+		// If the game has not been started! :
+		// set boolean gamestarted to true
 		gameStarted = true;
 		reset = true;
-		levens = 3;
+		// we start with 3 lives
+		currentLives = 3;
 		achievedScore = 0;
+		// load in a word of a selected length
 		wordsToGuess = wordLoader->loadWords(currentWordLength, currentWordAmount);
+		// draw the words
 		wordLoader->printWords(wordsToGuess);
 		currentWord = wordsToGuess[0];
+		// reset and start game timer
 		gameTimer->reset();
 		gameTimer->start();
-		oneSecondTimer->start();
+		antiSpamTimer->start();
 
+		// Size of correct and shot letters
 		correctLetters = std::vector<char>(currentWordLength);
 		shotLetters = std::vector<char>(currentWordLength);
 	}
 }
 
+// Set game to the end screen
 void GameLogic::setEndScreen() {
 	gameTimer->stop();
 	timeSpent = gameTimer->timeRemaining();
 }
 
-int wordIndex = 0;
+// Update function for the game logic
 bool GameLogic::update(bool* redDetected) {
 	checkForStartingConditions();
 
@@ -67,19 +75,20 @@ bool GameLogic::update(bool* redDetected) {
 	if (currentWordIndex == -1) {
 		fillVector();
 		currentWordIndex = 0;
-		// todo remove for debugging
+		// Print current word
 		std::cout << currentWord->getWord() << std::endl;
 		return false;
 	}
 
-
+	// If the timer has been finished, remove a life and reset game timmer
 	if (gameTimer->hasFinished())
 	{
-		if (levens>1)
+		if (currentLives>1)
 		{
-			levens--;
+			currentLives--;
 			gameTimer->reset();
 		}
+		// If there are no more lifes left
 		else {
 			setEndScreen();
 			wonGame = false;
@@ -91,8 +100,8 @@ bool GameLogic::update(bool* redDetected) {
 	if (*redDetected) {
 		*redDetected = false;
 		// Check if the player can fire
-		if (oneSecondTimer->hasFinished()) {
-			oneSecondTimer->start();
+		if (antiSpamTimer->hasFinished()) {
+			antiSpamTimer->start();
 
 			// Check if an objcet is selected
 			if (selectedObject != nullptr)
@@ -103,7 +112,7 @@ bool GameLogic::update(bool* redDetected) {
 					// Get the letter of that lettermodel and shoot it
 					char shotLetter = selectedObject->getComponent<LetterModelComponent>()->getLetter();
 					shootLetter(shotLetter);
-					selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = true;					
+					selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = true;
 				}
 			}
 
@@ -123,12 +132,12 @@ bool GameLogic::update(bool* redDetected) {
 					// If there are no words left we are done and return true
 					else {
 						wonGame = true;
-						achievedScore *= levens;
+						achievedScore *= currentLives;
 						setEndScreen();
 						return true;
 					}
 				}
-				// We remove all the shot characters 
+				// We remove all the shot characters
 				else {
 					currentWordIndex = 0;
 					shotWord = "";
@@ -154,34 +163,42 @@ bool GameLogic::update(bool* redDetected) {
 	return false;
 }
 
+
+
+//// Getter for which word has been hit
 std::string GameLogic::getShotWord()
 {
 	return shotWord;
 }
 
+// Getter for the correct/right word
 std::string GameLogic::getCorrectWord()
 {
 	return correctWord;
 }
 
+// Getter for the current assigned word
 Word* GameLogic::getCurrentWord()
 {
 	return currentWord;
 }
 
+// Getter for retreiving the timer
 Timer* GameLogic::getGameTimer()
 {
 	return gameTimer;
 }
 
-std::string GameLogic::getLevens()
+// Getter for retreiving the current lifes and score
+std::string GameLogic::getCurrentLifes()
 {
 	std::string stringLevens;
-	stringLevens.append(levens,'*');
+	stringLevens.append(currentLives,'*');
 	return stringLevens;
 }
 
-std::string GameLogic::getScore()
+// Retreive the current score
+std::string GameLogic::getCurrentScore()
 {
 	return std::to_string(achievedScore);
 }
@@ -207,6 +224,7 @@ void GameLogic::fillVector() {
 	}
 }
 
+// Function for checking the word, and if the guessed letters make up the correct word
 bool GameLogic::checkWord() {
 	int correctLettersAmount = 0;
 	for (int i = 0; i < currentWordLength; i++) {
@@ -226,6 +244,7 @@ bool GameLogic::checkWord() {
 	}
 }
 
+// With this function we can hit a letter
 void GameLogic::shootLetter(char shotLetter) {
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
