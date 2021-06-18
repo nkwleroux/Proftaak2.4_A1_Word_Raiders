@@ -150,7 +150,7 @@ void VisionCamera::update() {
 	// Find the color
 	findColor();
 	// Show video
-	imshow("Video", img);
+	//imshow("Video", img);
 
 	// Get height and width
 	videoHeight = videoCapture.get(CAP_PROP_FRAME_HEIGHT);
