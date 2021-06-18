@@ -347,7 +347,27 @@ void ObjectModelComponent::draw()
 		tigl::shader->enableColor(false);
 		tigl::shader->enableTexture(true);
 
-		materials[materialIndex]->texture->bind();
+		MaterialInfo* material = materials[materialIndex];
+		
+		if (material->ka != glm::vec3(0.0f))
+		{
+			tigl::shader->setLightAmbient(0, material->ka);
+		}
+		else {
+			tigl::shader->setLightAmbient(0, glm::vec3(1.0f));
+		}
+		
+		if (material->kd != glm::vec3(0.0f))
+		{
+			tigl::shader->setLightDiffuse(0, material->kd);
+		}
+		else {
+			tigl::shader->setLightDiffuse(0, glm::vec3(1.0f));
+		}
+
+		tigl::shader->setLightSpecular(0, material->ks);
+
+		material->texture->bind();
 		tigl::drawVertices(GL_TRIANGLES, vbo);
 	}
 }

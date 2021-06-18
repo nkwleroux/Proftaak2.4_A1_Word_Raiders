@@ -53,16 +53,18 @@ SceneIngame::SceneIngame()
 
 	initSkyboxTextures();
 
+	// Initialise text object with verdana font
 	textObject = new Text("c:/windows/fonts/Verdana.ttf", 64.0f);
 
-	backgroundBox = new GameObject(0);
-	//TODO changed
-	backgroundBox->position = glm::vec3(0, 0, 5);
-	backgroundBox->addComponent(new SkyboxComponent(50, textureSkybox));
-	backgroundBox->addComponent(new BoundingBoxComponent(backgroundBox));
+	// Create skybox
+	skyBox = new GameObject(0);
+	skyBox->position = glm::vec3(0, 0, 5);
+	skyBox->addComponent(new SkyboxComponent(50, textureSkybox));
+	skyBox->addComponent(new BoundingBoxComponent(skyBox));
 
 	crosshair = new Crosshair();
 
+	// Create letterModelComponents for all letters
 	char chars[] = { 'A','B','C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J' ,'K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T' ,'U' ,'V' ,'W' ,'X' ,'Y' ,'Z' };
 	Texture* texture = new Texture("resources/LetterBlockTexture.png");
 	for (int i = 0; i < sizeof(chars); i++) {
@@ -75,22 +77,32 @@ SceneIngame::SceneIngame()
 
 void SceneIngame::draw()
 {
+	glm::vec3 cameraPosition(0, 0, 30);
+	// Get the viewport variables
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 
+	// Set the projection matrix
+	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 100.0f);
 	tigl::shader->setProjectionMatrix(projection);
-	//TODO changed
-	glm::mat4 viewmatrix = glm::lookAt(glm::vec3(0, 0, 30), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+	// Set the viewmatrix
+	glm::mat4 viewmatrix = glm::lookAt(cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	tigl::shader->setViewMatrix(viewmatrix);
 
+	// Set the modelMatrix to a standard matrix
 	glm::mat4 modelmatrix(1.0f);
-	modelmatrix = glm::translate(modelmatrix, glm::vec3((float)((windowWidth / VC->videoWidth) * VC->currentPoint.x / 120.0f - 8.0), (float)(((windowHeight / VC->videoHeight) * VC->currentPoint.y / -125.0f + 4.0)), 0.0f));
 	tigl::shader->setModelMatrix(modelmatrix);
 
+	// Set the light in the scene
+	tigl::shader->setLightCount(1);
+	tigl::shader->setShinyness(1.0f);
+	tigl::shader->setLightPosition(0, glm::vec3(0,0,1));
+	tigl::shader->setLightDirectional(0, true);
+	
+	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
-	//for outlines only
-	//glpolygonmode(gl_front_and_back, gl_line);
+	tigl::shader->enableLighting(true);
 
 	// drawing objects
 	for (auto& o : dynamicObjectsList) {
@@ -112,23 +124,32 @@ void SceneIngame::draw()
 		rayCast(xpos, ypos, viewmatrix, projection);
 	}
 
+	// Disable lighting when drawing the skybox and 2d aspects
 	tigl::shader->enableLighting(false);
-
-	backgroundBox->draw();
+	skyBox->draw();
 
 	// 2D objects drawing
+	glDisable(GL_DEPTH_TEST);
 
-	//timer
+	// Draw all the gui details
 	textObject->draw("Score: " + gameLogic->getScore(), 50.0, 50.0, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getGameTimer()->timeRemainingToString(), 50.0, 100, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw("Levens: " + gameLogic->getLevens(), 50.0, 150, glm::vec4(1.0f, 1.0f, 1.0f, 0));	
 	textObject->draw(gameLogic->getShotWord(), windowWidth / 2 - 100, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 	textObject->draw(gameLogic->getCorrectWord(), windowWidth - 300, 100.0f, glm::vec4(1.0f, 1.0f, 1.0f, 0));
 
+	// Draw the crosshair
 	crosshair->draw();
-	glDisable(GL_DEPTH_TEST);
 }
 
+/// <summary>
+/// Helper function to generate a random vector 
+/// </summary>
+/// <param name="max"> Maximum value </param>
+/// <param name="xCollide"> If true it will randomise x component </param>
+/// <param name="yCollide"> If true it will randomise y component </param>
+/// <param name="zCollide"> If true it will randomise z component </param>
+/// <returns> Vector with random components if specified </returns>
 glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 	float x = 0, y = 0, z = 0;
 	int isNegative;
@@ -141,6 +162,7 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 			x *= -1;
 		}
 	}
+
 	if (yCollide) {
 		y = (float(rand()) / float((RAND_MAX)) * max);
 
@@ -149,13 +171,20 @@ glm::vec3 RandomVec3(float max, bool xCollide, bool yCollide, bool zCollide) {
 			y *= -1;
 		}
 	}
-	if (zCollide)
+
+	if (zCollide) {
 		z = (float(rand()) / float((RAND_MAX)) * max);
-	return glm::vec3(x, y, 0);
+
+		isNegative = (float(rand()) / float((RAND_MAX)) * 2);
+		if (isNegative == 1) {
+			z *= -1;
+		}
+	}
+
+	return glm::vec3(x, y, z);
 }
 
 void SceneIngame::update() {
-	//Maybe make into callback function. Now is dependent on update (timing).
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			if (key == GLFW_KEY_ESCAPE) {
@@ -192,12 +221,19 @@ void SceneIngame::update() {
 		return;
 	}
 
-	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot) {
-		dynamicObjectsList.remove(gameLogic->selectedObject);
-		gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
-		gameLogic->selectedObject = nullptr;
+	// If the selectedObject is not null and is an letterModelComponent
+	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()) {
+		// Check if it as been shot
+		if (gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot)
+		{
+			// Remove it from the list and dereference the object
+			dynamicObjectsList.remove(gameLogic->selectedObject);
+			gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
+			gameLogic->selectedObject = nullptr;
+		}
 	}
 
+	// If the word is correct, clear the dynamic objects and readd the new objects
 	if (gameLogic->wordCorrect) {
 		dynamicObjectsList.clear();
 		for (auto const& o : fullObjectsList)
@@ -268,8 +304,8 @@ void SceneIngame::update() {
 			}
 		}
 
-		//Have to fix, Blocks are flying out of the skybox
-		if (backgroundBox != nullptr && backgroundBox->getComponent<BoundingBoxComponent>()->collideWithWall(o)) {
+		// Check collision with skybox
+		if (skyBox != nullptr && skyBox->getComponent<BoundingBoxComponent>()->collideWithWall(o)) {
 			glm::vec3 oTarget = (o->getComponent<MoveToComponent>()->targetLocation);
 
 			oTarget = glm::vec3(-1 * oTarget.x, -1 * oTarget.y, -1 * oTarget.z);
@@ -281,6 +317,7 @@ void SceneIngame::update() {
 			o->getComponent<MoveToComponent>()->targetLocation = RandomVec3(25, true, true, false);
 		}
 
+		// Update every object
 		o->update(deltaTime);
 	}
 }
@@ -327,8 +364,11 @@ void SceneIngame::initSkyboxTextures() {
 
 void SceneIngame::createLetterCubes()
 {
+	// Clear all the previous objects
 	dynamicObjectsList.clear();
 	fullObjectsList.clear();
+
+	// Add new objects that are used by the new word
 	for (int i = 0; i < gameLogic->getCurrentWord()->getLetters().size(); i++) {
 		GameObject* o = new GameObject(i);
 		o->addComponent(lettersMap[gameLogic->getCurrentWord()->getLetters()[i]]);
@@ -361,6 +401,7 @@ void SceneIngame::selectObject() {
 	GameObject* object = nullptr;
 	glm::vec3 mousePos(mouse3d.x, mouse3d.y, mouse3d.z);
 
+	// Compare every object of the distance to that object is the smallest, that object is hit
 	for (const auto& o : dynamicObjectsList) {
 		if (minimalDistance == 0)
 		{
@@ -378,6 +419,7 @@ void SceneIngame::selectObject() {
 		}
 	}
 
+	// If the distance to the closest object is too large we know we didn't hit any objects
 	if (minimalDistance < 10)
 	{
 		gameLogic->selectedObject = object;
