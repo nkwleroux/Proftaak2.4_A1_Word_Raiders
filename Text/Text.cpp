@@ -38,18 +38,26 @@ Text::~Text()
 {
 }
 
+// draw method to draw the text
 void Text::draw(const std::string& text, float x, float y, glm::vec4 color)
 {
+	// creating a new viewport
 	int viewport[4];
+	// glGet — return the value or values of a selected parameter
 	glGetIntegerv(GL_VIEWPORT, viewport);
+	// set projectionmatrix viewmatrix and modelmatrix for the text display
 	tigl::shader->setProjectionMatrix(glm::ortho(0.0f, (float)viewport[2], (float)viewport[3], 0.0f, -100.0f, 100.0f));
 	tigl::shader->setViewMatrix(glm::mat4(1.0f));
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
+	// enable the usage of color
 	tigl::shader->enableColor(true);
+	// enable lightning
 	tigl::shader->enableLighting(false);
+	// enable textures
 	tigl::shader->enableTexture(true);
 	tigl::shader->enableColorMult(true);
+	//add color to the text
 	tigl::shader->setColorAdd(color);
 
 	glEnable(GL_BLEND);
@@ -57,7 +65,25 @@ void Text::draw(const std::string& text, float x, float y, glm::vec4 color)
 	glDisable(GL_DEPTH_TEST);
 	glBindTexture(GL_TEXTURE_2D, texId);
 	stbtt_aligned_quad q;
+	// float 	s0
+	//
+	// 	float 	s1
+	//
+	// 	float 	t0
+	//
+	// 	float 	t1
+	//
+	// 	float 	x0
+	//
+	// 	float 	x1
+	//
+	// 	float 	y0
+	//
+	// 	float 	y1
+
 	tigl::begin(GL_QUADS);
+
+	// create the text
 	for (int i = 0; i < text.size(); i++)
 	{
 		if (text[i] >= 32 && text[i] < 128)
@@ -71,5 +97,6 @@ void Text::draw(const std::string& text, float x, float y, glm::vec4 color)
 	}
 	tigl::end();
 
+	//finally add some color
 	tigl::shader->setColorAdd(glm::vec4(0, 0, 0, 0));
 }

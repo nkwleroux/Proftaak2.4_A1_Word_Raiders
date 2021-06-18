@@ -41,6 +41,7 @@ private:
 	glm::vec4 mouse3d;
 
 	// Textures used by the sky box
+	GameObject* backgroundBox;
 	Texture* textureSkybox[6];
 
 	// Texture used to draw the crosshair
@@ -75,18 +76,13 @@ private:
 
 	/// <summary>
 	/// Method used to cast an ray in the viewport
-	/// Method will return a 3d point where the ray hit 
+	/// Method will return a 3d point where the ray hit
 	/// </summary>
 	/// <param name="xOrigin"> X coordinate of the crosshair </param>
 	/// <param name="yOrigin"> Y coordinate of the crosshair </param>
 	/// <param name="viewMatrix"> Matrix containing where in the scene is looked at </param>
 	/// <param name="projectionMatrix"> Matrix containing how the scene is viewed </param>
 	void rayCast(int xOrigin, int yOrigin, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
-
-	/// <summary>
-	/// Initialise skybox textures that are used to draw the skybox
-	/// </summary>
-	void initSkyboxTextures();
 
 	/// <summary>
 	/// Method that creates all the cubes that are used in the word

@@ -10,12 +10,18 @@ class SceneSettings :
 {
 
 private:
+	// Variable for the texture we should load to this scene,
     Texture* settingsTexture;
+	// Metho dto convert integer to string variable type
     std::string intToString(int number);
 
 public:
+	//Constructor
     SceneSettings();
-    virtual void draw() override;
-    virtual void update() override;
-    virtual void freeTextures() override;
+	// Draw function for the scene
+	virtual void draw() override;
+	// Update function for the scene
+	virtual void update() override;
+	// Function that frees/unbinds the textures for the scene
+	virtual void freeTextures() override;
 };
