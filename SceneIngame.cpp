@@ -44,12 +44,6 @@ using tigl::Vertex;
 using namespace std;
 using namespace cv;
 
-// Variables defined elsewhere
-extern std::map<Scenes, Scene*> scenes;
-extern Scene* currentScene;
-extern GLFWwindow* window;
-extern int windowHeight;
-extern int windowWidth;
 
 SceneIngame::SceneIngame()
 {
