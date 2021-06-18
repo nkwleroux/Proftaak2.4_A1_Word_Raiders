@@ -252,7 +252,6 @@ bool GameLogic::checkWord() {
 
 // With this function we can hit a letter
 void GameLogic::shootLetter(char shotLetter) {
-	std::cout << "shotletter" << std::endl;
 	shotLetters.at(currentWordIndex) = shotLetter;
 	currentWordIndex++;
 	achievedScore += 5;

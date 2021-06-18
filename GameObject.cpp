@@ -41,6 +41,7 @@ void GameObject::draw(const glm::mat4 &parentMatrix)
 {
 	// If there is no drawcomponent, exit the function
 	if (!drawComponent)
+
 		return;
 
 	// Translate, rotate, and scale with vectors

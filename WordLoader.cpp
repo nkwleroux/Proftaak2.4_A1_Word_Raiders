@@ -76,7 +76,6 @@ bool WordLoader::checkIfNumberExists(int arr[], int number, int size) {
 */
 void WordLoader::printWords(std::vector<Word*> words) {
 	for (Word* w : words) {
-		//std::cout << w->getWord() << std::endl;
 		w->writeLetters();
 	}
 }

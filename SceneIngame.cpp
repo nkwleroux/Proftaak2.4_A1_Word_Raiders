@@ -246,7 +246,6 @@ void SceneIngame::update()
 	selectObject();
 
 	if (gameLogic->selectedObject != nullptr && gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot) {
-		cout << "remove object" << endl;
 		dynamicObjectsList.remove(gameLogic->selectedObject);
 		gameLogic->selectedObject->getComponent<LetterModelComponent>()->hasBeenShot = false;
 		gameLogic->selectedObject = nullptr;
@@ -494,7 +493,6 @@ void SceneIngame::selectObject()
 	// if minimal distance is lower then 10, set the selectedobject
 	if (minimalDistance < 10)
 	{
-		cout << "on object" << endl;
 		gameLogic->selectedObject = object;
 	}
 		// else there is no selected object
