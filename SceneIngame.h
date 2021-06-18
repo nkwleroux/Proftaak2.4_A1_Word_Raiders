@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "tigl.h"
 #include "glm/glm.hpp"
+#include "GLFW/glfw3.h"
+#include "Scene.h"
 #include "Texture.h"
 #include "VisionCamera.h"
 #include <unordered_map>
@@ -13,6 +15,20 @@
 
 class GameObject;
 class Texture;
+
+
+// Map used to navigate between scenes
+extern std::map<Scenes, Scene*> scenes;
+
+// Currently selected scene
+extern Scene* currentScene;
+
+// Window in which everything is displayed
+extern GLFWwindow* window;
+
+// Variables that keep the size of the display window
+extern int windowHeight;
+extern int windowWidth;
 
 /// <summary>
 /// Scene in which the gameplay takes place
