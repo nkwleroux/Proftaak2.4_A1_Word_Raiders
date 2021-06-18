@@ -136,7 +136,7 @@ bool GameLogic::update(bool* redDetected) {
 					else {
 						wonGame = true;
 						// Time left added to score
-						achievedScore += gameTimer->timeRemaining()*5;
+						achievedScore += gameTimer->timeRemaining();
 						// Current lives is a multiplier for the score
 						achievedScore *= currentLives;
 						setEndScreen();
