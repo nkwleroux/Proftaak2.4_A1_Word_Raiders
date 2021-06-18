@@ -16,10 +16,11 @@ extern GLFWwindow* window;
 Text* wordAmountText;
 extern int currentWordLength;
 extern int currentWordAmount;
+extern VisionCamera* VC;
 
-void SceneSettings::changeColor()
+void SceneSettings::changeColor(int index)
 {
-	VC->colorSettings(&VC->myColors.at(0));
+	VC->colorSettings(&VC->myColors.at(index));
 }
 
 SceneSettings::SceneSettings()
@@ -93,7 +94,10 @@ void SceneSettings::update()
 				}
 			}
 			else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-				handler->changeColor();
+				handler->changeColor(0);
+			}
+			else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+				handler->changeColor(1);
 			}
 		});
 	

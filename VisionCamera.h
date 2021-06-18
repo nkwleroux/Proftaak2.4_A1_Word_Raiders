@@ -42,10 +42,8 @@ public:
 	void update();
 	glm::vec2 getCrossHairCoords();
 	vector<vector<int>> myColors{
-		//{16, 28, 7, 93, 106, 172}, //Yellow - temp (delete after)
-		//{hmin, smin, vmin, hmax, smax, vmax} //blue - temp (delete after)
-		{0, 146, 165, 22, 236, 255}, //red
 		{55, 52, 7, 93, 106, 172}, //green
+		{0, 146, 165, 22, 236, 255} //red
 	};
 };
 

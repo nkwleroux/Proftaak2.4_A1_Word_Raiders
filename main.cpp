@@ -102,7 +102,6 @@ void init()
 	sceneInGame->VC = VC;
 	scenes[Scenes::PAUSE] = new ScenePause();
 	scenes[Scenes::SETTINGS] = sceneSettings;
-	sceneSettings->VC = VC;
 	scenes[Scenes::CREDITS] = new SceneCredits();
 	scenes[Scenes::GAMEEND] = new SceneEnding();
 	currentScene = scenes[Scenes::STARTUP];

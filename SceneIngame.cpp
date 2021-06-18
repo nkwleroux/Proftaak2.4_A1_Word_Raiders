@@ -117,7 +117,7 @@ void SceneIngame::draw()
 	rayCast(VC->getCrossHairCoords().x, VC->getCrossHairCoords().y, viewmatrix, projection);
 
 	// Debug use mouse as pointer
-	{
+	/*{
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -126,7 +126,7 @@ void SceneIngame::draw()
 			VC->redDetected = true;
 		}
 		rayCast(xpos, ypos, viewmatrix, projection);
-	}
+	}*/
 
 	tigl::shader->enableLighting(false);
 

@@ -19,27 +19,28 @@ void VisionCamera::colorSettings(vector<int>* colorValues)
 {
 	namedWindow("Trackbars", (640, 200));
 	createTrackbar("Hue Min", "Trackbars", &colorValues->at(0), 179);
-	createTrackbar("Hue Max", "Trackbars", &colorValues->at(1), 179);
-	createTrackbar("Sat Min", "Trackbars", &colorValues->at(2), 255);
-	createTrackbar("Sat Max", "Trackbars", &colorValues->at(3), 255);
-	createTrackbar("Val Min", "Trackbars", &colorValues->at(4), 255);
+	createTrackbar("Hue Max", "Trackbars", &colorValues->at(3), 179);
+	createTrackbar("Sat Min", "Trackbars", &colorValues->at(1), 255);
+	createTrackbar("Sat Max", "Trackbars", &colorValues->at(4), 255);
+	createTrackbar("Val Min", "Trackbars", &colorValues->at(2), 255);
 	createTrackbar("Val Max", "Trackbars", &colorValues->at(5), 255);
 
 	while (true)
 	{
 		cap.read(img);
 		cvtColor(img, imgHSV, COLOR_BGR2HSV);
-		Scalar lower(hmin, smin, vmin);
-		Scalar upper(hmax, smax, vmax);
+		Scalar lower(colorValues->at(0), colorValues->at(1), colorValues->at(2));
+		Scalar upper(colorValues->at(3), colorValues->at(4), colorValues->at(5));
 		inRange(imgHSV, lower, upper, mask);
 
-		cout << "hmin: " << hmin << ", smin: " << smin << ", vmin: " << vmin << endl;
-		cout << "hmax: " << hmax << ", smax: " << smax << ", vmax: " << vmax << endl;
+		//cout << "hmin: " << colorValues->at(0) << ", smin: " << colorValues->at(1) << ", vmin: " << colorValues->at(2) << endl;
+		//cout << "hmax: " << colorValues->at(3) << ", smax: " << colorValues->at(4) << ", vmax: " << colorValues->at(5) << endl;
 		imshow("Image", img);
-		imshow("Mask", mask);
+		imshow("Press q to quit", mask);
 
 		char key = (char)waitKey(30);
 		if (key == 113) {
+			destroyAllWindows();
 			break;
 		}
 	}
